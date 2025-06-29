@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#D4AF37">
+    <meta name="msapplication-TileColor" content="#D4AF37">
+    <meta name="theme-color" content="#D4AF37">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>LuxeHome - Premium Furniture & Home Decor Brand</title>
+    <meta name="title" content="LuxeHome - Premium Furniture & Home Decor Brand" />
+    <meta name="description" content="Transform your home with LuxeHome's curated collection of luxury furniture. Modern design meets exceptional craftsmanship. Free shipping, white-glove delivery, and design consultation available." />
+    <meta name="keywords" content="luxury furniture, premium home decor, modern furniture, scandinavian design, furniture brand, home furnishing, interior design" />
+    <meta name="author" content="LuxeHome" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://luxehome.com/" />
+    <meta property="og:title" content="LuxeHome - Premium Furniture & Home Decor Brand" />
+    <meta property="og:description" content="Transform your home with LuxeHome's curated collection of luxury furniture. Modern design meets exceptional craftsmanship." />
+    <meta property="og:image" content="https://luxehome.com/og-image.jpg" />
+    <meta property="og:site_name" content="LuxeHome" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://luxehome.com/" />
+    <meta property="twitter:title" content="LuxeHome - Premium Furniture & Home Decor Brand" />
+    <meta property="twitter:description" content="Transform your home with LuxeHome's curated collection of luxury furniture. Modern design meets exceptional craftsmanship." />
+    <meta property="twitter:image" content="https://luxehome.com/twitter-image.jpg" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "LuxeHome",
+      "url": "https://luxehome.com",
+      "logo": "https://luxehome.com/logo.png",
+      "description": "Premium furniture and home decor brand offering luxury furniture with modern design and exceptional craftsmanship.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "123 Design Avenue",
+        "addressLocality": "New York",
+        "addressRegion": "NY",
+        "postalCode": "10001",
+        "addressCountry": "US"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-555-123-4567",
+        "contactType": "customer service"
+      },
+      "sameAs": [
+        "https://www.facebook.com/luxehome",
+        "https://www.instagram.com/luxehome",
+        "https://www.twitter.com/luxehome"
+      ]
+    }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/index.css" as="style">
+    <link rel="preload" href="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop" as="image">
+    
+    <style>
+      /* Critical CSS for loading screen */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #2C2C2C 0%, #4A4A4A 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+      }
+      
+      .loading-logo {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #D4AF37;
+        margin-bottom: 2rem;
+        font-family: 'Montserrat', sans-serif;
+      }
+      
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(212, 175, 55, 0.3);
+        border-top: 3px solid #D4AF37;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loaded .loading-screen {
+        opacity: 0;
+        pointer-events: none;
+      }
+      
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background: #D4AF37;
+        border-radius: 4px;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background: #B8941F;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+      <div class="loading-logo">LuxeHome</div>
+      <div class="loading-spinner"></div>
+    </div>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <script>
+      // Hide loading screen when page is loaded
+      window.addEventListener('load', () => {
+        document.body.classList.add('loaded');
+      });
+      
+      // Install prompt for PWA
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+      });
+    </script>
+  </body>
+</html>
