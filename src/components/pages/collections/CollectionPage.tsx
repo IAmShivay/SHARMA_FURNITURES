@@ -59,7 +59,7 @@ const CollectionPage: React.FC = () => {
     },
     'office': {
       api: 'office',
-      title: 'Office Collection',
+      title: 'Office Collections',
       description: 'Work in comfort with our professional office furniture'
     }
   };
