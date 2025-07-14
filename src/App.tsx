@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { HelmetProvider } from 'react-helmet-async';
 import { store } from './store';
@@ -8,13 +8,13 @@ import Header from './components/layout/Header';
 import HeroSection from './components/sections/HeroSection';
 import CollectionsSection from './components/sections/CollectionsSection';
 import ProductShowcase from './components/sections/ProductShowcase';
+import VideoSection from './components/sections/VideoSection';
 import TestimonialsSection from './components/sections/TestimonialsSection';
 import NewsletterSection from './components/sections/NewsletterSection';
 import Footer from './components/layout/Footer';
 import ShoppingCart from './components/ui/ShoppingCart';
 import SEOHead from './components/common/SEOHead';
-import ProtectedRoute, { AdminRoute, CustomerRoute } from './components/auth/ProtectedRoute';
-import { Product } from './types';
+import  { AdminRoute } from './components/auth/ProtectedRoute';
 
 // Page imports
 import AboutUs from './components/pages/AboutUs';
@@ -46,6 +46,7 @@ const HomePage: React.FC = () => {
       <HeroSection />
       <CollectionsSection />
       <ProductShowcase />
+      <VideoSection />
       <TestimonialsSection />
       <NewsletterSection />
     </div>
@@ -54,8 +55,7 @@ const HomePage: React.FC = () => {
 
 // Product page wrapper to handle route params
 const ProductPageWrapper: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  return <ProductPage productId={id || ''} />;
+  return <ProductPage />;
 };
 
 // App content component (inside Redux provider)

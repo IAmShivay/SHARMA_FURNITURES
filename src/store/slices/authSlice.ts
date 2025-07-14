@@ -20,13 +20,38 @@ interface AuthState {
   error: string | null;
 }
 
-const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: false,
-  loading: false,
-  error: null,
+// Initialize state from localStorage
+const getInitialState = (): AuthState => {
+  const token = localStorage.getItem('token');
+  const userStr = localStorage.getItem('user');
+
+  if (token && userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      return {
+        user,
+        token,
+        isAuthenticated: true,
+        loading: false,
+        error: null,
+      };
+    } catch (error) {
+      // Clear invalid data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+  }
+
+  return {
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    loading: false,
+    error: null,
+  };
 };
+
+const initialState: AuthState = getInitialState();
 
 const authSlice = createSlice({
   name: 'auth',
@@ -39,6 +64,7 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.error = null;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
     },
     
     setUser: (state, action: PayloadAction<User>) => {
@@ -52,6 +78,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
     
     setLoading: (state, action: PayloadAction<boolean>) => {

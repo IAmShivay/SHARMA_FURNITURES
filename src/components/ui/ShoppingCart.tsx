@@ -206,6 +206,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
               <div className="space-y-3">
                 <Link
                   to="/checkout"
+                  onClick={onClose}
                   className="w-full bg-amber-600 text-white py-4 rounded-xl font-semibold hover:bg-amber-700 transition-colors duration-200 text-lg font-montserrat flex items-center justify-center space-x-2"
                 >
                   <span>Proceed to Checkout</span>

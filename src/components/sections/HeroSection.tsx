@@ -85,7 +85,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-black" style={{ height: 'calc(100vh - 0px)' }}>
+    <section className="relative overflow-hidden bg-black" style={{ height: 'calc(100vh - 80px)' }}>
       {/* Premium Slides Container */}
       <div className="relative h-full">
         {slides.map((slide, index) => (
@@ -130,23 +130,23 @@ const HeroSection: React.FC = () => {
             </div>
 
             {/* Premium Content Layout */}
-            <div className="relative h-full flex items-center px-6 lg:px-12">
+            <div className="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-12 py-8 sm:py-12">
               <div className="container mx-auto">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
                   {/* Content Column */}
                   <div className="text-white space-y-8">
                     {/* Luxury Badge */}
-                    <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full border transition-all duration-1000 delay-200 bg-white/10 border-white/30 text-white backdrop-blur-sm ${
+                    <div className={`inline-flex items-center space-x-2 px-3 sm:px-4 py-2 rounded-full border transition-all duration-1000 delay-200 bg-white/10 border-white/30 text-white backdrop-blur-sm ${
                       index === currentSlide
                         ? 'opacity-100 translate-y-0'
                         : 'opacity-0 translate-y-4'
                     }`}>
                       <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm font-semibold tracking-wider uppercase">Premium Collection</span>
+                      <span className="text-xs sm:text-sm font-semibold tracking-wider uppercase">Premium Collection</span>
                     </div>
 
                     {/* Main Title */}
-                    <h1 className={`text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight transition-all duration-1000 delay-400 font-montserrat ${
+                    <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight transition-all duration-1000 delay-400 font-montserrat ${
                       index === currentSlide
                         ? 'opacity-100 translate-y-0'
                         : 'opacity-0 translate-y-8'
@@ -160,7 +160,7 @@ const HeroSection: React.FC = () => {
                     </h1>
 
                     {/* Subtitle */}
-                    <p className={`text-lg md:text-xl lg:text-2xl leading-relaxed max-w-2xl transition-all duration-1000 delay-600 font-playfair text-gray-200 ${
+                    <p className={`text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed max-w-2xl transition-all duration-1000 delay-600 font-playfair text-gray-200 ${
                       index === currentSlide
                         ? 'opacity-100 translate-y-0'
                         : 'opacity-0 translate-y-8'
@@ -176,18 +176,18 @@ const HeroSection: React.FC = () => {
                     }`}>
                       <Link
                         to={slide.ctaLink}
-                        className="group inline-flex items-center justify-center space-x-3 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:via-orange-700 hover:to-amber-800 text-white px-8 py-4 text-lg font-bold rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-2xl transform-gpu font-montserrat"
+                        className="group inline-flex items-center justify-center space-x-2 sm:space-x-3 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-700 hover:via-orange-700 hover:to-amber-800 text-white px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold rounded-xl sm:rounded-2xl transition-all duration-500 hover:scale-105 hover:shadow-2xl transform-gpu font-montserrat"
                       >
                         <span>{slide.cta}</span>
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform duration-300" />
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-2 transition-transform duration-300" />
                       </Link>
 
                       <Link
                         to="/consultation"
-                        className="group inline-flex items-center justify-center space-x-3 px-8 py-4 text-lg font-bold rounded-2xl transition-all duration-500 hover:scale-105 transform-gpu font-montserrat bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 hover:border-white/50 backdrop-blur-sm"
+                        className="group inline-flex items-center justify-center space-x-2 sm:space-x-3 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-bold rounded-xl sm:rounded-2xl transition-all duration-500 hover:scale-105 transform-gpu font-montserrat bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 hover:border-white/50 backdrop-blur-sm"
                       >
                         <span>Free Consultation</span>
-                        <Phone className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                        <Phone className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform duration-300" />
                       </Link>
                     </div>
                   </div>
@@ -226,31 +226,31 @@ const HeroSection: React.FC = () => {
       {/* Premium Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-8 top-1/2 transform -translate-y-1/2 p-4 bg-white/15 hover:bg-white/25 backdrop-blur-xl rounded-2xl transition-all duration-500 hover:scale-110 z-20 group border border-white/30 hover:border-white/50 shadow-2xl"
+        className="absolute left-2 sm:left-4 lg:left-8 top-1/2 transform -translate-y-1/2 p-2 sm:p-3 lg:p-4 bg-white/15 hover:bg-white/25 backdrop-blur-xl rounded-xl lg:rounded-2xl transition-all duration-500 hover:scale-110 z-20 group border border-white/30 hover:border-white/50 shadow-2xl"
         aria-label="Previous slide"
       >
-        <ChevronLeft className="w-6 h-6 text-white group-hover:scale-125 group-hover:-translate-x-1 transition-all duration-300 filter drop-shadow-lg" />
+        <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:scale-125 group-hover:-translate-x-1 transition-all duration-300 filter drop-shadow-lg" />
       </button>
 
       <button
         onClick={nextSlide}
-        className="absolute right-8 top-1/2 transform -translate-y-1/2 p-4 bg-white/15 hover:bg-white/25 backdrop-blur-xl rounded-2xl transition-all duration-500 hover:scale-110 z-20 group border border-white/30 hover:border-white/50 shadow-2xl"
+        className="absolute right-2 sm:right-4 lg:right-8 top-1/2 transform -translate-y-1/2 p-2 sm:p-3 lg:p-4 bg-white/15 hover:bg-white/25 backdrop-blur-xl rounded-xl lg:rounded-2xl transition-all duration-500 hover:scale-110 z-20 group border border-white/30 hover:border-white/50 shadow-2xl"
         aria-label="Next slide"
       >
-        <ChevronRight className="w-6 h-6 text-white group-hover:scale-125 group-hover:translate-x-1 transition-all duration-300 filter drop-shadow-lg" />
+        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white group-hover:scale-125 group-hover:translate-x-1 transition-all duration-300 filter drop-shadow-lg" />
       </button>
 
       {/* Luxury Slide Indicators */}
-      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="flex items-center space-x-4 bg-black/30 backdrop-blur-xl rounded-2xl px-6 py-4 border border-white/20">
+      <div className="absolute bottom-6 sm:bottom-8 lg:bottom-12 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 bg-black/30 backdrop-blur-xl rounded-xl lg:rounded-2xl px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 border border-white/20">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               className={`relative transition-all duration-500 group ${
                 index === currentSlide
-                  ? 'w-12 h-3'
-                  : 'w-3 h-3 hover:w-6'
+                  ? 'w-8 h-2 sm:w-10 sm:h-2.5 lg:w-12 lg:h-3'
+                  : 'w-2 h-2 sm:w-2.5 sm:h-2.5 lg:w-3 lg:h-3 hover:w-4 sm:hover:w-5 lg:hover:w-6'
               }`}
               aria-label={`Go to slide ${index + 1}`}
             >
@@ -267,8 +267,8 @@ const HeroSection: React.FC = () => {
           ))}
 
           {/* Slide Counter */}
-          <div className="ml-4 pl-4 border-l border-white/30">
-            <span className="text-white text-sm font-bold font-montserrat">
+          <div className="hidden sm:block ml-2 sm:ml-3 lg:ml-4 pl-2 sm:pl-3 lg:pl-4 border-l border-white/30">
+            <span className="text-white text-xs sm:text-sm font-bold font-montserrat">
               {String(currentSlide + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
             </span>
           </div>
@@ -276,11 +276,11 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* Enhanced Scroll Indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="flex flex-col items-center space-y-2 animate-bounce">
-          <span className="text-white/80 text-xs font-semibold tracking-wider uppercase">Scroll</span>
-          <div className="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center relative overflow-hidden">
-            <div className="w-1 h-3 bg-white/80 rounded-full mt-2 animate-pulse" />
+      <div className="absolute bottom-2 sm:bottom-4 right-4 sm:right-6 lg:right-8 z-20">
+        <div className="flex flex-col items-center space-y-1 sm:space-y-2 animate-bounce">
+          <span className="text-white/80 text-xs font-semibold tracking-wider uppercase hidden sm:block">Scroll</span>
+          <div className="w-4 h-6 sm:w-5 sm:h-8 lg:w-6 lg:h-10 border-2 border-white/60 rounded-full flex justify-center relative overflow-hidden">
+            <div className="w-0.5 h-2 sm:w-1 sm:h-3 bg-white/80 rounded-full mt-1 sm:mt-2 animate-pulse" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/10 to-transparent animate-pulse" />
           </div>
         </div>

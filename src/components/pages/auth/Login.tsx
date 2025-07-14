@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../../store/hooks';
+import { setCredentials } from '../../../store/slices/authSlice';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -26,28 +29,51 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // Demo credentials authentication
+      const demoCredentials = {
+        admin: { email: 'admin@luxehome.com', password: 'admin123', role: 'admin' },
+        user: { email: 'john.doe@example.com', password: 'user123', role: 'user' }
+      };
 
-      const data = await response.json();
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (data.success) {
-        // Store token and user data
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        
-        // Redirect to home or dashboard
-        navigate('/');
+      // Check credentials
+      const isAdmin = formData.email === demoCredentials.admin.email && formData.password === demoCredentials.admin.password;
+      const isUser = formData.email === demoCredentials.user.email && formData.password === demoCredentials.user.password;
+
+      if (isAdmin || isUser) {
+        const userData = isAdmin ? demoCredentials.admin : demoCredentials.user;
+
+        // Create user object for Redux
+        const user = {
+          id: userData.email,
+          name: isAdmin ? 'Admin User' : 'John Doe',
+          email: userData.email,
+          role: userData.role as 'customer' | 'support' | 'manager' | 'admin',
+          emailVerified: true,
+          phoneVerified: true,
+          createdAt: new Date().toISOString()
+        };
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', 'demo-token-' + Date.now());
+
+        // Dispatch Redux action
+        dispatch(setCredentials({ user, token: 'demo-token-' + Date.now() }));
+
+        // Redirect based on role
+        if (isAdmin) {
+          navigate('/admin');
+        } else {
+          navigate('/account');
+        }
       } else {
-        setError(data.message || 'Login failed');
+        setError('Invalid email or password. Please use the demo credentials.');
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -82,6 +108,19 @@ const Login: React.FC = () => {
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 font-montserrat">Sign In</h2>
               <p className="text-gray-600 mt-2">Enter your credentials to access your account</p>
+            </div>
+
+            {/* Demo Credentials */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <h3 className="text-sm font-semibold text-amber-800 mb-2">Demo Credentials:</h3>
+              <div className="text-xs text-amber-700 space-y-1">
+                <div>
+                  <strong>Admin:</strong> admin@luxehome.com / admin123
+                </div>
+                <div>
+                  <strong>User:</strong> john.doe@example.com / user123
+                </div>
+              </div>
             </div>
 
             {error && (
