@@ -10,6 +10,14 @@ export interface User {
   phoneVerified: boolean;
   lastLogin?: string;
   createdAt: string;
+  phone?: string;
+  addresses?: Array<{
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  }>;
 }
 
 interface AuthState {

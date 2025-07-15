@@ -1,15 +1,49 @@
-import React, { useState } from 'react';
-import { User, Package, Heart, Settings, LogOut, Edit, Save, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Package, Heart, Settings, LogOut, Edit, Save, X, Loader2 } from 'lucide-react';
+import { useGetProfileQuery, useUpdateProfileMutation, useLogoutMutation } from '../../store/api/authApi';
+import { useGetUserOrdersQuery } from '../../store/api/ordersApi';
+import { useWishlist } from '../../hooks/useWishlist';
+import { useNavigate } from 'react-router-dom';
 
 const Account: React.FC = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Logout mutation
+  const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
+  
+  // Get user profile data
+  const { data: profileData, isLoading: isProfileLoading } = useGetProfileQuery();
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+  
+  // Get user orders
+  const { data: ordersData, isLoading: isOrdersLoading } = useGetUserOrdersQuery();
+  
+  // Get wishlist items with removal functionality
+  const { wishlistItems, isLoading: isWishlistLoading, removeFromWishlist } = useWishlist();
+  
   const [userInfo, setUserInfo] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main St, City, State 12345'
+    name: '',
+    email: '',
+    phone: '',
+    address: ''
   });
+  
+  // Initialize user info from profile data
+  useEffect(() => {
+    if (profileData?.data?.user) {
+      const user = profileData.data.user;
+      setUserInfo({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.addresses && user.addresses.length > 0 
+          ? `${user.addresses[0].street}, ${user.addresses[0].city}, ${user.addresses[0].state} ${user.addresses[0].zipCode}` 
+          : ''
+      });
+    }
+  }, [profileData]);
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -18,14 +52,58 @@ const Account: React.FC = () => {
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save to backend
+  const handleSave = async () => {
+    try {
+      // Extract address components if address is provided
+      let addressUpdate = {};
+      if (userInfo.address) {
+        const addressParts = userInfo.address.split(',').map(part => part.trim());
+        if (addressParts.length >= 3) {
+          const street = addressParts[0];
+          const city = addressParts[1];
+          const stateZip = addressParts[2].split(' ');
+          const state = stateZip[0];
+          const zipCode = stateZip[1] || '';
+          
+          addressUpdate = {
+            addresses: [{
+              street,
+              city,
+              state,
+              zipCode,
+              country: 'USA'
+            }]
+          };
+        }
+      }
+      
+      // Update profile with user info
+      await updateProfile({
+        name: userInfo.name,
+        phone: userInfo.phone,
+        ...addressUpdate
+      }).unwrap();
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset form data
+    // Reset form data to original profile data
+    if (profileData?.data?.user) {
+      const user = profileData.data.user;
+      setUserInfo({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.addresses && user.addresses.length > 0 
+          ? `${user.addresses[0].street}, ${user.addresses[0].city}, ${user.addresses[0].state} ${user.addresses[0].zipCode}` 
+          : ''
+      });
+    }
   };
 
   return (
@@ -82,6 +160,29 @@ const Account: React.FC = () => {
                     <span className="font-medium">Sign Out</span>
                   </button>
                 </nav>
+                
+                {/* Logout Button */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <button 
+                    onClick={async () => {
+                      try {
+                        await logout().unwrap();
+                        navigate('/');
+                      } catch (error) {
+                        console.error('Logout failed:', error);
+                      }
+                    }}
+                    disabled={isLoggingOut}
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                  >
+                    {isLoggingOut ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <LogOut className="w-5 h-5" />
+                    )}
+                    <span>Sign Out</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -90,121 +191,224 @@ const Account: React.FC = () => {
               <div className="bg-white rounded-3xl shadow-lg p-8">
                 {activeTab === 'profile' && (
                   <div>
-                    <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900 font-montserrat">Profile Information</h2>
-                      {!isEditing ? (
-                        <button
-                          onClick={() => setIsEditing(true)}
-                          className="flex items-center space-x-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
-                        >
-                          <Edit className="w-4 h-4" />
-                          <span>Edit</span>
-                        </button>
-                      ) : (
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={handleSave}
-                            className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                          >
-                            <Save className="w-4 h-4" />
-                            <span>Save</span>
-                          </button>
-                          <button
-                            onClick={handleCancel}
-                            className="flex items-center space-x-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                            <span>Cancel</span>
-                          </button>
+                    {isProfileLoading ? (
+                      <div className="flex justify-center items-center h-64">
+                        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                        <span className="ml-2 text-gray-600">Loading profile...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between mb-6">
+                          <h2 className="text-2xl font-bold text-gray-900 font-montserrat">Profile Information</h2>
+                          {!isEditing ? (
+                            <button
+                              onClick={() => setIsEditing(true)}
+                              className="flex items-center space-x-1 text-amber-600 hover:text-amber-700 transition-colors"
+                            >
+                              <Edit className="w-4 h-4" />
+                              <span>Edit</span>
+                            </button>
+                          ) : (
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={handleSave}
+                                disabled={isUpdating}
+                                className="flex items-center space-x-1 text-green-600 hover:text-green-700 transition-colors disabled:opacity-50"
+                              >
+                                {isUpdating ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Save className="w-4 h-4" />
+                                )}
+                                <span>Save</span>
+                              </button>
+                              <button
+                                onClick={handleCancel}
+                                disabled={isUpdating}
+                                className="flex items-center space-x-1 text-red-600 hover:text-red-700 transition-colors disabled:opacity-50"
+                              >
+                                <X className="w-4 h-4" />
+                                <span>Cancel</span>
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={userInfo.name}
-                            onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="px-4 py-3 bg-gray-50 rounded-lg">{userInfo.name}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                        {isEditing ? (
-                          <input
-                            type="email"
-                            value={userInfo.email}
-                            onChange={(e) => setUserInfo({ ...userInfo, email: e.target.value })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="px-4 py-3 bg-gray-50 rounded-lg">{userInfo.email}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                        {isEditing ? (
-                          <input
-                            type="tel"
-                            value={userInfo.phone}
-                            onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="px-4 py-3 bg-gray-50 rounded-lg">{userInfo.phone}</p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={userInfo.address}
-                            onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="px-4 py-3 bg-gray-50 rounded-lg">{userInfo.address}</p>
-                        )}
-                      </div>
-                    </div>
+                        <div className="space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                              {isEditing ? (
+                                <input
+                                  type="text"
+                                  value={userInfo.name}
+                                  onChange={(e) => setUserInfo({ ...userInfo, name: e.target.value })}
+                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                />
+                              ) : (
+                                <p className="text-gray-900">{userInfo.name}</p>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                              <p className="text-gray-900">{userInfo.email}</p>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                              {isEditing ? (
+                                <input
+                                  type="text"
+                                  value={userInfo.phone}
+                                  onChange={(e) => setUserInfo({ ...userInfo, phone: e.target.value })}
+                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                />
+                              ) : (
+                                <p className="text-gray-900">{userInfo.phone}</p>
+                              )}
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                              {isEditing ? (
+                                <input
+                                  type="text"
+                                  value={userInfo.address}
+                                  onChange={(e) => setUserInfo({ ...userInfo, address: e.target.value })}
+                                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                                  placeholder="Street, City, State ZipCode"
+                                />
+                              ) : (
+                                <p className="text-gray-900">{userInfo.address}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
 
                 {activeTab === 'orders' && (
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 font-montserrat mb-6">Order History</h2>
-                    <div className="text-center py-12">
-                      <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
-                      <p className="text-gray-600 mb-6">Start shopping to see your orders here</p>
-                      <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200">
-                        Start Shopping
-                      </button>
-                    </div>
+                    {isOrdersLoading ? (
+                      <div className="flex justify-center items-center h-64">
+                        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                        <span className="ml-2 text-gray-600">Loading orders...</span>
+                      </div>
+                    ) : ordersData?.data && ordersData.data.length > 0 ? (
+                      <div className="space-y-6">
+                        {ordersData.data.map((order) => (
+                          <div key={order.id} className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div className="flex flex-col md:flex-row justify-between mb-4">
+                              <div>
+                                <p className="text-sm text-gray-500">Order #{order.id.slice(0, 8)}</p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(order.createdAt).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="mt-2 md:mt-0">
+                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                                  order.status === 'delivered' ? 'bg-green-100 text-green-800' :
+                                  order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
+                                  order.status === 'processing' ? 'bg-amber-100 text-amber-800' :
+                                  order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <div className="border-t border-gray-200 pt-4 mt-2">
+                              <p className="font-medium">Items: {order.items.length}</p>
+                              <p className="font-medium mt-1">Total: ${order.total.toFixed(2)}</p>
+                            </div>
+                            
+                            <button 
+                              onClick={() => navigate(`/order/${order.id}`)}
+                              className="mt-4 text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center"
+                            >
+                              View Details
+                              <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                          <Package className="w-8 h-8 text-gray-500" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
+                        <p className="text-gray-600 mb-6">Your order history will appear here</p>
+                        <button 
+                          onClick={() => navigate('/products')}
+                          className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200"
+                        >
+                          Start Shopping
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {activeTab === 'wishlist' && (
                   <div>
                     <h2 className="text-2xl font-bold text-gray-900 font-montserrat mb-6">My Wishlist</h2>
-                    <div className="text-center py-12">
-                      <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">Your wishlist is empty</h3>
-                      <p className="text-gray-600 mb-6">Save items you love to your wishlist</p>
-                      <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200">
-                        Browse Products
-                      </button>
-                    </div>
+                    {isWishlistLoading ? (
+                      <div className="flex justify-center items-center h-64">
+                        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+                        <span className="ml-2 text-gray-600">Loading wishlist...</span>
+                      </div>
+                    ) : wishlistItems && wishlistItems.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {wishlistItems.map((item) => (
+                          <div key={item.id} className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
+                            <div className="relative pb-[56.25%] overflow-hidden">
+                              <img 
+                                src={item.product.images[0]} 
+                                alt={item.product.name}
+                                className="absolute inset-0 w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="p-4">
+                              <h3 className="font-medium text-gray-900 mb-1 truncate">{item.product.name}</h3>
+                              <p className="text-amber-600 font-medium">${item.product.basePrice.toFixed(2)}</p>
+                              <div className="mt-4 flex space-x-2">
+                                <button 
+                                  onClick={() => navigate(`/product/${item.productId}`)}
+                                  className="flex-1 bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition-colors"
+                                >
+                                  View Details
+                                </button>
+                                <button 
+                                  onClick={() => removeFromWishlist(item.productId, item.product.name)}
+                                  className="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                          <Heart className="w-8 h-8 text-gray-500" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Your wishlist is empty</h3>
+                        <p className="text-gray-600 mb-6">Save items you love to your wishlist</p>
+                        <button 
+                          onClick={() => navigate('/products')}
+                          className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-200"
+                        >
+                          Browse Products
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
