@@ -30,7 +30,11 @@ import CollectionPage from './components/pages/collections/CollectionPage';
 import CollectionsOverview from './components/pages/CollectionsOverview';
 import CheckoutPage from './components/pages/checkout/CheckoutPage';
 import CheckoutSuccess from './components/pages/checkout/CheckoutSuccess';
-import OrderManagement from './components/admin/OrderManagement';
+// Admin components
+import AdminLayout from './components/layouts/AdminLayout';
+import Dashboard from './components/pages/admin/Dashboard';
+import Users from './components/pages/admin/Users';
+import Orders from './components/pages/admin/Orders';
 import OrderTracking from './components/pages/OrderTracking';
 import Gallery from './components/pages/Gallery';
 import DeliveryTracker from './components/features/DeliveryTracker';
@@ -133,16 +137,11 @@ const AppContent: React.FC = () => {
               <Route path="/delivery-tracking" element={<DeliveryTracker />} />
 
               {/* Admin Routes */}
-              <Route path="/admin" element={
-                <AdminRoute>
-                  <OrderManagement />
-                </AdminRoute>
-              } />
-              <Route path="/admin/orders" element={
-                <AdminRoute>
-                  <OrderManagement />
-                </AdminRoute>
-              } />
+              <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                <Route index element={<Dashboard />} />
+                <Route path="users" element={<Users />} />
+                <Route path="orders" element={<Orders />} />
+              </Route>
             </Routes>
           </main>
 

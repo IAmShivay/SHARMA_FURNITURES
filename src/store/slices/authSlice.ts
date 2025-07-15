@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 
 export interface User {
   id: string;
@@ -20,91 +21,139 @@ export interface User {
   }>;
 }
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   token: string | null;
-  isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
 }
 
-// Initialize state from localStorage
-const getInitialState = (): AuthState => {
-  const token = localStorage.getItem('token');
-  const userStr = localStorage.getItem('user');
-
-  if (token && userStr) {
-    try {
-      const user = JSON.parse(userStr);
-      return {
-        user,
-        token,
-        isAuthenticated: true,
-        loading: false,
-        error: null,
-      };
-    } catch (error) {
-      // Clear invalid data
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
-  }
-
-  return {
-    user: null,
-    token: null,
-    isAuthenticated: false,
-    loading: false,
-    error: null,
-  };
+// Permission mapping based on roles
+export const permissionMap: Record<string, string[]> = {
+  // Product permissions
+  'products:read': ['customer', 'support', 'manager', 'admin'],
+  'products:create': ['manager', 'admin'],
+  'products:update': ['manager', 'admin'],
+  'products:delete': ['admin'],
+  
+  // Order permissions
+  'orders:read': ['customer', 'support', 'manager', 'admin'],
+  'orders:create': ['customer', 'support', 'manager', 'admin'],
+  'orders:update': ['support', 'manager', 'admin'],
+  'orders:delete': ['admin'],
+  'orders:read_all': ['support', 'manager', 'admin'],
+  
+  // User permissions
+  'users:read': ['customer', 'support', 'manager', 'admin'],
+  'users:create': ['manager', 'admin'],
+  'users:update': ['customer', 'support', 'manager', 'admin'],
+  'users:delete': ['admin'],
+  'users:read_all': ['support', 'manager', 'admin'],
+  'users:manage_roles': ['admin'],
+  
+  // Admin permissions
+  'admin:dashboard': ['support', 'manager', 'admin'],
+  'admin:analytics': ['manager', 'admin'],
+  'admin:settings': ['admin'],
+  'admin:system': ['admin'],
+  
+  // Customer service permissions
+  'support:tickets': ['support', 'manager', 'admin'],
+  'support:respond': ['support', 'manager', 'admin'],
+  'support:escalate': ['support', 'manager', 'admin'],
+  
+  // Inventory permissions
+  'inventory:read': ['support', 'manager', 'admin'],
+  'inventory:update': ['manager', 'admin'],
+  
+  // Financial permissions
+  'finance:read': ['manager', 'admin'],
+  'finance:reports': ['manager', 'admin'],
+  'finance:refunds': ['manager', 'admin']
 };
 
-const initialState: AuthState = getInitialState();
+// Load user and token from localStorage
+const loadUserFromStorage = (): User | null => {
+  try {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  } catch (error) {
+    console.error('Error loading user from localStorage:', error);
+    return null;
+  }
+};
 
-const authSlice = createSlice({
+const loadTokenFromStorage = (): string | null => {
+  try {
+    return localStorage.getItem('token');
+  } catch (error) {
+    console.error('Error loading token from localStorage:', error);
+    return null;
+  }
+};
+
+// Parse JWT token to check expiration
+export const parseJwt = (token: string) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Error parsing JWT:', error);
+    throw new Error('Invalid token');
+  }
+};
+
+const initialState: AuthState = {
+  user: loadUserFromStorage(),
+  token: loadTokenFromStorage(),
+  loading: false,
+  error: null,
+};
+
+export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<{ user: User; token: string }>) => {
-      const { user, token } = action.payload;
-      state.user = user;
-      state.token = token;
-      state.isAuthenticated = true;
-      state.error = null;
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+    setCredentials: (
+      state,
+      action: PayloadAction<{ user: User; token: string }>
+    ) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      localStorage.setItem('user', JSON.stringify(action.payload.user));
+      localStorage.setItem('token', action.payload.token);
     },
-    
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
-      state.isAuthenticated = true;
+      localStorage.setItem('user', JSON.stringify(action.payload));
     },
-    
     logout: (state) => {
       state.user = null;
       state.token = null;
-      state.isAuthenticated = false;
-      state.error = null;
-      localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
     },
-    
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    
-    setError: (state, action: PayloadAction<string | null>) => {
+    setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
-      state.loading = false;
     },
-    
     clearError: (state) => {
       state.error = null;
     },
-    
     updateProfile: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
+        localStorage.setItem('user', JSON.stringify(state.user));
       }
     },
   },
@@ -120,20 +169,86 @@ export const {
   updateProfile,
 } = authSlice.actions;
 
-export default authSlice.reducer;
-
 // Selectors
-export const selectCurrentUser = (state: { auth: AuthState }) => state.auth.user;
-export const selectCurrentToken = (state: { auth: AuthState }) => state.auth.token;
-export const selectIsAuthenticated = (state: { auth: AuthState }) => state.auth.isAuthenticated;
-export const selectAuthLoading = (state: { auth: AuthState }) => state.auth.loading;
-export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
+export const selectUser = (state: RootState) => state.auth.user;
+export const selectToken = (state: RootState) => state.auth.token;
+export const selectIsAuthenticated = (state: RootState) => Boolean(state.auth.token);
+export const selectLoading = (state: RootState) => state.auth.loading;
+export const selectError = (state: RootState) => state.auth.error;
 
 // Role-based selectors
-export const selectUserRole = (state: { auth: AuthState }) => state.auth.user?.role;
-export const selectIsAdmin = (state: { auth: AuthState }) => state.auth.user?.role === 'admin';
-export const selectIsManager = (state: { auth: AuthState }) => 
+export const selectIsAdmin = (state: RootState) =>
+  state.auth.user?.role === 'admin';
+export const selectIsManager = (state: RootState) =>
+  state.auth.user?.role === 'manager';
+export const selectIsSupport = (state: RootState) =>
+  state.auth.user?.role === 'support';
+export const selectIsCustomer = (state: RootState) =>
+  state.auth.user?.role === 'customer';
+export const selectIsManagerOrAdmin = (state: RootState) =>
   ['admin', 'manager'].includes(state.auth.user?.role || '');
-export const selectIsSupport = (state: { auth: AuthState }) => 
+export const selectIsSupportOrAbove = (state: RootState) =>
   ['admin', 'manager', 'support'].includes(state.auth.user?.role || '');
-export const selectIsCustomer = (state: { auth: AuthState }) => state.auth.user?.role === 'customer';
+
+// Permission-based selectors
+export const selectHasPermission = (state: RootState, permission: string) => {
+  const user = state.auth.user;
+  if (!user) return false;
+  
+  const allowedRoles = permissionMap[permission];
+  if (!allowedRoles) return false;
+  
+  return allowedRoles.includes(user.role);
+};
+
+// Resource ownership selector
+export const selectOwnerOrAdmin = (state: RootState, resourceUserId: string) => {
+  const user = state.auth.user;
+  if (!user) return false;
+  
+  // Admin and managers can access everything
+  if (['admin', 'manager'].includes(user.role)) {
+    return true;
+  }
+  
+  // Check if user owns the resource
+  return user.id === resourceUserId;
+};
+
+// Token expiration selector
+export const selectTokenStatus = (state: RootState) => {
+  const token = state.auth.token;
+  if (!token) return { isValid: false, remainingTime: 0 };
+  
+  try {
+    const decoded = parseJwt(token);
+    if (!decoded || !decoded.exp) return { isValid: false, remainingTime: 0 };
+    
+    const expiresAt = decoded.exp * 1000;
+    const now = Date.now();
+    const remainingTime = Math.max(0, Math.floor((expiresAt - now) / 1000));
+    const isExpired = now >= expiresAt;
+    
+    return { 
+      isValid: !isExpired, 
+      remainingTime,
+      expiresAt
+    };
+  } catch (error) {
+    return { isValid: false, remainingTime: 0 };
+  }
+};
+
+// Check if token is expiring soon (within 5 minutes)
+export const selectIsTokenExpiring = (state: RootState) => {
+  const tokenStatus = selectTokenStatus(state);
+  return tokenStatus.isValid && tokenStatus.remainingTime < 300;
+};
+
+// Check if token is expired
+export const selectIsTokenExpired = (state: RootState) => {
+  const tokenStatus = selectTokenStatus(state);
+  return !tokenStatus.isValid;
+};
+
+export default authSlice.reducer;
