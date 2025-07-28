@@ -5,11 +5,10 @@ import {
   logout as logoutAction,
   setLoading,
   setError,
-  selectCurrentUser,
+  selectUser,
   selectIsAuthenticated,
-  selectAuthLoading,
-  selectAuthError,
-  selectUserRole
+  selectLoading,
+  selectError
 } from '../store/slices/authSlice';
 import {
   useLoginMutation,
@@ -22,11 +21,11 @@ export const useAuth = () => {
   const dispatch = useAppDispatch();
 
   // Selectors
-  const user = useAppSelector(selectCurrentUser);
+  const user = useAppSelector(selectUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const loading = useAppSelector(selectAuthLoading);
-  const error = useAppSelector(selectAuthError);
-  const userRole = useAppSelector(selectUserRole);
+  const loading = useAppSelector(selectLoading);
+  const error = useAppSelector(selectError);
+  const userRole = user?.role;
 
   // Mutations
   const [loginMutation] = useLoginMutation();

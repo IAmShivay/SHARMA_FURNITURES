@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { selectIsAuthenticated, selectUserRole, selectAuthLoading } from '../../store/slices/authSlice';
+import { selectIsAuthenticated, selectUser, selectLoading } from '../../store/slices/authSlice';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -20,8 +20,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const userRole = useAppSelector(selectUserRole);
-  const loading = useAppSelector(selectAuthLoading);
+  const user = useAppSelector(selectUser);
+  const loading = useAppSelector(selectLoading);
+  const userRole = user?.role;
 
   // Show loading spinner while checking authentication
   if (loading) {
@@ -115,8 +116,9 @@ export const CustomerRoute: React.FC<{ children: React.ReactNode }> = ({ childre
 
 // Hook for checking permissions
 export const usePermissions = () => {
-  const userRole = useAppSelector(selectUserRole);
+  const user = useAppSelector(selectUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const userRole = user?.role;
 
   const hasRole = (roles: string | string[]) => {
     if (!isAuthenticated || !userRole) return false;
