@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { User, Package, Heart, Settings, LogOut, Edit, Save, X, Loader2 } from 'lucide-react';
-import { useGetProfileQuery, useUpdateProfileMutation, useLogoutMutation } from '../../store/api/authApi';
+import { useGetProfileQuery, useUpdateProfileMutation } from '../../store/api/authApi';
 import { useGetUserOrdersQuery } from '../../store/api/ordersApi';
 import { useWishlist } from '../../hooks/useWishlist';
+import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import SEOHead from '../../components/common/SEOHead';
 
 const Account: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Logout mutation
-  const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const { logout: authLogout } = useAuth();
   
   // Get user profile data
   const { data: profileData, isLoading: isProfileLoading } = useGetProfileQuery();
@@ -107,18 +109,19 @@ const Account: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead title="My Account | LuxeHome" description="Manage your LuxeHome account, orders, and preferences." noIndex={true} />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
               My Account
             </h1>
-            <p className="text-xl text-gray-600 mb-8 font-playfair">
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair">
               Manage your account settings and preferences
             </p>
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+            <div className="flex items-center justify-center flex-wrap space-x-4 sm:space-x-6 lg:space-x-8 text-sm text-gray-600">
               <span>✓ Profile Management</span>
               <span>✓ Order History</span>
               <span>✓ Secure Settings</span>
@@ -132,7 +135,7 @@ const Account: React.FC = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-6xl mx-auto">
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-3xl shadow-lg p-6 sticky top-8">
@@ -155,21 +158,20 @@ const Account: React.FC = () => {
                     );
                   })}
                   
-                  <button className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all duration-200 mt-8">
-                    <LogOut className="w-5 h-5" />
-                    <span className="font-medium">Sign Out</span>
-                  </button>
                 </nav>
-                
+
                 {/* Logout Button */}
                 <div className="mt-8 pt-6 border-t border-gray-200">
-                  <button 
+                  <button
                     onClick={async () => {
+                      setIsLoggingOut(true);
                       try {
-                        await logout().unwrap();
-                        navigate('/');
+                        await authLogout();
+                        navigate('/login');
                       } catch (error) {
                         console.error('Logout failed:', error);
+                      } finally {
+                        setIsLoggingOut(false);
                       }
                     }}
                     disabled={isLoggingOut}
@@ -188,7 +190,7 @@ const Account: React.FC = () => {
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              <div className="bg-white rounded-3xl shadow-lg p-8">
+              <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8">
                 {activeTab === 'profile' && (
                   <div>
                     {isProfileLoading ? (
@@ -325,7 +327,7 @@ const Account: React.FC = () => {
                             </div>
                             
                             <button 
-                              onClick={() => navigate(`/order/${order.id}`)}
+                              onClick={() => navigate(`/account/orders/${order.id}`)}
                               className="mt-4 text-amber-600 hover:text-amber-700 text-sm font-medium flex items-center"
                             >
                               View Details
@@ -422,7 +424,18 @@ const Account: React.FC = () => {
                           <p className="text-sm text-gray-600">Receive updates about your orders and promotions</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={(profileData?.data?.user as any)?.preferences?.notifications?.email ?? true}
+                            onChange={async (e) => {
+                              try {
+                                await updateProfile({
+                                  preferences: { notifications: { email: e.target.checked, sms: (profileData?.data?.user as any)?.preferences?.notifications?.sms ?? false } }
+                                } as any).unwrap();
+                              } catch (err) { console.error(err); }
+                            }}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                         </label>
                       </div>
@@ -433,7 +446,18 @@ const Account: React.FC = () => {
                           <p className="text-sm text-gray-600">Get text updates about your orders</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" />
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={(profileData?.data?.user as any)?.preferences?.notifications?.sms ?? false}
+                            onChange={async (e) => {
+                              try {
+                                await updateProfile({
+                                  preferences: { notifications: { sms: e.target.checked, email: (profileData?.data?.user as any)?.preferences?.notifications?.email ?? true } }
+                                } as any).unwrap();
+                              } catch (err) { console.error(err); }
+                            }}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                         </label>
                       </div>
@@ -444,7 +468,18 @@ const Account: React.FC = () => {
                           <p className="text-sm text-gray-600">Receive promotional offers and product updates</p>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={(profileData?.data?.user as any)?.preferences?.newsletter ?? true}
+                            onChange={async (e) => {
+                              try {
+                                await updateProfile({
+                                  preferences: { newsletter: e.target.checked }
+                                } as any).unwrap();
+                              } catch (err) { console.error(err); }
+                            }}
+                          />
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                         </label>
                       </div>

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../store/hooks';
-import { setCredentials } from '../../../store/slices/authSlice';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../hooks/useAuth';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
+import SEOHead from '../../../components/common/SEOHead';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -15,12 +16,18 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // If already authenticated, redirect
+  const from = (location.state as any)?.from?.pathname || '/account';
+  if (isAuthenticated) {
+    navigate(from, { replace: true });
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-    setError(''); // Clear error when user types
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,50 +36,20 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      // Demo credentials authentication
-      const demoCredentials = {
-        admin: { email: 'admin@luxehome.com', password: 'admin123', role: 'admin' },
-        user: { email: 'john.doe@example.com', password: 'user123', role: 'user' }
-      };
+      const result = await login(formData.email, formData.password);
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Check credentials
-      const isAdmin = formData.email === demoCredentials.admin.email && formData.password === demoCredentials.admin.password;
-      const isUser = formData.email === demoCredentials.user.email && formData.password === demoCredentials.user.password;
-
-      if (isAdmin || isUser) {
-        const userData = isAdmin ? demoCredentials.admin : demoCredentials.user;
-
-        // Create user object for Redux
-        const user = {
-          id: userData.email,
-          name: isAdmin ? 'Admin User' : 'John Doe',
-          email: userData.email,
-          role: userData.role as 'customer' | 'support' | 'manager' | 'admin',
-          emailVerified: true,
-          phoneVerified: true,
-          createdAt: new Date().toISOString()
-        };
-
-        // Store user data in localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', 'demo-token-' + Date.now());
-
-        // Dispatch Redux action
-        dispatch(setCredentials({ user, token: 'demo-token-' + Date.now() }));
-
-        // Redirect based on role
-        if (isAdmin) {
+      if (result.success) {
+        const user = result.user;
+        // Redirect based on role or where user came from
+        if (user?.role === 'admin') {
           navigate('/admin');
         } else {
-          navigate('/account');
+          navigate(from, { replace: true });
         }
       } else {
-        setError('Invalid email or password. Please use the demo credentials.');
+        setError(result.error || 'Invalid email or password.');
       }
-    } catch (error) {
+    } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -80,18 +57,23 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Sign In | LuxeHome"
+        description="Sign in to your LuxeHome account to access your orders, wishlist, and exclusive offers."
+        keywords="luxehome login, sign in, furniture store account"
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
               Welcome Back
             </h1>
-            <p className="text-xl text-gray-600 mb-8 font-playfair">
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair">
               Sign in to your account to continue shopping
             </p>
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+            <div className="flex items-center justify-center flex-wrap space-x-4 sm:space-x-6 lg:space-x-8 text-sm text-gray-600">
               <span>✓ Secure Login</span>
               <span>✓ Save Favorites</span>
               <span>✓ Track Orders</span>
@@ -104,7 +86,7 @@ const Login: React.FC = () => {
       {/* Login Form */}
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-3xl shadow-lg p-8">
+          <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 font-montserrat">Sign In</h2>
               <p className="text-gray-600 mt-2">Enter your credentials to access your account</p>
@@ -116,9 +98,6 @@ const Login: React.FC = () => {
               <div className="text-xs text-amber-700 space-y-1">
                 <div>
                   <strong>Admin:</strong> admin@luxehome.com / admin123
-                </div>
-                <div>
-                  <strong>User:</strong> john.doe@example.com / user123
                 </div>
               </div>
             </div>
@@ -222,15 +201,6 @@ const Login: React.FC = () => {
                 )}
               </button>
             </form>
-
-            {/* Demo Credentials */}
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h3>
-              <div className="text-xs text-gray-600 space-y-1">
-                <p><strong>Admin:</strong> admin@luxehome.com / admin123</p>
-                <p><strong>User:</strong> john.doe@example.com / user123</p>
-              </div>
-            </div>
 
             {/* Sign Up Link */}
             <div className="mt-8 text-center">

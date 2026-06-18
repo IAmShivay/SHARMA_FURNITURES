@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { useAuth } from '../../../hooks/useAuth';
+import SEOHead from '../../../components/common/SEOHead';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,7 +24,7 @@ const Register: React.FC = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
-    setError(''); // Clear error when user types
+    setError('');
   };
 
   const validateForm = () => {
@@ -29,8 +32,8 @@ const Register: React.FC = () => {
       setError('Passwords do not match');
       return false;
     }
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long');
       return false;
     }
     return true;
@@ -38,7 +41,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -47,51 +50,39 @@ const Register: React.FC = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          password: formData.password
-        }),
-      });
+      const name = `${formData.firstName} ${formData.lastName}`.trim();
+      const result = await register(name, formData.email, formData.password);
 
-      const data = await response.json();
-
-      if (data.success) {
-        // Store token and user data
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        
-        // Redirect to home
-        navigate('/');
+      if (result.success) {
+        navigate('/account');
       } else {
-        setError(data.message || 'Registration failed');
+        setError(result.error || 'Registration failed');
       }
-    } catch (error) {
-      setError('Network error. Please try again.');
+    } catch (err) {
+      setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Create Account | LuxeHome"
+        description="Create your LuxeHome account to start shopping premium furniture."
+        keywords="luxehome register, create account, sign up"
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
               Join LuxeHome
             </h1>
-            <p className="text-xl text-gray-600 mb-8 font-playfair">
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair">
               Create your account and start your furniture journey
             </p>
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+            <div className="flex items-center justify-center flex-wrap space-x-4 sm:space-x-6 lg:space-x-8 text-sm text-gray-600">
               <span>✓ Free Account</span>
               <span>✓ Exclusive Deals</span>
               <span>✓ Wishlist & Favorites</span>
@@ -104,7 +95,7 @@ const Register: React.FC = () => {
       {/* Register Form */}
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-3xl shadow-lg p-8">
+          <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 font-montserrat">Create Account</h2>
               <p className="text-gray-600 mt-2">Fill in your details to get started</p>
