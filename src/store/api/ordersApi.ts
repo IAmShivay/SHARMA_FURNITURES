@@ -44,7 +44,7 @@ export const ordersApi = apiSlice.injectEndpoints({
     // Create order
     createOrder: builder.mutation<
       { success: boolean; data: Order },
-      { items: OrderItem[]; shippingAddress: Address; paymentMethod: string }
+      { items: OrderItem[]; shippingAddress: Address; paymentMethod: string; deliveryOption?: string }
     >({
       query: (orderData) => ({
         url: '/orders',

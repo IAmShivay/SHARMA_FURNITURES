@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../store';
 import { useCart } from '../../../hooks/useCart';
-import { 
-  CreditCard, 
-  Truck, 
-  Shield, 
-  MapPin, 
-  User, 
-  Mail, 
-  Phone,
+import { useCreateOrderMutation } from '../../../store/api/ordersApi';
+import {
+  CreditCard,
+  Truck,
+  Shield,
   Lock,
   CheckCircle,
   ArrowLeft
 } from 'lucide-react';
+import SEOHead from '../../../components/common/SEOHead';
 
 interface ShippingInfo {
   firstName: string;
@@ -38,6 +34,7 @@ interface PaymentInfo {
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { cartItems, total, clearCart } = useCart();
+  const [createOrder] = useCreateOrderMutation();
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -78,42 +75,29 @@ const CheckoutPage: React.FC = () => {
     setIsProcessing(true);
 
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Create order
-      const orderData = {
-        id: `ORD-${Date.now()}`,
-        items: cartItems,
-        shipping: shippingInfo,
-        payment: {
-          method: paymentMethod,
-          last4: paymentInfo.cardNumber.slice(-4)
+      const result = await createOrder({
+        items: cartItems.map(item => ({
+          productId: item.productId || item.id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        shippingAddress: {
+          name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+          street: shippingInfo.address,
+          city: shippingInfo.city,
+          state: shippingInfo.state,
+          zipCode: shippingInfo.zipCode,
+          country: shippingInfo.country,
+          phone: shippingInfo.phone,
         },
-        totals: {
-          subtotal,
-          shipping,
-          tax,
-          total: finalTotal
-        },
-        status: 'confirmed',
+        paymentMethod,
         deliveryOption,
-        createdAt: new Date().toISOString(),
-        estimatedDelivery: new Date(Date.now() + (deliveryOption === 'express' ? 2 : 7) * 24 * 60 * 60 * 1000).toISOString()
-      };
+      } as any).unwrap();
 
-      // Store order in localStorage (in real app, this would be sent to backend)
-      const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-      existingOrders.push(orderData);
-      localStorage.setItem('orders', JSON.stringify(existingOrders));
-
-      // Clear cart
       clearCart();
-
-      // Navigate to success page
-      navigate(`/checkout/success/${orderData.id}`);
-    } catch (error) {
-      console.error('Payment failed:', error);
+      navigate(`/checkout/success/${result.data.id || result.data._id}`);
+    } catch (error: any) {
+      console.error('Order creation failed:', error);
       setIsProcessing(false);
     }
   };
@@ -126,6 +110,7 @@ const CheckoutPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead title="Checkout | LuxeHome" noIndex={true} />
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

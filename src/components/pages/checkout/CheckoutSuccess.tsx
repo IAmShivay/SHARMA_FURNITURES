@@ -1,39 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { 
-  CheckCircle, 
-  Truck, 
-  Calendar, 
-  MapPin, 
-  Mail, 
+import { useGetOrderQuery } from '../../../store/api/ordersApi';
+import {
+  CheckCircle,
+  Truck,
+  Calendar,
+  Mail,
   Phone,
   Download,
   ArrowRight,
-  Package
+  Package,
+  Loader2
 } from 'lucide-react';
-
-interface Order {
-  id: string;
-  items: any[];
-  shipping: any;
-  payment: any;
-  totals: any;
-  status: string;
-  deliveryOption: string;
-  createdAt: string;
-  estimatedDelivery: string;
-}
+import SEOHead from '../../../components/common/SEOHead';
 
 const CheckoutSuccess: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
+  const { data, isLoading, error } = useGetOrderQuery(orderId || '', { skip: !orderId });
 
-  useEffect(() => {
-    // Get order from localStorage (in real app, this would be fetched from API)
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const foundOrder = orders.find((o: Order) => o.id === orderId);
-    setOrder(foundOrder);
-  }, [orderId]);
+  const order = data?.data;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -48,15 +41,20 @@ const CheckoutSuccess: React.FC = () => {
     );
   }
 
-  const estimatedDeliveryDate = new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const estimatedDeliveryDate = order.estimatedDelivery
+    ? new Date(order.estimatedDelivery).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    : 'To be confirmed';
+
+  const shippingMethod = order.shipping?.method || 'standard';
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead title="Order Confirmed | LuxeHome" noIndex={true} />
       <div className="container mx-auto px-6 py-8">
         {/* Success Header */}
         <div className="text-center mb-12">
@@ -67,10 +65,10 @@ const CheckoutSuccess: React.FC = () => {
             Order Confirmed!
           </h1>
           <p className="text-xl text-gray-600 mb-2 font-playfair">
-            Thank you for your purchase, {order.shipping.firstName}!
+            Thank you for your purchase!
           </p>
           <p className="text-gray-600">
-            Your order <span className="font-semibold text-amber-600">{order.id}</span> has been confirmed and is being processed.
+            Your order <span className="font-semibold text-amber-600">{order.orderNumber || order.id}</span> has been confirmed and is being processed.
           </p>
         </div>
 
@@ -83,32 +81,28 @@ const CheckoutSuccess: React.FC = () => {
                 <Truck className="w-6 h-6 mr-3 text-amber-600" />
                 Delivery Information
               </h2>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">Shipping Address</h3>
                     <div className="text-gray-600 space-y-1">
-                      <p>{order.shipping.firstName} {order.shipping.lastName}</p>
-                      <p>{order.shipping.address}</p>
-                      <p>{order.shipping.city}, {order.shipping.state} {order.shipping.zipCode}</p>
-                      <p>{order.shipping.country}</p>
+                      <p>{order.shippingAddress?.name}</p>
+                      <p>{order.shippingAddress?.street}</p>
+                      <p>{order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.zipCode}</p>
+                      <p>{order.shippingAddress?.country}</p>
                     </div>
                   </div>
-                  
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Contact Information</h3>
-                    <div className="text-gray-600 space-y-1">
-                      <div className="flex items-center space-x-2">
-                        <Mail className="w-4 h-4" />
-                        <span>{order.shipping.email}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
+
+                  {order.shippingAddress?.phone && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Contact</h3>
+                      <div className="flex items-center space-x-2 text-gray-600">
                         <Phone className="w-4 h-4" />
-                        <span>{order.shipping.phone}</span>
+                        <span>{order.shippingAddress.phone}</span>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -118,11 +112,11 @@ const CheckoutSuccess: React.FC = () => {
                       <div className="flex items-center space-x-2 mb-2">
                         <Package className="w-5 h-5 text-amber-600" />
                         <span className="font-medium text-amber-800">
-                          {order.deliveryOption === 'express' ? 'Express Delivery' : 'Standard Delivery'}
+                          {shippingMethod === 'express' ? 'Express Delivery' : 'Standard Delivery'}
                         </span>
                       </div>
                       <p className="text-amber-700 text-sm">
-                        {order.deliveryOption === 'express' 
+                        {shippingMethod === 'express'
                           ? 'Priority delivery with white-glove setup (2-3 days)'
                           : 'White-glove delivery and setup included (5-7 days)'
                         }
@@ -146,33 +140,20 @@ const CheckoutSuccess: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-6 font-montserrat">
                 Order Items
               </h2>
-              
+
               <div className="space-y-6">
-                {order.items.map((item) => (
-                  <div key={item.id} className="flex space-x-4 pb-6 border-b border-gray-200 last:border-b-0">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-20 h-20 object-cover rounded-lg"
-                    />
+                {order.items.map((item: any, index: number) => (
+                  <div key={index} className="flex space-x-4 pb-6 border-b border-gray-200 last:border-b-0">
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                    )}
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
                       <p className="text-sm text-gray-600 mb-2">Quantity: {item.quantity}</p>
-                      
-                      {item.customization && (
-                        <div className="text-sm text-gray-600 space-y-1 mb-2">
-                          {item.customization.color && (
-                            <p>Color: {item.customization.color}</p>
-                          )}
-                          {item.customization.woodType && (
-                            <p>Wood: {item.customization.woodType}</p>
-                          )}
-                          {item.customization.finish && (
-                            <p>Finish: {item.customization.finish}</p>
-                          )}
-                        </div>
-                      )}
-                      
                       <p className="font-semibold text-gray-900">
                         ${(item.price * item.quantity).toFixed(2)}
                       </p>
@@ -187,32 +168,24 @@ const CheckoutSuccess: React.FC = () => {
               <h2 className="text-2xl font-bold text-gray-900 mb-6 font-montserrat">
                 What Happens Next?
               </h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    1
-                  </div>
+                  <div className="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Order Processing</h3>
                     <p className="text-gray-600">We'll prepare your items and schedule delivery within 24 hours.</p>
                   </div>
                 </div>
-                
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    2
-                  </div>
+                  <div className="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Delivery Coordination</h3>
                     <p className="text-gray-600">Our delivery team will contact you to schedule a convenient time.</p>
                   </div>
                 </div>
-                
                 <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    3
-                  </div>
+                  <div className="flex-shrink-0 w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
                   <div>
                     <h3 className="font-semibold text-gray-900">White-Glove Delivery</h3>
                     <p className="text-gray-600">Professional delivery and setup in your desired room.</p>
@@ -224,35 +197,32 @@ const CheckoutSuccess: React.FC = () => {
 
           {/* Order Summary Sidebar */}
           <div className="space-y-6">
-            {/* Order Summary */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4 font-montserrat">
-                Order Summary
-              </h3>
-              
+              <h3 className="text-xl font-bold text-gray-900 mb-4 font-montserrat">Order Summary</h3>
+
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${order.totals.subtotal.toFixed(2)}</span>
+                  <span>${order.subtotal?.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{order.totals.shipping === 0 ? 'FREE' : `$${order.totals.shipping.toFixed(2)}`}</span>
+                  <span>{order.shipping?.cost === 0 ? 'FREE' : `$${order.shipping?.cost?.toFixed(2)}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${order.totals.tax.toFixed(2)}</span>
+                  <span>${order.tax?.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2 mt-2">
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span>${order.totals.total.toFixed(2)}</span>
+                    <span>${order.total?.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-600">
-                <p>Payment Method: •••• {order.payment.last4}</p>
+                <p>Status: {order.status}</p>
                 <p>Order Date: {new Date(order.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
@@ -260,22 +230,17 @@ const CheckoutSuccess: React.FC = () => {
             {/* Actions */}
             <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-              
-              <button className="w-full flex items-center justify-center space-x-2 bg-amber-600 text-white py-3 rounded-lg hover:bg-amber-700 transition-colors">
-                <Download className="w-4 h-4" />
-                <span>Download Receipt</span>
-              </button>
-              
+
               <Link
-                to="/account/orders"
+                to="/account"
                 className="w-full flex items-center justify-center space-x-2 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <Package className="w-4 h-4" />
-                <span>Track Order</span>
+                <span>View My Orders</span>
               </Link>
-              
+
               <Link
-                to="/"
+                to="/products"
                 className="w-full flex items-center justify-center space-x-2 text-amber-600 py-3 rounded-lg hover:bg-amber-50 transition-colors"
               >
                 <span>Continue Shopping</span>
