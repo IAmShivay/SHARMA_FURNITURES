@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { 
-  HelpCircle, 
-  ChevronDown, 
-  Search, 
-  Package, 
-  CreditCard, 
-  Truck, 
+import {
+  HelpCircle,
+  ChevronDown,
+  Search,
+  Package,
+  CreditCard,
+  Truck,
   RotateCcw,
   Settings,
   MessageSquare
 } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 interface FAQItem {
   id: string;
@@ -141,17 +142,22 @@ const FAQ: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="FAQ | LuxeHome"
+        description="Find answers to frequently asked questions about LuxeHome's furniture, shipping, returns, and more."
+        keywords="luxehome faq, furniture questions, shipping policy, return policy"
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-purple-50 to-indigo-50 py-20">
+      <section className="bg-gradient-to-br from-purple-50 to-indigo-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
             <HelpCircle className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-montserrat">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
             Frequently Asked Questions
           </h1>
-          <p className="text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
             Find answers to common questions about our products, shipping, returns, and more
           </p>
           
@@ -246,8 +252,8 @@ const FAQ: React.FC = () => {
             Can't find what you're looking for? Our customer service team is here to help.
           </p>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="bg-gray-50 rounded-3xl p-8">
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-4xl mx-auto">
+            <div className="bg-gray-50 rounded-3xl p-4 sm:p-6 lg:p-8">
               <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <MessageSquare className="w-8 h-8 text-green-600" />
               </div>
@@ -258,7 +264,7 @@ const FAQ: React.FC = () => {
               </button>
             </div>
             
-            <div className="bg-gray-50 rounded-3xl p-8">
+            <div className="bg-gray-50 rounded-3xl p-4 sm:p-6 lg:p-8">
               <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <HelpCircle className="w-8 h-8 text-blue-600" />
               </div>
@@ -269,7 +275,7 @@ const FAQ: React.FC = () => {
               </button>
             </div>
             
-            <div className="bg-gray-50 rounded-3xl p-8">
+            <div className="bg-gray-50 rounded-3xl p-4 sm:p-6 lg:p-8">
               <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Package className="w-8 h-8 text-purple-600" />
               </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import SEOHead from '../../common/SEOHead';
 import { selectHasPermission } from '../../../store/slices/authSlice';
 import { 
   useGetUsersQuery, 
@@ -100,7 +101,8 @@ const Users: React.FC = () => {
   const totalPages = data?.data.pagination.pages || 1;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+      <SEOHead title="User Management | LuxeHome Admin" noIndex={true} />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
         <p className="text-gray-500">Manage user accounts and permissions</p>

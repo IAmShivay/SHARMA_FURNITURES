@@ -9,6 +9,7 @@ interface SEOHeadProps {
   url?: string;
   type?: string;
   structuredData?: object;
+  noIndex?: boolean;
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
@@ -18,11 +19,13 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   image = 'https://luxehome.com/og-image.jpg',
   url = 'https://luxehome.com',
   type = 'website',
-  structuredData
+  structuredData,
+  noIndex = false
 }) => {
   return (
     <Helmet>
       <title>{title}</title>
+      {noIndex && <meta name="robots" content="noindex, nofollow" />}
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       

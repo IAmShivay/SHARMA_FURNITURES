@@ -60,7 +60,8 @@ export const apiSlice = createApi({
     'Wishlist',
     'Review',
     'Category',
-    'Admin'
+    'Admin',
+    'BlogPost'
   ],
   endpoints: (builder) => ({
     // Health check endpoint

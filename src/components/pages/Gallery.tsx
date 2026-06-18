@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Camera, 
-  Heart, 
-  Share2, 
-  Download, 
+import {
+  Camera,
+  Heart,
+  Share2,
+  Download,
   Filter,
   Grid,
   Search,
@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 interface GalleryImage {
   id: string;
@@ -145,17 +146,22 @@ const Gallery: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Gallery & Inspiration | LuxeHome"
+        description="Explore our gallery of beautifully furnished spaces for design inspiration."
+        keywords="furniture gallery, interior design inspiration, home decor ideas"
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-purple-50 to-indigo-50 py-20">
+      <section className="bg-gradient-to-br from-purple-50 to-indigo-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
             <Camera className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-montserrat">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
             Design Gallery
           </h1>
-          <p className="text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
             Get inspired by beautiful room designs featuring our premium furniture collections
           </p>
           
@@ -204,7 +210,7 @@ const Gallery: React.FC = () => {
               <p className="text-gray-600">Try adjusting your search or browse different categories</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {filteredImages.map((image) => (
                 <div
                   key={image.id}

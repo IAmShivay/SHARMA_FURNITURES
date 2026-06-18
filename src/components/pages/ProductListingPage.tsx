@@ -12,6 +12,7 @@ import {
 import { Link } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
 import { formatPrice } from '../../utils/cartUtils';
+import SEOHead from '../../components/common/SEOHead';
 
 interface Product {
   id: string;
@@ -236,18 +237,23 @@ const ProductListingPage: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Premium Furniture Collection | LuxeHome"
+        description="Browse our curated collection of premium furniture. Shop sofas, chairs, tables, and more with free delivery."
+        keywords="buy furniture online, premium furniture, sofas, chairs, tables, home decor"
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
               Premium Furniture Collection
             </h1>
-            <p className="text-xl text-gray-600 mb-8 font-playfair">
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair">
               Discover our curated selection of luxury furniture pieces
             </p>
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+            <div className="flex items-center justify-center flex-wrap space-x-4 sm:space-x-6 lg:space-x-8 text-sm text-gray-600">
               <span>✓ Premium Quality</span>
               <span>✓ Free Shipping</span>
               <span>✓ Expert Curation</span>

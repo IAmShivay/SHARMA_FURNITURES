@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
   Send,
   MessageSquare,
   Calendar,
@@ -11,6 +11,7 @@ import {
   Building,
   Globe
 } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -84,14 +85,19 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Contact Us | LuxeHome"
+        description="Get in touch with LuxeHome. We're here to help with your furniture needs, design consultations, and customer support."
+        keywords="contact luxehome, furniture store contact, customer support"
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-montserrat">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
             Get In Touch
           </h1>
-          <p className="text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
             Have questions about our furniture? Need design consultation? We're here to help you create your perfect space.
           </p>
         </div>
@@ -102,7 +108,7 @@ const Contact: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactInfo.map((info, index) => (
-              <div key={index} className="bg-white rounded-3xl shadow-lg p-8 text-center hover:shadow-2xl transition-shadow duration-300">
+              <div key={index} className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8 text-center hover:shadow-2xl transition-shadow duration-300">
                 <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <info.icon className="w-8 h-8 text-white" />
                 </div>
@@ -130,7 +136,7 @@ const Contact: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Contact Form */}
-            <div className="bg-white rounded-3xl shadow-lg p-8">
+            <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 font-montserrat">
                 Send Us a Message
               </h2>
@@ -300,7 +306,7 @@ const Contact: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
             {locations.map((location, index) => (
               <div key={index} className="bg-gray-50 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
                 <img

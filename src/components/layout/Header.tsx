@@ -5,6 +5,7 @@ import { brandInfo } from '../../config/brand';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setMobileMenuOpen, setSearchOpen } from '../../store/slices/uiSlice';
 import { useWishlist } from '../../hooks/useWishlist';
+import { selectIsAuthenticated } from '../../store/slices/authSlice';
 
 interface HeaderProps {
   cartCount: number;
@@ -20,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
   // Redux state
   const mobileMenuOpen = useAppSelector(state => state.ui.mobileMenuOpen);
   const searchOpen = useAppSelector(state => state.ui.searchOpen);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
   // Local state
   const [isScrolled, setIsScrolled] = useState(false);
@@ -91,6 +93,10 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
         { name: 'Office', href: '/collections/office', description: 'Desks, chairs, and bookcases' },
         { name: 'Outdoor', href: '/collections/outdoor', description: 'Patio and garden furniture' },
       ]
+    },
+    {
+      name: 'Blog',
+      href: '/blog'
     },
     {
       name: 'Gallery',
@@ -303,9 +309,9 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
 
             {/* Premium Account Button */}
             <button
-              onClick={() => navigate('/account')}
+              onClick={() => navigate(isAuthenticated ? '/account' : '/login')}
               className="hidden sm:block relative p-2 sm:p-3 md:p-4 transition-all duration-500 rounded-xl sm:rounded-2xl group hover:scale-110 transform-gpu text-white hover:text-white hover:bg-white/25 hover:backdrop-blur-xl filter drop-shadow-lg hover:shadow-2xl border border-white/30 hover:border-white/50"
-              aria-label="Account"
+              aria-label={isAuthenticated ? 'Account' : 'Sign In'}
             >
               <User className="w-5 h-5 transition-all duration-500 group-hover:scale-125" />
 

@@ -13,6 +13,7 @@ import AmazonStyleFilters from '../../filters/AmazonStyleFilters';
 import { useProducts } from '../../../hooks/useProducts';
 import { Link } from 'react-router-dom';
 import { formatPrice } from '../../../utils/cartUtils';
+import SEOHead from '../../../components/common/SEOHead';
 
 interface Product {
   id: string;
@@ -254,8 +255,8 @@ const CollectionPage: React.FC = () => {
   // Show loading state
   if (apiLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-32">
-        <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+        <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
@@ -288,8 +289,8 @@ const CollectionPage: React.FC = () => {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-32">
-        <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+        <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
@@ -311,18 +312,22 @@ const CollectionPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title={`${currentCategory.title} | LuxeHome`}
+        description={currentCategory.description}
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 font-montserrat">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
               {currentCategory.title}
             </h1>
-            <p className="text-xl text-gray-600 mb-8 font-playfair">
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair">
               {currentCategory.description}
             </p>
-            <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+            <div className="flex items-center justify-center flex-wrap space-x-4 sm:space-x-6 lg:space-x-8 text-sm text-gray-600">
               <span>✓ Free White-Glove Delivery</span>
               <span>✓ 30-Day Returns</span>
               <span>✓ Lifetime Warranty</span>

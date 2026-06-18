@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield, Eye, Lock, Users, Globe, Mail } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 const PrivacyPolicy: React.FC = () => {
   const sections = [
@@ -50,17 +51,21 @@ const PrivacyPolicy: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Privacy Policy | LuxeHome"
+        description="Read LuxeHome's privacy policy to understand how we collect, use, and protect your personal information."
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 py-20">
+      <section className="bg-gradient-to-br from-blue-50 to-indigo-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
             <Shield className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-montserrat">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
             Privacy Policy
           </h1>
-          <p className="text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
             Your privacy is important to us. This policy explains how we collect, use, and protect your personal information.
           </p>
           <div className="text-sm text-gray-500">
@@ -74,7 +79,7 @@ const PrivacyPolicy: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             {/* Introduction */}
-            <div className="bg-white rounded-3xl shadow-lg p-8 mb-8">
+            <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8 mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 font-montserrat">
                 Our Commitment to Privacy
               </h2>

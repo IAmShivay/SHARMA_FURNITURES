@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, Scale, Shield, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 const TermsOfService: React.FC = () => {
   const sections = [
@@ -58,17 +59,21 @@ const TermsOfService: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Terms of Service | LuxeHome"
+        description="Review LuxeHome's terms of service for using our website and purchasing furniture."
+      />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-indigo-50 to-purple-50 py-20">
+      <section className="bg-gradient-to-br from-indigo-50 to-purple-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
             <Scale className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-montserrat">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
             Terms of Service
           </h1>
-          <p className="text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
             Please read these terms carefully before using our services. These terms govern your use of LuxeHome's website and services.
           </p>
           <div className="text-sm text-gray-500">

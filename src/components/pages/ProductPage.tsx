@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import AddToCartButton from '../product/AddToCartButton';
 import { useWishlist } from '../../hooks/useWishlist';
+import SEOHead from '../../components/common/SEOHead';
 
 const ProductPage: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -95,6 +96,33 @@ const ProductPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title={`${product.name} | LuxeHome`}
+        description={product.description.slice(0, 160)}
+        keywords="luxury furniture, velvet accent chair, premium furniture"
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: product.name,
+          description: product.description,
+          image: product.images[0],
+          brand: {
+            '@type': 'Brand',
+            name: product.brand
+          },
+          offers: {
+            '@type': 'Offer',
+            price: product.basePrice,
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock'
+          },
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: product.rating,
+            reviewCount: product.reviews
+          }
+        }}
+      />
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-6 py-4">

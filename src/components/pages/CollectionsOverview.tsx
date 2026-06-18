@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Eye, Sofa, Bed, ChefHat, Briefcase, Home, Palette } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 interface Collection {
   id: string;
@@ -89,6 +90,11 @@ const CollectionsOverview: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="Collections | LuxeHome"
+        description="Explore our curated furniture collections for every room."
+        keywords="furniture collections, living room, bedroom, dining room, office furniture"
+      />
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-amber-900 text-white py-16">
         <div className="container mx-auto px-6">

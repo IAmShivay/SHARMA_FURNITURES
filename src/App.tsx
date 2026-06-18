@@ -14,7 +14,7 @@ import NewsletterSection from './components/sections/NewsletterSection';
 import Footer from './components/layout/Footer';
 import ShoppingCart from './components/ui/ShoppingCart';
 import SEOHead from './components/common/SEOHead';
-import  { AdminRoute } from './components/auth/ProtectedRoute';
+import ProtectedRoute, { AdminRoute } from './components/auth/ProtectedRoute';
 
 // Page imports
 import AboutUs from './components/pages/AboutUs';
@@ -42,6 +42,9 @@ import Account from './components/pages/Account';
 import Wishlist from './components/pages/Wishlist';
 import Login from './components/pages/auth/Login';
 import Register from './components/pages/auth/Register';
+import BlogListing from './components/pages/BlogListing';
+import BlogPostPage from './components/pages/BlogPostPage';
+import BlogManagement from './components/pages/admin/BlogManagement';
 
 // Home page component
 const HomePage: React.FC = () => {
@@ -110,17 +113,21 @@ const AppContent: React.FC = () => {
               <Route path="/collections/living-room" element={<LivingRoomCollection />} />
 
               {/* Checkout Routes */}
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/checkout/success/:orderId" element={<CheckoutSuccess />} />
+              <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+              <Route path="/checkout/success/:orderId" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
 
               {/* User Account Routes */}
-              <Route path="/account" element={<Account />} />
-              <Route path="/account/orders/:orderId" element={<OrderTracking />} />
-              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+              <Route path="/account/orders/:orderId" element={<ProtectedRoute><OrderTracking /></ProtectedRoute>} />
+              <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
 
               {/* Authentication Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+
+              {/* Blog */}
+              <Route path="/blog" element={<BlogListing />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
 
               {/* Gallery & Inspiration */}
               <Route path="/gallery" element={<Gallery />} />
@@ -141,6 +148,7 @@ const AppContent: React.FC = () => {
                 <Route index element={<Dashboard />} />
                 <Route path="users" element={<Users />} />
                 <Route path="orders" element={<Orders />} />
+                <Route path="blog" element={<BlogManagement />} />
               </Route>
             </Routes>
           </main>

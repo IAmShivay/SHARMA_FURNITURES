@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import SEOHead from '../../common/SEOHead';
 import { selectHasPermission } from '../../../store/slices/authSlice';
 import { useGetDashboardStatsQuery } from '../../../store/api/adminApi';
 import { Loader, AlertCircle, Users, Package, DollarSign, ShoppingBag } from 'lucide-react';
@@ -207,7 +208,8 @@ const Dashboard: React.FC = () => {
   const loading = isLoading || isFetching;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+      <SEOHead title="Admin Dashboard | LuxeHome" noIndex={true} />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
         <p className="text-gray-500">Overview of your store's performance</p>
@@ -221,7 +223,7 @@ const Dashboard: React.FC = () => {
       ) : null}
 
       {/* Date range selector */}
-      <div className="mb-6 bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+      <div className="mb-6 bg-white p-4 rounded-lg shadow flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:space-x-4">
         <div>
           <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">
             Start Date
@@ -249,7 +251,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Stats overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
         <StatCard
           title="Total Revenue"
           value={formatCurrency(data?.data.overview.totalRevenue || 0)}
@@ -290,7 +292,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Tables section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
         <RecentOrdersTable
           orders={data?.data.recentOrders || []}
           loading={loading}

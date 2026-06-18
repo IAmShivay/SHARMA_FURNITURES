@@ -7,19 +7,20 @@ import {
   selectIsTokenExpiring,
   selectIsAuthenticated
 } from '../../store/slices/authSlice';
-import { 
-  LayoutDashboard, 
-  Users, 
-  ShoppingBag, 
-  Package, 
-  BarChart3, 
-  Settings, 
-  LogOut, 
-  Menu, 
-  X, 
+import {
+  LayoutDashboard,
+  Users,
+  ShoppingBag,
+  Package,
+  BarChart3,
+  Settings,
+  LogOut,
+  Menu,
+  X,
   ChevronDown,
   User,
-  Bell
+  Bell,
+  FileText
 } from 'lucide-react';
 import { useLogoutMutation } from '../../store/api/authApi';
 
@@ -84,6 +85,12 @@ const AdminLayout: React.FC = () => {
       path: '/admin/products',
       icon: <Package size={20} />,
       permission: 'products:read_all'
+    },
+    {
+      name: 'Blog',
+      path: '/admin/blog',
+      icon: <FileText size={20} />,
+      permission: 'admin:dashboard'
     },
     {
       name: 'Analytics',

@@ -1,15 +1,16 @@
 import React from 'react';
-import { 
-  Award, 
-  Users, 
-  Globe, 
-  Heart, 
-  Truck, 
+import {
+  Award,
+  Users,
+  Globe,
+  Heart,
+  Truck,
   Shield,
   Star,
   CheckCircle,
   ArrowRight
 } from 'lucide-react';
+import SEOHead from '../../components/common/SEOHead';
 
 const AboutUs: React.FC = () => {
   const stats = [
@@ -64,19 +65,24 @@ const AboutUs: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <SEOHead
+        title="About Us | LuxeHome"
+        description="Discover LuxeHome's story, mission, and commitment to bringing premium furniture and exceptional design to your home."
+        keywords="about luxehome, furniture company, premium home furnishings"
+      />
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-20">
+      <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 font-montserrat">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl md:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
               Crafting Dreams Into
               <span className="block bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                 Beautiful Reality
               </span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 font-playfair leading-relaxed">
-              For over two decades, LuxeHome has been creating exceptional furniture that transforms houses into homes. 
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair leading-relaxed">
+              For over two decades, LuxeHome has been creating exceptional furniture that transforms houses into homes.
               Our passion for craftsmanship and dedication to quality has made us a trusted name in luxury furniture.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -94,7 +100,7 @@ const AboutUs: React.FC = () => {
       {/* Stats Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -169,7 +175,7 @@ const AboutUs: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
             {values.map((value, index) => (
               <div key={index} className="text-center group hover:scale-105 transition-transform duration-300">
                 <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:from-amber-600 group-hover:to-orange-600 transition-all duration-300">
@@ -199,7 +205,7 @@ const AboutUs: React.FC = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
             {team.map((member, index) => (
               <div key={index} className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
                 <img
@@ -207,7 +213,7 @@ const AboutUs: React.FC = () => {
                   alt={member.name}
                   className="w-full h-64 object-cover"
                 />
-                <div className="p-8">
+                <div className="p-4 sm:p-6 lg:p-8">
                   <h3 className="text-xl font-bold text-gray-900 mb-2 font-montserrat">
                     {member.name}
                   </h3>

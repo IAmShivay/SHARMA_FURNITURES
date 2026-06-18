@@ -65,7 +65,7 @@ export interface ProductFilters {
 export interface ProductsResponse {
   success: boolean;
   data: {
-    products: Product[];
+    items: Product[];
     pagination: {
       current: number;
       pages: number;
