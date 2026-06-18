@@ -248,7 +248,8 @@ ProductSchema.index({ createdAt: -1 });
 
 // Virtuals
 ProductSchema.virtual('availableQuantity').get(function() {
-  return Math.max(0, this.inventory.quantity - this.inventory.reserved);
+  if (!this.inventory) return 0;
+  return Math.max(0, (this.inventory.quantity || 0) - (this.inventory.reserved || 0));
 });
 
 ProductSchema.virtual('discountPercentage').get(function() {
@@ -261,7 +262,8 @@ ProductSchema.virtual('inStock').get(function() {
 });
 
 ProductSchema.virtual('lowStock').get(function() {
-  return this.availableQuantity > 0 && this.availableQuantity <= this.inventory.lowStockThreshold;
+  if (!this.inventory) return false;
+  return this.availableQuantity > 0 && this.availableQuantity <= (this.inventory.lowStockThreshold || 0);
 });
 
 // Methods

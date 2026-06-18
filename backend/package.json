@@ -4,12 +4,12 @@
   "description": "Backend API for Furniture E-commerce Platform",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/server-simple.ts",
-    "dev-full": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start": "node -r dotenv/config dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only -r dotenv/config src/server-simple.ts",
+    "dev-full": "ts-node-dev --respawn --transpile-only -r dotenv/config -r tsconfig-paths/register src/server.ts",
     "build": "tsc",
     "test": "jest",
-    "seed": "ts-node src/scripts/seedDatabase.ts",
+    "seed": "ts-node --transpile-only -r dotenv/config src/scripts/seedProducts.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
   },
@@ -43,6 +43,7 @@
     "nodemailer": "^6.9.4",
     "slugify": "^1.6.6",
     "stripe": "^13.5.0",
+    "tsconfig-paths": "^4.2.0",
     "xss-clean": "^0.1.4",
     "zod": "^3.25.67"
   },

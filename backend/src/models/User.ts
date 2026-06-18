@@ -228,6 +228,7 @@ UserSchema.methods.getCartTotal = async function(): Promise<number> {
 // Remove password from JSON output
 UserSchema.methods.toJSON = function() {
   const userObject = this.toObject();
+  userObject.id = userObject._id.toString();
   delete userObject.password;
   delete userObject.resetPasswordToken;
   delete userObject.resetPasswordExpire;

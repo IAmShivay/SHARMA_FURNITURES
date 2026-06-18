@@ -90,7 +90,7 @@ export class AuthService {
   /**
    * Get user profile
    */
-  async getProfile(userId: string): Promise<ApiResponse<IUser>> {
+  async getProfile(userId: string): Promise<ApiResponse<{ user: IUser }>> {
     const user = await User.findById(userId)
       .populate('wishlist', 'name images basePrice')
       .populate('cart.product', 'name images basePrice');
@@ -101,14 +101,14 @@ export class AuthService {
 
     return {
       success: true,
-      data: user,
+      data: { user },
     };
   }
 
   /**
    * Update user profile
    */
-  async updateProfile(userId: string, updateData: UpdateProfileInput): Promise<ApiResponse<IUser>> {
+  async updateProfile(userId: string, updateData: UpdateProfileInput): Promise<ApiResponse<{ user: IUser }>> {
     const user = await User.findByIdAndUpdate(
       userId,
       updateData,
@@ -122,7 +122,7 @@ export class AuthService {
     return {
       success: true,
       message: 'Profile updated successfully',
-      data: user,
+      data: { user },
     };
   }
 

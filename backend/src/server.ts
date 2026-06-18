@@ -6,8 +6,6 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
-import dotenv from 'dotenv';
-
 import { connectDB } from './config/database';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
@@ -19,9 +17,8 @@ import productRoutes from './routes/product.routes';
 import orderRoutes from './routes/order.routes';
 import userRoutes from './routes/user.routes';
 import adminRoutes from './routes/admin.routes';
-
-// Load environment variables
-dotenv.config();
+import wishlistRoutes from './routes/wishlist.routes';
+import blogRoutes from './routes/blog.routes';
 
 // Create Express app
 const app = express();
@@ -133,6 +130,8 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/blog', blogRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

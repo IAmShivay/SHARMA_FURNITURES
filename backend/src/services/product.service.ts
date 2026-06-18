@@ -89,7 +89,7 @@ export class ProductService {
   /**
    * Get single product by ID
    */
-  async getProductById(id: string): Promise<ApiResponse<IProduct>> {
+  async getProductById(id: string): Promise<ApiResponse<{ product: IProduct }>> {
     const product = await Product.findById(id)
       .populate('reviews.user', 'name avatar')
       .select('-__v');
@@ -103,14 +103,14 @@ export class ProductService {
 
     return {
       success: true,
-      data: product
+      data: { product },
     };
   }
 
   /**
    * Get product by slug
    */
-  async getProductBySlug(slug: string): Promise<ApiResponse<IProduct>> {
+  async getProductBySlug(slug: string): Promise<ApiResponse<{ product: IProduct }>> {
     const product = await Product.findOne({ slug, status: 'active' })
       .populate('reviews.user', 'name avatar')
       .select('-__v');
@@ -124,14 +124,14 @@ export class ProductService {
 
     return {
       success: true,
-      data: product
+      data: { product },
     };
   }
 
   /**
    * Get featured products
    */
-  async getFeaturedProducts(limit: number = 12): Promise<ApiResponse<IProduct[]>> {
+  async getFeaturedProducts(limit: number = 12): Promise<ApiResponse<{ items: IProduct[] }>> {
     const products = await Product.find({
       status: 'active',
       featured: true
@@ -143,7 +143,7 @@ export class ProductService {
 
     return {
       success: true,
-      data: products as IProduct[]
+      data: { items: products as IProduct[] },
     };
   }
 
