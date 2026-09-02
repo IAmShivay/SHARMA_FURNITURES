@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../../../hooks/useCart';
 import { useCreateOrderMutation } from '../../../store/api/ordersApi';
 import {
@@ -37,6 +37,7 @@ const CheckoutPage: React.FC = () => {
   const [createOrder] = useCreateOrderMutation();
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     firstName: '',
@@ -289,7 +290,7 @@ const CheckoutPage: React.FC = () => {
                         <div className="ml-3 flex-1">
                           <div className="flex items-center justify-between">
                             <span className="font-medium">Standard Delivery (5-7 days)</span>
-                            <span className="font-semibold">{subtotal > 1000 ? 'FREE' : '$99.99'}</span>
+                            <span className="font-semibold">{subtotal > 1000 ? 'FREE' : '₹99.99'}</span>
                           </div>
                           <p className="text-sm text-gray-600">White-glove delivery and setup included</p>
                         </div>
@@ -306,7 +307,7 @@ const CheckoutPage: React.FC = () => {
                         <div className="ml-3 flex-1">
                           <div className="flex items-center justify-between">
                             <span className="font-medium">Express Delivery (2-3 days)</span>
-                            <span className="font-semibold">$49.99</span>
+                            <span className="font-semibold">₹49.99</span>
                           </div>
                           <p className="text-sm text-gray-600">Priority delivery with setup</p>
                         </div>
@@ -419,12 +420,22 @@ const CheckoutPage: React.FC = () => {
                     </button>
                     <button
                       type="submit"
-                      disabled={isProcessing}
+                      disabled={isProcessing || !agreedToTerms}
                       className="flex-1 bg-amber-600 text-white py-4 rounded-xl font-semibold hover:bg-amber-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isProcessing ? 'Processing...' : `Pay $${finalTotal.toFixed(2)}`}
+                      {isProcessing ? 'Processing...' : `Pay ₹${finalTotal.toFixed(2)}`}
                     </button>
                   </div>
+                  <label className="flex items-start gap-2 cursor-pointer mt-4">
+                    <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)}
+                      className="w-4 h-4 mt-0.5 text-amber-600 border-gray-300 rounded focus:ring-amber-500" />
+                    <span className="text-xs text-gray-600">
+                      By placing this order, I agree to the{' '}
+                      <Link to="/terms" target="_blank" className="text-amber-600 hover:underline">Terms & Conditions</Link>,{' '}
+                      <Link to="/privacy" target="_blank" className="text-amber-600 hover:underline">Privacy Policy</Link>, and{' '}
+                      <Link to="/refund-policy" target="_blank" className="text-amber-600 hover:underline">Refund Policy</Link>.
+                    </span>
+                  </label>
                 </form>
               </div>
             )}
@@ -445,7 +456,7 @@ const CheckoutPage: React.FC = () => {
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900">{item.name}</h4>
                     <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
-                    <p className="font-semibold text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold text-gray-900">₹{(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -454,20 +465,20 @@ const CheckoutPage: React.FC = () => {
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                <span>{shipping === 0 ? 'FREE' : `₹${shipping.toFixed(2)}`}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>₹{tax.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-2">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                  <span>₹{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>

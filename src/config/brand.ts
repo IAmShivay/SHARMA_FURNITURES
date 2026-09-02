@@ -16,7 +16,7 @@ export const brandInfo: BrandInfo = {
 };
 
 export const contactInfo: ContactInfo = {
-  phone: '+1 (555) 123-4567',
+  phone: '+91 9547587246',
   email: 'hello@luxehome.com',
   address: {
     street: '123 Design Avenue',

@@ -62,7 +62,7 @@ const FAQ: React.FC = () => {
       id: '5',
       category: 'shipping',
       question: 'Do you offer free shipping?',
-      answer: 'Yes! We offer free standard shipping on orders over $500 and free white-glove delivery on orders over $1,000. Express shipping rates vary by location.'
+      answer: 'Yes! We offer free standard shipping on orders over ₹500 and free white-glove delivery on orders over ₹1,000. Express shipping rates vary by location.'
     },
     {
       id: '6',
@@ -122,7 +122,7 @@ const FAQ: React.FC = () => {
       id: '15',
       category: 'account',
       question: 'How do I contact customer service?',
-      answer: 'You can reach us via live chat, email at support@luxehome.com, or phone at (555) 123-4567. Our team is available Monday-Friday 9AM-6PM EST.'
+      answer: 'You can reach us via live chat, email at support@luxehome.com, or phone at 9547587246. Our team is available Monday-Friday 9AM-6PM EST.'
     }
   ];
 
@@ -282,7 +282,7 @@ const FAQ: React.FC = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-2 font-montserrat">Call Us</h3>
               <p className="text-gray-600 mb-4 font-playfair">Speak directly with our team</p>
               <button className="bg-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors duration-200">
-                (555) 123-4567
+                9547587246
               </button>
             </div>
           </div>

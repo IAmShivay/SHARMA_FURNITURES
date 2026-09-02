@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { HelmetProvider } from 'react-helmet-async';
 import { store } from './store';
@@ -14,7 +14,7 @@ import NewsletterSection from './components/sections/NewsletterSection';
 import Footer from './components/layout/Footer';
 import ShoppingCart from './components/ui/ShoppingCart';
 import SEOHead from './components/common/SEOHead';
-import ProtectedRoute, { AdminRoute } from './components/auth/ProtectedRoute';
+import ProtectedRoute, { AdminRoute, SupportRoute } from './components/auth/ProtectedRoute';
 
 // Page imports
 import AboutUs from './components/pages/AboutUs';
@@ -35,6 +35,7 @@ import AdminLayout from './components/layouts/AdminLayout';
 import Dashboard from './components/pages/admin/Dashboard';
 import Users from './components/pages/admin/Users';
 import Orders from './components/pages/admin/Orders';
+import AdminProducts from './components/pages/admin/Products';
 import OrderTracking from './components/pages/OrderTracking';
 import Gallery from './components/pages/Gallery';
 import DeliveryTracker from './components/features/DeliveryTracker';
@@ -45,6 +46,10 @@ import Register from './components/pages/auth/Register';
 import BlogListing from './components/pages/BlogListing';
 import BlogPostPage from './components/pages/BlogPostPage';
 import BlogManagement from './components/pages/admin/BlogManagement';
+import AdminConsultations from './components/pages/admin/Consultations';
+import Consultation from './components/pages/Consultation';
+import Services from './components/pages/Services';
+import RefundPolicy from './components/pages/RefundPolicy';
 
 // Home page component
 const HomePage: React.FC = () => {
@@ -65,8 +70,11 @@ const ProductPageWrapper: React.FC = () => {
   return <ProductPage />;
 };
 
-// App content component (inside Redux provider)
-const AppContent: React.FC = () => {
+// Inner layout component (must be inside Router to use useLocation)
+const AppLayout: React.FC = () => {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   const {
     cartItems,
     itemCount: cartItemCount,
@@ -91,78 +99,81 @@ const AppContent: React.FC = () => {
   };
 
   return (
+    <div className="min-h-screen bg-white">
+      <SEOHead structuredData={structuredData} />
+
+      {!isAdminRoute && <Header cartCount={cartItemCount} onCartClick={handleCartClick} />}
+
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+
+          <Route path="/products" element={<ProductListingPage />} />
+          <Route path="/product/:id" element={<ProductPageWrapper />} />
+
+          <Route path="/collections" element={<CollectionsOverview />} />
+          <Route path="/collections/:category" element={<CollectionPage />} />
+          <Route path="/collections/living-room" element={<LivingRoomCollection />} />
+
+          <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+          <Route path="/checkout/success/:orderId" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
+
+          <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+          <Route path="/account/orders/:orderId" element={<ProtectedRoute><OrderTracking /></ProtectedRoute>} />
+          <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route path="/blog" element={<BlogListing />} />
+          <Route path="/blog/:slug" element={<BlogPostPage />} />
+
+          <Route path="/gallery" element={<Gallery />} />
+
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/shipping" element={<ShippingReturns />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/consultation" element={<Consultation />} />
+          <Route path="/services" element={<Services />} />
+
+          <Route path="/delivery-tracking" element={<DeliveryTracker />} />
+
+          <Route path="/admin" element={<SupportRoute><AdminLayout /></SupportRoute>}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="users" element={<AdminRoute><Users /></AdminRoute>} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="consultations" element={<AdminConsultations />} />
+            <Route path="blog" element={<BlogManagement />} />
+          </Route>
+        </Routes>
+      </main>
+
+      {!isAdminRoute && <Footer />}
+
+      {!isAdminRoute && (
+        <ShoppingCart
+          isOpen={isCartOpen}
+          onClose={handleCloseCart}
+          cartItems={cartItems}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveFromCart}
+        />
+      )}
+    </div>
+  );
+};
+
+// App content component (inside Redux provider)
+const AppContent: React.FC = () => {
+  return (
     <HelmetProvider>
       <Router>
-        <div className="min-h-screen bg-white">
-          <SEOHead structuredData={structuredData} />
-
-          <Header cartCount={cartItemCount} onCartClick={handleCartClick} />
-
-          <main>
-            <Routes>
-              {/* Home */}
-              <Route path="/" element={<HomePage />} />
-
-              {/* Product Routes */}
-              <Route path="/products" element={<ProductListingPage />} />
-              <Route path="/product/:id" element={<ProductPageWrapper />} />
-
-              {/* Collection Routes */}
-              <Route path="/collections" element={<CollectionsOverview />} />
-              <Route path="/collections/:category" element={<CollectionPage />} />
-              <Route path="/collections/living-room" element={<LivingRoomCollection />} />
-
-              {/* Checkout Routes */}
-              <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-              <Route path="/checkout/success/:orderId" element={<ProtectedRoute><CheckoutSuccess /></ProtectedRoute>} />
-
-              {/* User Account Routes */}
-              <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
-              <Route path="/account/orders/:orderId" element={<ProtectedRoute><OrderTracking /></ProtectedRoute>} />
-              <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
-
-              {/* Authentication Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-
-              {/* Blog */}
-              <Route path="/blog" element={<BlogListing />} />
-              <Route path="/blog/:slug" element={<BlogPostPage />} />
-
-              {/* Gallery & Inspiration */}
-              <Route path="/gallery" element={<Gallery />} />
-
-              {/* Footer Pages */}
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/shipping" element={<ShippingReturns />} />
-              <Route path="/faq" element={<FAQ />} />
-
-              {/* Service Routes */}
-              <Route path="/delivery-tracking" element={<DeliveryTracker />} />
-
-              {/* Admin Routes */}
-              <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
-                <Route index element={<Dashboard />} />
-                <Route path="users" element={<Users />} />
-                <Route path="orders" element={<Orders />} />
-                <Route path="blog" element={<BlogManagement />} />
-              </Route>
-            </Routes>
-          </main>
-
-          <Footer />
-
-          <ShoppingCart
-            isOpen={isCartOpen}
-            onClose={handleCloseCart}
-            cartItems={cartItems}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveItem={handleRemoveFromCart}
-          />
-        </div>
+        <AppLayout />
       </Router>
     </HelmetProvider>
   );

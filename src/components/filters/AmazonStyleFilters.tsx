@@ -72,11 +72,11 @@ const AmazonStyleFilters: React.FC<AmazonStyleFiltersProps> = ({
       type: 'price',
       expanded: true,
       options: [
-        { id: 'under-500', label: 'Under $500', count: 89, selected: false },
-        { id: '500-1000', label: '$500 to $1,000', count: 156, selected: false },
-        { id: '1000-2000', label: '$1,000 to $2,000', count: 234, selected: false },
-        { id: '2000-5000', label: '$2,000 to $5,000', count: 123, selected: false },
-        { id: 'over-5000', label: '$5,000 & Above', count: 45, selected: false },
+        { id: 'under-500', label: 'Under ₹500', count: 89, selected: false },
+        { id: '500-1000', label: '₹500 to ₹1,000', count: 156, selected: false },
+        { id: '1000-2000', label: '₹1,000 to ₹2,000', count: 234, selected: false },
+        { id: '2000-5000', label: '₹2,000 to ₹5,000', count: 123, selected: false },
+        { id: 'over-5000', label: '₹5,000 & Above', count: 45, selected: false },
       ],
       priceRange: { min: 0, max: 10000 }
     },

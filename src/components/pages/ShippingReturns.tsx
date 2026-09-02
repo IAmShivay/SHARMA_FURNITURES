@@ -19,21 +19,21 @@ const ShippingReturns: React.FC = () => {
     {
       name: 'Standard Delivery',
       time: '5-7 Business Days',
-      price: 'Free on orders $500+',
+      price: 'Free on orders ₹500+',
       description: 'Professional delivery to your door',
       icon: Package
     },
     {
       name: 'White-Glove Delivery',
       time: '3-5 Business Days',
-      price: 'Free on orders $1,000+',
+      price: 'Free on orders ₹1,000+',
       description: 'Full setup and assembly included',
       icon: Truck
     },
     {
       name: 'Express Delivery',
       time: '1-2 Business Days',
-      price: '$199',
+      price: '₹199',
       description: 'Priority handling and delivery',
       icon: Clock
     }
@@ -41,8 +41,8 @@ const ShippingReturns: React.FC = () => {
 
   const deliveryZones = [
     { zone: 'Zone 1', states: 'NY, NJ, CT, PA', time: '1-3 days', price: 'Free' },
-    { zone: 'Zone 2', states: 'MA, RI, VT, NH, ME, MD, DE, VA, DC', time: '2-4 days', price: '$99' },
-    { zone: 'Zone 3', states: 'All other US states', time: '5-7 days', price: '$199' }
+    { zone: 'Zone 2', states: 'MA, RI, VT, NH, ME, MD, DE, VA, DC', time: '2-4 days', price: '₹99' },
+    { zone: 'Zone 3', states: 'All other US states', time: '5-7 days', price: '₹199' }
   ];
 
   const returnReasons = [

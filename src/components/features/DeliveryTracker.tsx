@@ -51,7 +51,7 @@ const DeliveryTracker: React.FC = () => {
     deliveryAddress: '123 Main Street, Apt 4B, New York, NY 10001',
     deliveryPartner: 'LuxeHome White-Glove Delivery',
     driverName: 'Michael Johnson',
-    driverPhone: '+1 (555) 123-4567',
+    driverPhone: '+91 9547587246',
     specialInstructions: 'Please call before delivery. Assembly required.',
     statuses: [
       {

@@ -155,7 +155,7 @@ const CheckoutSuccess: React.FC = () => {
                       <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
                       <p className="text-sm text-gray-600 mb-2">Quantity: {item.quantity}</p>
                       <p className="font-semibold text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ₹{(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -203,20 +203,20 @@ const CheckoutSuccess: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${order.subtotal?.toFixed(2)}</span>
+                  <span>₹{order.subtotal?.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{order.shipping?.cost === 0 ? 'FREE' : `$${order.shipping?.cost?.toFixed(2)}`}</span>
+                  <span>{order.shipping?.cost === 0 ? 'FREE' : `₹${order.shipping?.cost?.toFixed(2)}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${order.tax?.toFixed(2)}</span>
+                  <span>₹{order.tax?.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2 mt-2">
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span>${order.total?.toFixed(2)}</span>
+                    <span>₹{order.total?.toFixed(2)}</span>
                   </div>
                 </div>
               </div>

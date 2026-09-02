@@ -229,7 +229,7 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total Revenue"
-            value={`$${stats.totalRevenue.toLocaleString()}`}
+            value={`₹${stats.totalRevenue.toLocaleString('en-IN')}`}
             icon={<DollarSign className="w-6 h-6 text-white" />}
             change="+12.5%"
             changeType="positive"
@@ -266,7 +266,7 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <StatCard
             title="Average Order Value"
-            value={`$${stats.averageOrderValue.toFixed(2)}`}
+            value={`₹${stats.averageOrderValue.toFixed(2)}`}
             icon={<BarChart3 className="w-6 h-6 text-white" />}
             change="+5.7%"
             changeType="positive"
@@ -308,7 +308,7 @@ const AdminDashboard: React.FC = () => {
                     <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">${order.total.toLocaleString()}</p>
+                    <p className="font-bold text-gray-900">₹{order.total.toLocaleString('en-IN')}</p>
                     <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                       {order.status}
                     </span>
@@ -337,7 +337,7 @@ const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 truncate">{product.name}</p>
-                    <p className="text-sm text-gray-600">${product.basePrice.toLocaleString()}</p>
+                    <p className="text-sm text-gray-600">₹{product.basePrice.toLocaleString('en-IN')}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-gray-900">{product.salesCount} sold</p>

@@ -84,11 +84,12 @@ const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-3">
               <li><Link to="/contact" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Contact Us</Link></li>
-              <li><Link to="/design-services" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Design Services</Link></li>
+              <li><Link to="/services" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Design Services</Link></li>
+              <li><Link to="/consultation" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Book Consultation</Link></li>
               <li><Link to="/shipping" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Shipping & Delivery</Link></li>
-              <li><Link to="/shipping" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Returns & Exchanges</Link></li>
-              <li><Link to="/care-guide" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Furniture Care Guide</Link></li>
-              <li><Link to="/terms" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Warranty</Link></li>
+              <li><Link to="/refund-policy" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Refund Policy</Link></li>
+              <li><Link to="/privacy" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">Terms & Conditions</Link></li>
               <li><Link to="/faq" className="text-gray-300 hover:text-amber-600 transition-colors duration-200 font-playfair">FAQ</Link></li>
             </ul>
           </div>
@@ -154,7 +155,7 @@ const Footer: React.FC = () => {
               <Truck className="w-6 h-6 text-amber-600" />
               <div>
                 <p className="text-sm font-medium text-white">Free Delivery</p>
-                <p className="text-xs">Orders over $1,000</p>
+                <p className="text-xs">Orders over ₹1,000</p>
               </div>
             </div>
             <div className="flex items-center space-x-3 text-gray-400">
@@ -192,7 +193,7 @@ const Footer: React.FC = () => {
             <div className="flex flex-wrap justify-center md:justify-end space-x-6 text-sm">
               <Link to="/privacy" className="text-gray-400 hover:text-amber-600 transition-colors duration-200">Privacy Policy</Link>
               <Link to="/terms" className="text-gray-400 hover:text-amber-600 transition-colors duration-200">Terms of Service</Link>
-              <Link to="/about" className="text-gray-400 hover:text-amber-600 transition-colors duration-200">About Us</Link>
+              <Link to="/refund-policy" className="text-gray-400 hover:text-amber-600 transition-colors duration-200">Refund Policy</Link>
               <Link to="/contact" className="text-gray-400 hover:text-amber-600 transition-colors duration-200">Contact</Link>
             </div>
           </div>

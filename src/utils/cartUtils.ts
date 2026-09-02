@@ -78,8 +78,8 @@ export const calculateCartTotal = (
 /**
  * Format price for display
  */
-export const formatPrice = (price: number, currency: string = 'USD'): string => {
-  return new Intl.NumberFormat('en-US', {
+export const formatPrice = (price: number, currency: string = 'INR'): string => {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency,
   }).format(price);

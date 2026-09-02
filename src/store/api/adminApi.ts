@@ -211,10 +211,27 @@ export const adminApi = apiSlice.injectEndpoints({
       query: ({ period = '30d' }) => `/admin/analytics?period=${period}`,
       providesTags: ['Admin'],
     }),
+
+    getConsultationBookings: builder.query<any, { page?: number; limit?: number; status?: string }>({
+      query: ({ page = 1, limit = 20, status }) => {
+        const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+        if (status) params.append('status', status);
+        return `/consultation/bookings?${params}`;
+      },
+      providesTags: ['Admin'],
+    }),
+
+    updateConsultationStatus: builder.mutation<any, { id: string; status: string }>({
+      query: ({ id, status }) => ({
+        url: `/consultation/bookings/${id}/status`,
+        method: 'PUT',
+        body: { status },
+      }),
+      invalidatesTags: ['Admin'],
+    }),
   }),
 });
 
-// Export hooks for usage in components
 export const {
   useGetDashboardStatsQuery,
   useGetUsersQuery,
@@ -223,4 +240,6 @@ export const {
   useGetOrdersQuery,
   useUpdateOrderStatusMutation,
   useGetAnalyticsQuery,
+  useGetConsultationBookingsQuery,
+  useUpdateConsultationStatusMutation,
 } = adminApi;

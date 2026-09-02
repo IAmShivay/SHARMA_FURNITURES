@@ -1,128 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Camera,
-  Heart,
   Share2,
-  Download,
   Filter,
-  Grid,
   Search,
   Eye,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
 import SEOHead from '../../components/common/SEOHead';
+import { useGetProductsQuery, Product } from '../../store/api/productsApi';
+import { formatCurrency } from '../../utils/formatters';
 
-interface GalleryImage {
+interface GalleryItem {
   id: string;
   src: string;
   title: string;
   category: string;
-  room: string;
-  style: string;
-  products: string[];
-  likes: number;
-  isLiked: boolean;
+  price: number;
+  originalPrice?: number;
 }
 
 const Gallery: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const categories = [
-    { id: 'all', name: 'All Rooms' },
-    { id: 'living-room', name: 'Living Room' },
-    { id: 'bedroom', name: 'Bedroom' },
-    { id: 'dining', name: 'Dining Room' },
-    { id: 'office', name: 'Home Office' },
-    { id: 'outdoor', name: 'Outdoor' }
-  ];
+  const { data, isLoading } = useGetProductsQuery({ limit: 12 });
 
-  const galleryImages: GalleryImage[] = [
-    {
-      id: '1',
-      src: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
-      title: 'Modern Scandinavian Living Room',
-      category: 'living-room',
-      room: 'Living Room',
-      style: 'Scandinavian',
-      products: ['Premium Scandinavian Sofa', 'Glass Coffee Table', 'Modern Floor Lamp'],
-      likes: 234,
-      isLiked: false
-    },
-    {
-      id: '2',
-      src: 'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=800',
-      title: 'Elegant Dining Space',
-      category: 'dining',
-      room: 'Dining Room',
-      style: 'Contemporary',
-      products: ['Oak Dining Table', 'Upholstered Dining Chairs', 'Crystal Chandelier'],
-      likes: 189,
-      isLiked: true
-    },
-    {
-      id: '3',
-      src: 'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=800',
-      title: 'Luxury Master Bedroom',
-      category: 'bedroom',
-      room: 'Bedroom',
-      style: 'Luxury',
-      products: ['King Platform Bed', 'Velvet Accent Chair', 'Marble Nightstands'],
-      likes: 312,
-      isLiked: false
-    },
-    {
-      id: '4',
-      src: 'https://images.pexels.com/photos/2062426/pexels-photo-2062426.jpeg?auto=compress&cs=tinysrgb&w=800',
-      title: 'Executive Home Office',
-      category: 'office',
-      room: 'Home Office',
-      style: 'Traditional',
-      products: ['Executive Desk', 'Leather Office Chair', 'Built-in Bookshelf'],
-      likes: 156,
-      isLiked: false
-    },
-    {
-      id: '5',
-      src: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
-      title: 'Cozy Reading Nook',
-      category: 'living-room',
-      room: 'Living Room',
-      style: 'Cozy',
-      products: ['Reading Chair', 'Side Table', 'Floor Lamp'],
-      likes: 98,
-      isLiked: true
-    },
-    {
-      id: '6',
-      src: 'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=800',
-      title: 'Minimalist Bedroom',
-      category: 'bedroom',
-      room: 'Bedroom',
-      style: 'Minimalist',
-      products: ['Platform Bed', 'Floating Nightstands', 'Pendant Lights'],
-      likes: 267,
-      isLiked: false
-    }
-  ];
+  const galleryItems = useMemo<GalleryItem[]>(() => {
+    if (!data?.data?.items?.length) return [];
 
-  const filteredImages = galleryImages.filter(image => {
-    const matchesCategory = selectedCategory === 'all' || image.category === selectedCategory;
-    const matchesSearch = image.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         image.style.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         image.products.some(product => product.toLowerCase().includes(searchQuery.toLowerCase()));
+    return data.data.items
+      .filter((product: Product) => product.images.length > 0)
+      .map((product: Product) => ({
+        id: product.id,
+        src: product.images[0],
+        title: product.name,
+        category: product.category,
+        price: product.basePrice,
+        originalPrice: product.originalPrice,
+      }));
+  }, [data]);
+
+  const categories = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(galleryItems.map((item) => item.category)));
+    return [
+      { id: 'all', name: 'All' },
+      ...uniqueCategories.map((cat) => ({
+        id: cat,
+        name: cat.charAt(0).toUpperCase() + cat.slice(1).replace(/-/g, ' '),
+      })),
+    ];
+  }, [galleryItems]);
+
+  const filteredImages = galleryItems.filter((item) => {
+    const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.category.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const toggleLike = (imageId: string) => {
-    // Handle like toggle
-    console.log('Toggle like for image:', imageId);
-  };
-
-  const openLightbox = (image: GalleryImage) => {
+  const openLightbox = (image: GalleryItem) => {
     setSelectedImage(image);
   };
 
@@ -132,16 +74,16 @@ const Gallery: React.FC = () => {
 
   const navigateImage = (direction: 'prev' | 'next') => {
     if (!selectedImage) return;
-    
-    const currentIndex = filteredImages.findIndex(img => img.id === selectedImage.id);
+
+    const currentIndex = filteredImages.findIndex((img) => img.id === selectedImage.id);
     let newIndex;
-    
+
     if (direction === 'prev') {
       newIndex = currentIndex > 0 ? currentIndex - 1 : filteredImages.length - 1;
     } else {
       newIndex = currentIndex < filteredImages.length - 1 ? currentIndex + 1 : 0;
     }
-    
+
     setSelectedImage(filteredImages[newIndex]);
   };
 
@@ -152,7 +94,7 @@ const Gallery: React.FC = () => {
         description="Explore our gallery of beautifully furnished spaces for design inspiration."
         keywords="furniture gallery, interior design inspiration, home decor ideas"
       />
-      {/* Hero Section */}
+
       <section className="bg-gradient-to-br from-purple-50 to-indigo-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
@@ -164,13 +106,12 @@ const Gallery: React.FC = () => {
           <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
             Get inspired by beautiful room designs featuring our premium furniture collections
           </p>
-          
-          {/* Search Bar */}
+
           <div className="max-w-2xl mx-auto relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
             <input
               type="text"
-              placeholder="Search designs, styles, or products..."
+              placeholder="Search products or categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-6 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-purple-500 focus:outline-none bg-white shadow-lg"
@@ -179,7 +120,6 @@ const Gallery: React.FC = () => {
         </div>
       </section>
 
-      {/* Category Filter */}
       <section className="py-8">
         <div className="container mx-auto px-6">
           <div className="flex flex-wrap justify-center gap-4">
@@ -200,10 +140,22 @@ const Gallery: React.FC = () => {
         </div>
       </section>
 
-      {/* Gallery Grid */}
       <section className="py-12">
         <div className="container mx-auto px-6">
-          {filteredImages.length === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-3xl shadow-lg overflow-hidden animate-pulse">
+                  <div className="w-full h-64 bg-gray-200" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-5 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/2" />
+                    <div className="h-4 bg-gray-200 rounded w-1/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredImages.length === 0 ? (
             <div className="text-center py-16">
               <Camera className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-gray-900 mb-2">No images found</h3>
@@ -223,32 +175,21 @@ const Gallery: React.FC = () => {
                       alt={image.title}
                       className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    
-                    {/* Overlay */}
+
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                       <div className="flex space-x-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleLike(image.id);
-                          }}
-                          className="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-colors duration-200"
-                        >
-                          <Heart className={`w-5 h-5 ${image.isLiked ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
+                        <button className="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-colors duration-200">
+                          <Eye className="w-5 h-5 text-gray-600" />
                         </button>
                         <button className="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-colors duration-200">
                           <Share2 className="w-5 h-5 text-gray-600" />
                         </button>
-                        <button className="bg-white/90 backdrop-blur-sm p-3 rounded-full hover:bg-white transition-colors duration-200">
-                          <Eye className="w-5 h-5 text-gray-600" />
-                        </button>
                       </div>
                     </div>
 
-                    {/* Style Badge */}
                     <div className="absolute top-4 left-4">
                       <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-bold">
-                        {image.style}
+                        {image.category.charAt(0).toUpperCase() + image.category.slice(1).replace(/-/g, ' ')}
                       </span>
                     </div>
                   </div>
@@ -258,16 +199,22 @@ const Gallery: React.FC = () => {
                       {image.title}
                     </h3>
                     <p className="text-gray-600 text-sm mb-3 font-playfair">
-                      {image.room} • {image.products.length} Products
+                      {image.category.charAt(0).toUpperCase() + image.category.slice(1).replace(/-/g, ' ')}
                     </p>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1">
-                        <Heart className="w-4 h-4 text-red-500" />
-                        <span className="text-sm text-gray-600">{image.likes}</span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-bold text-amber-600">{formatCurrency(image.price)}</span>
+                        {image.originalPrice && image.originalPrice > image.price && (
+                          <span className="text-sm text-gray-400 line-through">{formatCurrency(image.originalPrice)}</span>
+                        )}
                       </div>
-                      <button className="text-purple-600 hover:text-purple-700 font-semibold text-sm">
-                        View Details
-                      </button>
+                      <Link
+                        to={`/product/${image.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-purple-600 hover:text-purple-700 font-semibold text-sm"
+                      >
+                        View Product
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -277,11 +224,9 @@ const Gallery: React.FC = () => {
         </div>
       </section>
 
-      {/* Lightbox Modal */}
       {selectedImage && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
           <div className="relative max-w-6xl w-full">
-            {/* Close Button */}
             <button
               onClick={closeLightbox}
               className="absolute top-4 right-4 bg-white/20 text-white p-2 rounded-full hover:bg-white/30 transition-colors z-10"
@@ -289,7 +234,6 @@ const Gallery: React.FC = () => {
               <X className="w-6 h-6" />
             </button>
 
-            {/* Navigation Buttons */}
             <button
               onClick={() => navigateImage('prev')}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 text-white p-3 rounded-full hover:bg-white/30 transition-colors z-10"
@@ -303,50 +247,38 @@ const Gallery: React.FC = () => {
               <ChevronRight className="w-6 h-6" />
             </button>
 
-            {/* Image */}
             <img
               src={selectedImage.src}
               alt={selectedImage.title}
               className="w-full h-auto max-h-[80vh] object-contain rounded-2xl"
             />
 
-            {/* Image Info */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-8 rounded-b-2xl">
               <h3 className="text-2xl font-bold text-white mb-2 font-montserrat">
                 {selectedImage.title}
               </h3>
               <p className="text-white/90 mb-4 font-playfair">
-                {selectedImage.room} • {selectedImage.style} Style
+                {selectedImage.category.charAt(0).toUpperCase() + selectedImage.category.slice(1).replace(/-/g, ' ')}
               </p>
-              
-              {/* Featured Products */}
+
               <div className="mb-4">
-                <h4 className="text-white font-semibold mb-2">Featured Products:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedImage.products.map((product, index) => (
-                    <span
-                      key={index}
-                      className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm"
-                    >
-                      {product}
-                    </span>
-                  ))}
-                </div>
+                <span className="text-2xl font-bold text-amber-400">{formatCurrency(selectedImage.price)}</span>
+                {selectedImage.originalPrice && selectedImage.originalPrice > selectedImage.price && (
+                  <span className="text-lg text-white/50 line-through ml-3">{formatCurrency(selectedImage.originalPrice)}</span>
+                )}
               </div>
 
-              {/* Actions */}
               <div className="flex items-center space-x-4">
-                <button className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-colors">
-                  <Heart className="w-4 h-4" />
-                  <span>{selectedImage.likes}</span>
-                </button>
-                <button className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-colors">
+                <Link
+                  to={`/product/${selectedImage.id}`}
+                  className="flex items-center space-x-2 bg-amber-600 text-white px-6 py-3 rounded-xl hover:bg-amber-700 transition-colors font-semibold"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>View Product</span>
+                </Link>
+                <button className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 py-3 rounded-xl hover:bg-white/30 transition-colors">
                   <Share2 className="w-4 h-4" />
                   <span>Share</span>
-                </button>
-                <button className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-colors">
-                  <Download className="w-4 h-4" />
-                  <span>Download</span>
                 </button>
               </div>
             </div>

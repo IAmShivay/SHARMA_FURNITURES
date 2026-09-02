@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown, Home, Phone, Mail, ArrowRight } from 'lucide-react';
+import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown, Home, Phone, Mail, ArrowRight, Shield, Package, LayoutDashboard, LogOut } from 'lucide-react';
 import { brandInfo } from '../../config/brand';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setMobileMenuOpen, setSearchOpen } from '../../store/slices/uiSlice';
 import { useWishlist } from '../../hooks/useWishlist';
-import { selectIsAuthenticated } from '../../store/slices/authSlice';
+import { selectIsAuthenticated, selectUser } from '../../store/slices/authSlice';
+import { useAuth } from '../../hooks/useAuth';
 
 interface HeaderProps {
   cartCount: number;
@@ -18,16 +19,21 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
   const dispatch = useAppDispatch();
   const { wishlistCount } = useWishlist();
 
+  const { logout, isAdmin, isSupport } = useAuth();
+
   // Redux state
   const mobileMenuOpen = useAppSelector(state => state.ui.mobileMenuOpen);
   const searchOpen = useAppSelector(state => state.ui.searchOpen);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectUser);
 
   // Local state
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Refs for click outside detection
   const searchRef = useRef<HTMLDivElement>(null);
   const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -43,6 +49,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
   // Reset dropdowns and mobile menu when route changes
   useEffect(() => {
     setActiveDropdown(null);
+    setUserMenuOpen(false);
     dispatch(setMobileMenuOpen(false));
     dispatch(setSearchOpen(false));
   }, [location.pathname, dispatch]);
@@ -53,6 +60,11 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
       // Close search if clicked outside
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         dispatch(setSearchOpen(false));
+      }
+
+      // Close user menu if clicked outside
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
       }
 
       // Close dropdown if clicked outside
@@ -74,6 +86,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
       if (event.key === 'Escape') {
         dispatch(setSearchOpen(false));
         setActiveDropdown(null);
+        setUserMenuOpen(false);
         dispatch(setMobileMenuOpen(false));
       }
     };
@@ -95,12 +108,16 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
       ]
     },
     {
-      name: 'Blog',
-      href: '/blog'
+      name: 'Services',
+      href: '/services'
     },
     {
       name: 'Gallery',
       href: '/gallery'
+    },
+    {
+      name: 'Blog',
+      href: '/blog'
     },
     {
       name: 'About',
@@ -210,8 +227,10 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                 }}
                 onMouseEnter={() => setActiveDropdown(item.name)}
                 onMouseLeave={() => {
-                  // Add a small delay to prevent flickering
-                  setTimeout(() => {
+                  if (dropdownTimerRef.current) {
+                    clearTimeout(dropdownTimerRef.current);
+                  }
+                  dropdownTimerRef.current = setTimeout(() => {
                     if (!dropdownRefs.current[item.name]?.matches(':hover')) {
                       setActiveDropdown(null);
                     }
@@ -307,18 +326,71 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
               <div className="absolute -inset-0.5 rounded-2xl transition-all duration-500 opacity-0 group-hover:opacity-100 blur-sm bg-gradient-to-br from-white/40 to-white/20"></div>
             </button>
 
-            {/* Premium Account Button */}
-            <button
-              onClick={() => navigate(isAuthenticated ? '/account' : '/login')}
-              className="hidden sm:block relative p-2 sm:p-3 md:p-4 transition-all duration-500 rounded-xl sm:rounded-2xl group hover:scale-110 transform-gpu text-white hover:text-white hover:bg-white/25 hover:backdrop-blur-xl filter drop-shadow-lg hover:shadow-2xl border border-white/30 hover:border-white/50"
-              aria-label={isAuthenticated ? 'Account' : 'Sign In'}
-            >
-              <User className="w-5 h-5 transition-all duration-500 group-hover:scale-125" />
+            <div className="hidden sm:block relative" ref={userMenuRef}>
+              <button
+                onClick={() => isAuthenticated ? setUserMenuOpen(!userMenuOpen) : navigate('/login')}
+                className="relative p-2 sm:p-3 md:p-4 transition-all duration-500 rounded-xl sm:rounded-2xl group hover:scale-110 transform-gpu text-white hover:text-white hover:bg-white/25 hover:backdrop-blur-xl filter drop-shadow-lg hover:shadow-2xl border border-white/30 hover:border-white/50"
+                aria-label={isAuthenticated ? 'Account' : 'Sign In'}
+              >
+                <User className="w-5 h-5 transition-all duration-500 group-hover:scale-125" />
+                {isAuthenticated && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
+                )}
+              </button>
 
-              <div className="absolute inset-0 rounded-2xl transition-all duration-500 opacity-0 group-hover:opacity-100 bg-gradient-to-br from-white/20 to-white/10 shadow-inner"></div>
+              {userMenuOpen && isAuthenticated && (
+                <div className="absolute right-0 top-full mt-2 w-64 bg-black/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 py-4 z-[60]">
+                  <div className="px-5 pb-3 mb-2 border-b border-white/10">
+                    <p className="text-white font-semibold text-sm truncate">{user?.name}</p>
+                    <p className="text-gray-400 text-xs truncate">{user?.email}</p>
+                    <span className="inline-block mt-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-500/20 text-amber-400">
+                      {user?.role}
+                    </span>
+                  </div>
 
-              <div className="absolute -inset-0.5 rounded-2xl transition-all duration-500 opacity-0 group-hover:opacity-100 blur-sm bg-gradient-to-br from-white/40 to-white/20"></div>
-            </button>
+                  <Link to="/account" onClick={() => setUserMenuOpen(false)} className="flex items-center space-x-3 px-5 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <User className="w-4 h-4" />
+                    <span>My Account</span>
+                  </Link>
+                  <Link to="/account" onClick={() => setUserMenuOpen(false)} className="flex items-center space-x-3 px-5 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors">
+                    <Package className="w-4 h-4" />
+                    <span>My Orders</span>
+                  </Link>
+
+                  {isSupport() && (
+                    <>
+                      <div className="my-2 border-t border-white/10" />
+                      <Link to="/admin" onClick={() => setUserMenuOpen(false)} className="flex items-center space-x-3 px-5 py-2.5 text-sm text-amber-400 hover:text-amber-300 hover:bg-white/10 transition-colors">
+                        <LayoutDashboard className="w-4 h-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                      <Link to="/admin/orders" onClick={() => setUserMenuOpen(false)} className="flex items-center space-x-3 px-5 py-2.5 text-sm text-amber-400 hover:text-amber-300 hover:bg-white/10 transition-colors">
+                        <Package className="w-4 h-4" />
+                        <span>Manage Orders</span>
+                      </Link>
+                    </>
+                  )}
+
+                  {isAdmin() && (
+                    <>
+                      <Link to="/admin/users" onClick={() => setUserMenuOpen(false)} className="flex items-center space-x-3 px-5 py-2.5 text-sm text-amber-400 hover:text-amber-300 hover:bg-white/10 transition-colors">
+                        <Shield className="w-4 h-4" />
+                        <span>Manage Users</span>
+                      </Link>
+                    </>
+                  )}
+
+                  <div className="my-2 border-t border-white/10" />
+                  <button
+                    onClick={() => { setUserMenuOpen(false); logout(); navigate('/'); }}
+                    className="flex items-center space-x-3 w-full px-5 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/10 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Premium Wishlist Button */}
             <button
@@ -466,12 +538,48 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
               ))}
             </div>
 
-            {/* Mobile Contact Section */}
+            {isAuthenticated && (
+              <div className="pt-6 mt-6 border-t border-gray-200/50">
+                <h4 className="text-lg font-bold text-gray-900 mb-3">
+                  {user?.name}
+                  <span className="ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-amber-100 text-amber-700">
+                    {user?.role}
+                  </span>
+                </h4>
+                <div className="space-y-1">
+                  <Link to="/account" onClick={() => dispatch(setMobileMenuOpen(false))} className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all">
+                    <User className="w-5 h-5" /><span>My Account</span>
+                  </Link>
+                  <Link to="/account" onClick={() => dispatch(setMobileMenuOpen(false))} className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all">
+                    <Package className="w-5 h-5" /><span>My Orders</span>
+                  </Link>
+                  {isSupport() && (
+                    <>
+                      <Link to="/admin" onClick={() => dispatch(setMobileMenuOpen(false))} className="flex items-center space-x-3 px-4 py-3 text-amber-700 hover:bg-amber-50 rounded-xl transition-all">
+                        <LayoutDashboard className="w-5 h-5" /><span>Dashboard</span>
+                      </Link>
+                      <Link to="/admin/orders" onClick={() => dispatch(setMobileMenuOpen(false))} className="flex items-center space-x-3 px-4 py-3 text-amber-700 hover:bg-amber-50 rounded-xl transition-all">
+                        <Package className="w-5 h-5" /><span>Manage Orders</span>
+                      </Link>
+                    </>
+                  )}
+                  {isAdmin() && (
+                    <Link to="/admin/users" onClick={() => dispatch(setMobileMenuOpen(false))} className="flex items-center space-x-3 px-4 py-3 text-amber-700 hover:bg-amber-50 rounded-xl transition-all">
+                      <Shield className="w-5 h-5" /><span>Manage Users</span>
+                    </Link>
+                  )}
+                  <button onClick={() => { dispatch(setMobileMenuOpen(false)); logout(); navigate('/'); }} className="flex items-center space-x-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all">
+                    <LogOut className="w-5 h-5" /><span>Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="pt-8 mt-8 border-t border-gray-200/50">
-              <h4 className="text-lg font-bold text-gray-900 mb-4 font-montserrat">Get in Touch</h4>
+              <h4 className="text-lg font-bold text-gray-900 mb-4">Get in Touch</h4>
               <div className="space-y-3">
                 <a
-                  href="tel:+15551234567"
+                  href="tel:+919547587246"
                   className="flex items-center space-x-4 px-4 py-3 text-gray-700 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 rounded-xl transition-all duration-300 group"
                 >
                   <div className="p-2 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors duration-300">
@@ -479,7 +587,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                   </div>
                   <div>
                     <div className="font-semibold">Call Us</div>
-                    <div className="text-sm text-gray-500">+1 (555) 123-4567</div>
+                    <div className="text-sm text-gray-500">+91 9547587246</div>
                   </div>
                 </a>
                 <a

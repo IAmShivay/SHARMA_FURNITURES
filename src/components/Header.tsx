@@ -71,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
     }`}>
       {/* Promotional Banner */}
       <div className="bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 text-center py-2 px-4 text-sm font-medium">
-        Free shipping on orders over $599 | Design consultation available
+        Free shipping on orders over ₹599 | Design consultation available
       </div>
 
       <div className="container mx-auto px-4">

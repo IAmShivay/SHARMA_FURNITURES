@@ -19,6 +19,7 @@ import userRoutes from './routes/user.routes';
 import adminRoutes from './routes/admin.routes';
 import wishlistRoutes from './routes/wishlist.routes';
 import blogRoutes from './routes/blog.routes';
+import consultationRoutes from './routes/consultation.routes';
 
 // Create Express app
 const app = express();
@@ -132,6 +133,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/consultation', consultationRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

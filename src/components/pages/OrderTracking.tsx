@@ -285,20 +285,20 @@ const OrderTracking: React.FC = () => {
               <div className="border-t border-gray-200 pt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${order.totals.subtotal.toFixed(2)}</span>
+                  <span>₹{order.totals.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{order.totals.shipping === 0 ? 'FREE' : `$${order.totals.shipping.toFixed(2)}`}</span>
+                  <span>{order.totals.shipping === 0 ? 'FREE' : `₹${order.totals.shipping.toFixed(2)}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${order.totals.tax.toFixed(2)}</span>
+                  <span>₹{order.totals.tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2">
                   <div className="flex justify-between font-bold">
                     <span>Total</span>
-                    <span>${order.totals.total.toFixed(2)}</span>
+                    <span>₹{order.totals.total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>

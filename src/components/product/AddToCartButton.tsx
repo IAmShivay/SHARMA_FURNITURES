@@ -28,7 +28,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const [showCustomizer, setShowCustomizer] = useState(false);
 
   // Check if product has customization options
-  const hasCustomization = product.customizationSections && product.customizationSections.length > 0;
+  const hasCustomization = product.customization && product.customization.length > 0;
 
   const handleClick = () => {
     if (hasCustomization) {
