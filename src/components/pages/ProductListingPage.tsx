@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
+import { useGetCategoriesQuery } from '../../store/api/productsApi';
 import { formatPrice } from '../../utils/cartUtils';
 import SEOHead from '../../components/common/SEOHead';
 
@@ -36,16 +37,19 @@ const ProductListingPage: React.FC = () => {
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch categories from API
+  const { data: categoriesData } = useGetCategoriesQuery();
+
   // Fetch products from API with filters
   const { products: apiProducts, loading, error } = useProducts({
     limit: 20,
     search: searchQuery,
-    minPrice: priceRange[0],
-    maxPrice: priceRange[1],
-    sortBy: sortBy
+    category: filterCategory !== 'all' ? filterCategory : undefined,
+    minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
+    maxPrice: priceRange[1] < 5000 ? priceRange[1] : undefined,
+    sortBy: sortBy,
   });
 
-  // Convert API products to local Product interface
   const products: Product[] = (apiProducts || []).map((product: any) => ({
     id: product._id || product.id,
     name: product.name,
@@ -53,58 +57,20 @@ const ProductListingPage: React.FC = () => {
     price: product.basePrice || product.price,
     originalPrice: product.originalPrice,
     rating: product.rating?.average || 0,
-    reviewCount: product.rating?.count || 0,
     reviews: product.rating?.count || 0,
     image: product.images?.[0] || '',
     category: product.category,
     colors: product.colors || [],
-    inStock: product.inventory?.quantity > 0,
     isNew: product.newArrival,
     isBestseller: product.bestseller,
-    description: product.description || product.shortDescription || '',
-    // Add customization sections for all products
-    customizationSections: product.customizationSections || [
-      {
-        id: 'color',
-        title: 'Choose Color',
-        type: 'color',
-        required: true,
-        options: (product.colors || ['Natural', 'Dark', 'Light']).map((color: string, index: number) => ({
-          id: color.toLowerCase().replace(/\s+/g, '-'),
-          name: color,
-          price: index === 0 ? 0 : 50,
-          image: product.images?.[index] || product.images?.[0] || ''
-        }))
-      },
-      {
-        id: 'material',
-        title: 'Material Options',
-        type: 'radio',
-        required: false,
-        options: (product.materials || ['Standard', 'Premium']).map((material: string, index: number) => ({
-          id: material.toLowerCase().replace(/\s+/g, '-'),
-          name: material,
-          price: index === 0 ? 0 : 200
-        }))
-      },
-      {
-        id: 'assembly',
-        title: 'Assembly Service',
-        type: 'checkbox',
-        required: false,
-        options: [
-          { id: 'assembly', name: 'Professional Assembly & Setup', price: 150 }
-        ]
-      }
-    ]
   }));
 
   const categories = [
     { id: 'all', name: 'All Categories' },
-    { id: 'living-room', name: 'Living Room' },
-    { id: 'bedroom', name: 'Bedroom' },
-    { id: 'dining', name: 'Dining Room' },
-    { id: 'office', name: 'Office' }
+    ...((categoriesData?.data || []) as any[]).map((c: any) => ({
+      id: c._id,
+      name: c._id.charAt(0).toUpperCase() + c._id.slice(1),
+    })),
   ];
 
   const sortOptions = [
@@ -112,16 +78,8 @@ const ProductListingPage: React.FC = () => {
     { id: 'price-low', name: 'Price: Low to High' },
     { id: 'price-high', name: 'Price: High to Low' },
     { id: 'rating', name: 'Highest Rated' },
-    { id: 'newest', name: 'Newest First' }
+    { id: 'newest', name: 'Newest First' },
   ];
-
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
-    const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.brand.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesPrice && matchesSearch;
-  });
 
   const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
     <div className="bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:scale-105 transform-gpu">
@@ -215,11 +173,11 @@ const ProductListingPage: React.FC = () => {
         {/* Price */}
         <div className="flex items-center space-x-3">
           <span className="text-2xl font-bold text-gray-900">
-            ${product.price.toLocaleString()}
+            ₹{product.price.toLocaleString('en-IN')}
           </span>
           {product.originalPrice > product.price && (
             <span className="text-lg text-gray-500 line-through">
-              ${product.originalPrice.toLocaleString()}
+              ₹{product.originalPrice.toLocaleString('en-IN')}
             </span>
           )}
         </div>
@@ -336,7 +294,7 @@ const ProductListingPage: React.FC = () => {
         {/* Results Count */}
         <div className="flex items-center justify-between mb-6">
           <span className="text-gray-600">
-            Showing {filteredProducts.length} of {products.length} products
+            Showing {products.length} of {products.length} products
           </span>
         </div>
 
@@ -346,7 +304,7 @@ const ProductListingPage: React.FC = () => {
             ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
             : 'grid-cols-1'
         }`}>
-          {filteredProducts.map(product => (
+          {products.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

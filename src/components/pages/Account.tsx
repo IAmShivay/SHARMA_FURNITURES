@@ -377,7 +377,7 @@ const Account: React.FC = () => {
                             </div>
                             <div className="p-4">
                               <h3 className="font-medium text-gray-900 mb-1 truncate">{item.product.name}</h3>
-                              <p className="text-amber-600 font-medium">${item.product.basePrice.toFixed(2)}</p>
+                              <p className="text-amber-600 font-medium">₹{item.product.basePrice.toFixed(2)}</p>
                               <div className="mt-4 flex space-x-2">
                                 <button 
                                   onClick={() => navigate(`/product/${item.productId}`)}

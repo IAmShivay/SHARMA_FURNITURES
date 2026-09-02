@@ -212,9 +212,9 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = () => {
                 {/* Price & Colors */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-gray-900 font-montserrat">${(product.basePrice || product.price || 0).toLocaleString()}</span>
+                    <span className="text-2xl font-bold text-gray-900 font-montserrat">₹{(product.basePrice || product.price || 0).toLocaleString('en-IN')}</span>
                     {product.originalPrice && (
-                      <span className="text-lg text-gray-500 line-through">${product.originalPrice}</span>
+                      <span className="text-lg text-gray-500 line-through">₹{product.originalPrice.toLocaleString('en-IN')}</span>
                     )}
                   </div>
 

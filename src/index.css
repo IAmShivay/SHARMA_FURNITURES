@@ -12,13 +12,20 @@
   --color-forest-green: #355E3B;
 }
 
-/* Font Family Utilities */
-.font-montserrat {
-  font-family: 'Montserrat', sans-serif;
+/* Global Font Defaults */
+body {
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-.font-playfair {
-  font-family: 'Playfair Display', serif;
+/* Font Family Utilities */
+.font-montserrat,
+.font-heading {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.font-playfair,
+.font-body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
 }
 
 /* Performance Optimizations */
@@ -397,6 +404,11 @@ html {
 
 /* Focus Ring for Better Accessibility */
 :focus-visible {
-  outline: 2px solid #D4AF37;
-  outline-offset: 2px;
+  outline: 1px solid rgba(212, 175, 55, 0.5);
+  outline-offset: 1px;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: none;
 }

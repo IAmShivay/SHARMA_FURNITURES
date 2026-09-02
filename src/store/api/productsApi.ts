@@ -185,6 +185,39 @@ export const productsApi = apiSlice.injectEndpoints({
       query: () => '/products/filters',
       providesTags: [{ type: 'Category', id: 'FILTERS' }],
     }),
+
+    // Create product (admin)
+    createProduct: builder.mutation<{ success: boolean; data: Product }, Partial<Product>>({
+      query: (product) => ({
+        url: '/products',
+        method: 'POST',
+        body: product,
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }, { type: 'Product', id: 'FEATURED' }, { type: 'Category', id: 'LIST' }],
+    }),
+
+    // Update product (admin)
+    updateProduct: builder.mutation<{ success: boolean; data: Product }, { id: string; updates: Partial<Product> }>({
+      query: ({ id, updates }) => ({
+        url: `/products/${id}`,
+        method: 'PUT',
+        body: updates,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Product', id },
+        { type: 'Product', id: 'LIST' },
+        { type: 'Product', id: 'FEATURED' },
+      ],
+    }),
+
+    // Delete product (admin)
+    deleteProduct: builder.mutation<{ success: boolean }, string>({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{ type: 'Product', id: 'LIST' }, { type: 'Product', id: 'FEATURED' }, { type: 'Category', id: 'LIST' }],
+    }),
   }),
 });
 
@@ -198,4 +231,7 @@ export const {
   useAddProductReviewMutation,
   useGetCategoriesQuery,
   useGetFiltersDataQuery,
+  useCreateProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
 } = productsApi;

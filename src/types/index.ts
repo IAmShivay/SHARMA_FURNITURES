@@ -1,22 +1,57 @@
+export interface ProductCustomization {
+  name: string;
+  options: string[];
+  priceModifier?: number;
+}
+
+export interface ProductDimensions {
+  width: number;
+  height: number;
+  depth: number;
+  weight?: number;
+  unit?: string;
+}
+
+export interface ProductShipping {
+  weight: number;
+  freeShipping?: boolean;
+  estimatedDays?: number;
+  shippingCost?: number;
+}
+
 export interface Product {
   id: string;
+  _id?: string;
   name: string;
-  price: number;
+  slug?: string;
+  brand?: string;
+  basePrice: number;
+  price?: number;
   originalPrice?: number;
   images: string[];
+  image?: string;
   category: string;
   subcategory?: string;
   description: string;
-  specifications: Record<string, string>;
-  inStock: boolean;
-  rating: number;
-  reviewCount: number;
+  shortDescription?: string;
+  specifications?: Record<string, string>;
+  features?: string[];
+  inStock?: boolean;
+  rating?: { average: number; count: number };
+  reviewCount?: number;
   colors?: string[];
   materials?: string[];
-  tags: string[];
-  sku?: string;
-  weight?: string;
-  dimensions?: string;
+  styles?: string[];
+  tags?: string[];
+  customization?: ProductCustomization[];
+  inventory?: { quantity: number; reserved: number; lowStockThreshold: number };
+  status?: string;
+  featured?: boolean;
+  bestseller?: boolean;
+  newArrival?: boolean;
+  onSale?: boolean;
+  dimensions?: ProductDimensions;
+  shipping?: ProductShipping;
 }
 
 export interface CartItem {

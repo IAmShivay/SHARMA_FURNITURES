@@ -90,41 +90,7 @@ const CollectionPage: React.FC = () => {
     inStock: product.inventory?.quantity > 0,
     isNew: product.newArrival,
     isBestseller: product.bestseller,
-    // Add customization sections for all products
-    customizationSections: product.customizationSections || [
-      {
-        id: 'color',
-        title: 'Choose Color',
-        type: 'color',
-        required: true,
-        options: (product.colors || ['Natural', 'Dark', 'Light']).map((color: string, index: number) => ({
-          id: color.toLowerCase().replace(/\s+/g, '-'),
-          name: color,
-          price: index === 0 ? 0 : 50,
-          image: product.images?.[index] || product.images?.[0] || ''
-        }))
-      },
-      {
-        id: 'material',
-        title: 'Material Options',
-        type: 'radio',
-        required: false,
-        options: (product.materials || ['Standard', 'Premium']).map((material: string, index: number) => ({
-          id: material.toLowerCase().replace(/\s+/g, '-'),
-          name: material,
-          price: index === 0 ? 0 : 200
-        }))
-      },
-      {
-        id: 'assembly',
-        title: 'Assembly Service',
-        type: 'checkbox',
-        required: false,
-        options: [
-          { id: 'assembly', name: 'Professional Assembly & Setup', price: 150 }
-        ]
-      }
-    ]
+    customization: product.customization || []
   }));
 
   const handleFiltersChange = useCallback((filters: any) => {

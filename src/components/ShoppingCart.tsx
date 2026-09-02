@@ -36,7 +36,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
       <div className="fixed right-0 top-0 h-full w-full max-w-md bg-white z-50 shadow-2xl transform transition-transform duration-300 overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
             Shopping Cart ({cartItems.length})
           </h2>
           <button
@@ -107,7 +107,7 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
                       
                       <div className="text-right">
                         <p className="text-lg font-bold text-gray-900">
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          ₹{(item.product.price * item.quantity).toFixed(2)}
                         </p>
                         <button
                           onClick={() => onRemoveItem(item.product.id)}
@@ -126,27 +126,27 @@ const ShoppingCart: React.FC<ShoppingCartProps> = ({
             <div className="border-t border-gray-200 p-6 space-y-4">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
-                <span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
+                <span>{shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}</span>
               </div>
               <div className="flex justify-between text-gray-600">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>₹{tax.toFixed(2)}</span>
               </div>
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex justify-between text-xl font-bold text-gray-900">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>₹{total.toFixed(2)}</span>
                 </div>
               </div>
 
               {subtotal < 599 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
                   <p className="text-sm text-amber-800">
-                    Add ${(599 - subtotal).toFixed(2)} more for free shipping!
+                    Add ₹{(599 - subtotal).toFixed(2)} more for free shipping!
                   </p>
                   <div className="w-full bg-amber-200 rounded-full h-2 mt-2">
                     <div

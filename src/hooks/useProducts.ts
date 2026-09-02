@@ -7,6 +7,11 @@ import {
   type ProductFilters
 } from '../store/api/productsApi';
 
+const normalizeProduct = (p: any) => {
+  if (!p) return null;
+  return { ...p, id: p.id || p._id };
+};
+
 export const useProducts = (filters: ProductFilters = {}) => {
   const {
     data,
@@ -15,7 +20,7 @@ export const useProducts = (filters: ProductFilters = {}) => {
     refetch,
   } = useGetProductsQuery(filters);
 
-  const products = useMemo(() => data?.data?.items || [], [data]);
+  const products = useMemo(() => (data?.data?.items || []).map(normalizeProduct), [data]);
   const pagination = useMemo(() => data?.data?.pagination || {
     current: 1,
     pages: 1,
@@ -42,7 +47,7 @@ export const useProduct = (id: string) => {
     skip: !id,
   });
 
-  const product = useMemo(() => data?.data?.product || null, [data]);
+  const product = useMemo(() => normalizeProduct(data?.data?.product || null), [data]);
 
   return {
     product,
@@ -60,7 +65,7 @@ export const useFeaturedProducts = () => {
     refetch,
   } = useGetFeaturedProductsQuery();
 
-  const products = useMemo(() => data?.data?.items || [], [data]);
+  const products = useMemo(() => (data?.data?.items || []).map(normalizeProduct), [data]);
 
   return {
     products,
@@ -83,7 +88,7 @@ export const useProductSearch = (query: string, filters: ProductFilters = {}) =>
     }
   );
 
-  const products = useMemo(() => data?.data?.items || [], [data]);
+  const products = useMemo(() => (data?.data?.items || []).map(normalizeProduct), [data]);
   const pagination = useMemo(() => data?.data?.pagination || {
     current: 1,
     pages: 1,

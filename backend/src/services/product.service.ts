@@ -1,9 +1,9 @@
 import { FilterQuery, SortOrder } from 'mongoose';
-import Product from '@/models/Product';
-import { IProduct, ProductFilters, PaginatedResponse, ApiResponse } from '@/types';
-import { CreateProductInput, UpdateProductInput, AddReviewInput } from '@/validations/product.validation';
-import { generateSlug } from '@/utils/helpers';
-import { AppError } from '@/utils/AppError';
+import Product from '../models/Product';
+import { IProduct, ProductFilters, PaginatedResponse, ApiResponse } from '../types';
+import { CreateProductInput, UpdateProductInput, AddReviewInput } from '../validations/product.validation';
+import { generateSlug } from '../utils/helpers';
+import { AppError } from '../utils/AppError';
 
 export class ProductService {
   /**

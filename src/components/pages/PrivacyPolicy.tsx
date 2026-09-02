@@ -69,7 +69,7 @@ const PrivacyPolicy: React.FC = () => {
             Your privacy is important to us. This policy explains how we collect, use, and protect your personal information.
           </p>
           <div className="text-sm text-gray-500">
-            Last updated: January 1, 2024
+            Last updated: September 1, 2026
           </div>
         </div>
       </section>

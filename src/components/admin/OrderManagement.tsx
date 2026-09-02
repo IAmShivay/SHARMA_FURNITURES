@@ -238,7 +238,7 @@ const OrderManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        ${order.totals.total.toFixed(2)}
+                        ₹{order.totals.total.toFixed(2)}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -333,20 +333,20 @@ const OrderManagement: React.FC = () => {
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span>Subtotal</span>
-                          <span>${selectedOrder.totals.subtotal.toFixed(2)}</span>
+                          <span>₹{selectedOrder.totals.subtotal.toFixed(2)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Shipping</span>
-                          <span>{selectedOrder.totals.shipping === 0 ? 'FREE' : `$${selectedOrder.totals.shipping.toFixed(2)}`}</span>
+                          <span>{selectedOrder.totals.shipping === 0 ? 'FREE' : `₹${selectedOrder.totals.shipping.toFixed(2)}`}</span>
                         </div>
                         <div className="flex justify-between">
                           <span>Tax</span>
-                          <span>${selectedOrder.totals.tax.toFixed(2)}</span>
+                          <span>₹{selectedOrder.totals.tax.toFixed(2)}</span>
                         </div>
                         <div className="border-t pt-2">
                           <div className="flex justify-between font-semibold">
                             <span>Total</span>
-                            <span>${selectedOrder.totals.total.toFixed(2)}</span>
+                            <span>₹{selectedOrder.totals.total.toFixed(2)}</span>
                           </div>
                         </div>
                       </div>
@@ -368,7 +368,7 @@ const OrderManagement: React.FC = () => {
                             <h4 className="font-medium text-gray-900">{item.name}</h4>
                             <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                             <p className="text-sm font-semibold text-gray-900">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              ₹{(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>

@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { 
-  selectHasPermission, 
-  selectUser, 
-  selectIsTokenExpiring,
-  selectIsAuthenticated
+import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
+import {
+  selectUser,
+  selectIsAuthenticated,
+  selectIsSupportOrAbove,
+  selectIsManagerOrAdmin,
+  selectIsAdmin,
 } from '../../store/slices/authSlice';
 import {
   LayoutDashboard,
   Users,
   ShoppingBag,
   Package,
-  BarChart3,
   Settings,
   LogOut,
   Menu,
@@ -20,344 +19,225 @@ import {
   ChevronDown,
   User,
   Bell,
-  FileText
+  FileText,
+  Home,
+  Store,
+  Calendar,
 } from 'lucide-react';
-import { useLogoutMutation } from '../../store/api/authApi';
+import { useAuth } from '../../hooks/useAuth';
+import { useAppSelector } from '../../store/hooks';
 
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  
-  const user = useSelector(selectUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const isTokenExpiring = useSelector(selectIsTokenExpiring);
-  const hasAdminAccess = useSelector((state) => selectHasPermission(state, 'admin:access'));
-  const [logout] = useLogoutMutation();
 
-  // Check if user is authenticated and has admin access
+  const user = useAppSelector(selectUser);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isSupportOrAbove = useAppSelector(selectIsSupportOrAbove);
+  const isManagerOrAdmin = useAppSelector(selectIsManagerOrAdmin);
+  const isAdminOnly = useAppSelector(selectIsAdmin);
+  const { logout } = useAuth();
+
   React.useEffect(() => {
-    if (!isAuthenticated || !hasAdminAccess) {
+    if (!isAuthenticated || !isSupportOrAbove) {
       navigate('/login', { state: { from: '/admin' } });
     }
-  }, [isAuthenticated, hasAdminAccess, navigate]);
+  }, [isAuthenticated, isSupportOrAbove, navigate]);
 
-  // Handle token expiration
-  React.useEffect(() => {
-    if (isTokenExpiring) {
-      // Show a notification or handle token refresh
-      console.log('Token is expiring soon');
-    }
-  }, [isTokenExpiring]);
-
-  // Handle logout
   const handleLogout = async () => {
-    try {
-      await logout().unwrap();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    await logout();
+    navigate('/login');
   };
 
-  // Navigation items with permission checks
   const navItems = [
-    {
-      name: 'Dashboard',
-      path: '/admin',
-      icon: <LayoutDashboard size={20} />,
-      permission: 'admin:dashboard'
-    },
-    {
-      name: 'Users',
-      path: '/admin/users',
-      icon: <Users size={20} />,
-      permission: 'users:read_all'
-    },
-    {
-      name: 'Orders',
-      path: '/admin/orders',
-      icon: <ShoppingBag size={20} />,
-      permission: 'orders:read_all'
-    },
-    {
-      name: 'Products',
-      path: '/admin/products',
-      icon: <Package size={20} />,
-      permission: 'products:read_all'
-    },
-    {
-      name: 'Blog',
-      path: '/admin/blog',
-      icon: <FileText size={20} />,
-      permission: 'admin:dashboard'
-    },
-    {
-      name: 'Analytics',
-      path: '/admin/analytics',
-      icon: <BarChart3 size={20} />,
-      permission: 'admin:analytics'
-    },
-    {
-      name: 'Settings',
-      path: '/admin/settings',
-      icon: <Settings size={20} />,
-      permission: 'admin:settings'
-    }
+    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, visible: isSupportOrAbove },
+    { name: 'Products', path: '/admin/products', icon: Package, visible: isManagerOrAdmin },
+    { name: 'Orders', path: '/admin/orders', icon: ShoppingBag, visible: isSupportOrAbove },
+    { name: 'Consultations', path: '/admin/consultations', icon: Calendar, visible: isSupportOrAbove },
+    { name: 'Users', path: '/admin/users', icon: Users, visible: isAdminOnly },
+    { name: 'Blog', path: '/admin/blog', icon: FileText, visible: isSupportOrAbove },
   ];
 
-  if (!isAuthenticated || !hasAdminAccess) {
-    return null;
-  }
+  const visibleNavItems = navItems.filter((item) => item.visible);
+
+  if (!isAuthenticated || !isSupportOrAbove) return null;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Mobile sidebar */}
-      <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
-        {/* Overlay */}
-        <div 
-          className="fixed inset-0 bg-gray-600 bg-opacity-75" 
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-        
-        {/* Sidebar */}
-        <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white">
-          <div className="absolute top-0 right-0 -mr-12 pt-2">
-            <button
-              className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <span className="sr-only">Close sidebar</span>
-              <X className="h-6 w-6 text-white" aria-hidden="true" />
-            </button>
-          </div>
-          
-          <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
-            <div className="flex-shrink-0 flex items-center px-4">
-              <h1 className="text-xl font-bold text-gray-900">Furniture Admin</h1>
-            </div>
-            <nav className="mt-5 px-2 space-y-1">
-              {navItems.map((item) => {
-                const hasPermission = useSelector((state) => selectHasPermission(state, item.permission));
-                if (!hasPermission) return null;
-                
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                        isActive
-                          ? 'bg-gray-100 text-gray-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`
-                    }
-                    end={item.path === '/admin'}
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <div className="mr-4 flex-shrink-0 text-gray-500">{item.icon}</div>
-                    {item.name}
-                  </NavLink>
-                );
-              })}
-            </nav>
-          </div>
-          
-          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-            <button
-              onClick={handleLogout}
-              className="flex-shrink-0 group block w-full flex items-center"
-            >
-              <div className="flex items-center">
-                <div>
-                  {user?.avatar ? (
-                    <img
-                      className="inline-block h-10 w-10 rounded-full"
-                      src={user.avatar}
-                      alt={user.name}
-                    />
-                  ) : (
-                    <div className="inline-block h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User size={20} className="text-gray-500" />
-                    </div>
-                  )}
+    <div className="min-h-screen bg-gray-50">
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed inset-y-0 left-0 flex flex-col w-72 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 shadow-2xl">
+            <div className="flex items-center justify-between px-6 pt-6 pb-4">
+              <Link to="/" className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                  <Home className="w-5 h-5 text-white" />
                 </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                    {user?.name}
-                  </p>
-                  <div className="flex items-center text-sm font-medium text-red-500 group-hover:text-red-700">
-                    <LogOut size={16} className="mr-1" />
-                    Logout
-                  </div>
+                <span className="text-xl font-bold text-white">LuxeHome</span>
+              </Link>
+              <button onClick={() => setSidebarOpen(false)} className="p-1 text-gray-400 hover:text-white rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-3 mt-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 px-6">Admin Panel</div>
+            <nav className="flex-1 px-3 mt-4 space-y-1 overflow-y-auto">
+              {visibleNavItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  end={item.path === '/admin'}
+                  onClick={() => setSidebarOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400 border border-amber-500/20'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`
+                  }
+                >
+                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                  {item.name}
+                </NavLink>
+              ))}
+            </nav>
+            <div className="p-4 border-t border-white/10">
+              <div className="flex items-center gap-3 px-2">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                  {user?.name?.charAt(0) || 'A'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
+                  <p className="text-[10px] text-amber-400 uppercase font-bold tracking-wider">{user?.role}</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+        <div className="flex flex-col flex-1 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
+          <div className="flex items-center gap-3 px-6 pt-7 pb-6">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
+                <Home className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold text-white">LuxeHome</h1>
+                <p className="text-[10px] text-amber-400 uppercase font-bold tracking-widest">Admin Panel</p>
+              </div>
+            </Link>
+          </div>
+
+          <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
+            {visibleNavItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/admin'}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
+                    isActive
+                      ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/10 text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/5'
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                {item.name}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="px-3 pb-3 mt-auto space-y-1">
+            <Link to="/" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all">
+              <Store className="w-5 h-5" />
+              Back to Store
+            </Link>
+            <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all">
+              <LogOut className="w-5 h-5" />
+              Sign Out
             </button>
+          </div>
+
+          <div className="p-4 mx-3 mb-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold shadow-lg shadow-amber-500/20">
+                {user?.name?.charAt(0) || 'A'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
+                <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/20">
+                {user?.role}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Static sidebar for desktop */}
-      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
-        <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
-          <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-            <div className="flex items-center flex-shrink-0 px-4">
-              <h1 className="text-xl font-bold text-gray-900">Furniture Admin</h1>
+      {/* Main content area */}
+      <div className="lg:pl-64 flex flex-col min-h-screen">
+        {/* Top bar */}
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+          <div className="flex items-center justify-between h-16 px-4 sm:px-6">
+            <div className="flex items-center gap-4">
+              <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors">
+                <Menu className="w-5 h-5" />
+              </button>
             </div>
-            <nav className="mt-5 flex-1 px-2 bg-white space-y-1">
-              {navItems.map((item) => {
-                const hasPermission = useSelector((state) => selectHasPermission(state, item.permission));
-                if (!hasPermission) return null;
-                
-                return (
-                  <NavLink
-                    key={item.path}
-                    to={item.path}
-                    className={({ isActive }) =>
-                      `group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                        isActive
-                          ? 'bg-gray-100 text-gray-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`
-                    }
-                    end={item.path === '/admin'}
-                  >
-                    <div className="mr-3 flex-shrink-0 text-gray-500">{item.icon}</div>
-                    {item.name}
-                  </NavLink>
-                );
-              })}
-            </nav>
-          </div>
-          
-          <div className="flex-shrink-0 flex border-t border-gray-200 p-4">
-            <button
-              onClick={handleLogout}
-              className="flex-shrink-0 w-full group block"
-            >
-              <div className="flex items-center">
-                <div>
-                  {user?.avatar ? (
-                    <img
-                      className="inline-block h-9 w-9 rounded-full"
-                      src={user.avatar}
-                      alt={user.name}
-                    />
-                  ) : (
-                    <div className="inline-block h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User size={18} className="text-gray-500" />
-                    </div>
-                  )}
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                    {user?.name}
-                  </p>
-                  <div className="flex items-center text-xs font-medium text-red-500 group-hover:text-red-700">
-                    <LogOut size={14} className="mr-1" />
-                    Logout
-                  </div>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main content */}
-      <div className="lg:pl-64 flex flex-col">
-        {/* Top header */}
-        <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
-          <button
-            type="button"
-            className="px-4 border-r border-gray-200 text-gray-500 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <Menu className="h-6 w-6" aria-hidden="true" />
-          </button>
-          
-          <div className="flex-1 px-4 flex justify-between">
-            <div className="flex-1 flex items-center">
-              <h1 className="text-lg font-semibold text-gray-900 lg:hidden">Furniture Admin</h1>
-            </div>
-            
-            <div className="ml-4 flex items-center md:ml-6">
-              {/* Notification bell */}
-              <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <span className="sr-only">View notifications</span>
-                <Bell className="h-6 w-6" aria-hidden="true" />
+            <div className="flex items-center gap-3">
+              <button className="relative p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full" />
               </button>
 
-              {/* Profile dropdown */}
-              <div className="ml-3 relative">
-                <div>
-                  <button
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                    className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    <span className="sr-only">Open user menu</span>
-                    {user?.avatar ? (
-                      <img
-                        className="h-8 w-8 rounded-full"
-                        src={user.avatar}
-                        alt={user.name}
-                      />
-                    ) : (
-                      <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User size={16} className="text-gray-500" />
-                      </div>
-                    )}
-                    <span className="hidden md:flex md:items-center ml-2">
-                      <span className="text-sm font-medium text-gray-700 mr-1">{user?.name}</span>
-                      <ChevronDown size={16} className="text-gray-400" />
-                    </span>
-                  </button>
-                </div>
-                
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-bold text-sm">
+                    {user?.name?.charAt(0) || 'A'}
+                  </div>
+                  <span className="hidden sm:block text-sm font-medium text-gray-700">{user?.name}</span>
+                  <ChevronDown className="w-4 h-4 text-gray-400 hidden sm:block" />
+                </button>
+
                 {userMenuOpen && (
-                  <div
-                    className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="user-menu"
-                  >
-                    <button
-                      onClick={() => {
-                        navigate('/account');
-                        setUserMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                    >
-                      Your Profile
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                      <p className="text-xs text-gray-400">{user?.email}</p>
+                    </div>
+                    <button onClick={() => { navigate('/account'); setUserMenuOpen(false); }}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <User className="w-4 h-4 text-gray-400" /> Your Profile
                     </button>
-                    <button
-                      onClick={() => {
-                        navigate('/admin/settings');
-                        setUserMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                    >
-                      Settings
+                    <button onClick={() => { navigate('/'); setUserMenuOpen(false); }}
+                      className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Store className="w-4 h-4 text-gray-400" /> Back to Store
                     </button>
-                    <button
-                      onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                    >
-                      Logout
-                    </button>
+                    <div className="border-t border-gray-100 mt-1 pt-1">
+                      <button onClick={handleLogout}
+                        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        <LogOut className="w-4 h-4" /> Sign Out
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Main content area */}
-        <main className="flex-1">
+        <main className="flex-1 bg-gray-50">
           <Outlet />
         </main>
       </div>

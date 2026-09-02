@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
             <h3 className="text-2xl font-bold mb-4">
               <span className="text-amber-600">Luxe</span>Home
             </h3>
-            <p className="text-gray-300 mb-6 leading-relaxed" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <p className="text-gray-300 mb-6 leading-relaxed" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
               Transforming homes with premium furniture that combines timeless design, exceptional craftsmanship, and modern functionality.
             </p>
             <div className="flex space-x-4">
@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
 
           {/* Shop Categories */}
           <div>
-            <h4 className="text-lg font-semibold mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h4 className="text-lg font-semibold mb-6" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
               Shop Categories
             </h4>
             <ul className="space-y-3">
@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
 
           {/* Customer Service */}
           <div>
-            <h4 className="text-lg font-semibold mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h4 className="text-lg font-semibold mb-6" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
               Customer Service
             </h4>
             <ul className="space-y-3">
@@ -64,13 +64,13 @@ const Footer: React.FC = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <h4 className="text-lg font-semibold mb-6" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
               Get in Touch
             </h4>
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                <span className="text-gray-300">(555) 123-4567</span>
+                <span className="text-gray-300">9547587246</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-amber-600 flex-shrink-0" />

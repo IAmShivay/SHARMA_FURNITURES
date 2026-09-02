@@ -27,7 +27,7 @@ const Contact: React.FC = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: ['+1 (555) 123-4567', '+1 (555) 987-6543'],
+      details: ['+91 9547587246', '+91 9547587246'],
       description: 'Mon-Fri 9AM-6PM EST'
     },
     {
@@ -54,19 +54,19 @@ const Contact: React.FC = () => {
     {
       city: 'New York',
       address: '123 Design District, NY 10001',
-      phone: '+1 (555) 123-4567',
+      phone: '+91 9547587246',
       image: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
       city: 'Los Angeles',
       address: '456 Furniture Ave, LA 90210',
-      phone: '+1 (555) 987-6543',
+      phone: '+91 9547587246',
       image: 'https://images.pexels.com/photos/1571463/pexels-photo-1571463.jpeg?auto=compress&cs=tinysrgb&w=400'
     },
     {
       city: 'Chicago',
       address: '789 Home Street, Chicago 60601',
-      phone: '+1 (555) 456-7890',
+      phone: '+91 9547587246',
       image: 'https://images.pexels.com/photos/1571468/pexels-photo-1571468.jpeg?auto=compress&cs=tinysrgb&w=400'
     }
   ];
