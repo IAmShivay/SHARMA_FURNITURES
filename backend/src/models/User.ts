@@ -28,10 +28,10 @@ const UserPreferencesSchema = new Schema<IUserPreferences>({
 });
 
 const CartItemSchema = new Schema<ICartItem>({
-  product: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'Product', 
-    required: true 
+  product: {
+    type: Schema.Types.ObjectId as any,
+    ref: 'Product',
+    required: true
   },
   quantity: { 
     type: Number, 
@@ -146,12 +146,12 @@ UserSchema.methods.addToWishlist = async function(productId: string): Promise<IU
     this.wishlist.push(productId);
     await this.save();
   }
-  return this;
+  return this as unknown as IUser;
 };
 
 // Instance method to remove from wishlist
 UserSchema.methods.removeFromWishlist = async function(productId: string): Promise<IUser> {
-  this.wishlist = this.wishlist.filter(id => id.toString() !== productId);
+  this.wishlist = this.wishlist.filter((id: any) => id.toString() !== productId);
   return await this.save();
 };
 
@@ -162,7 +162,7 @@ UserSchema.methods.addToCart = async function(
   customization?: any
 ): Promise<IUser> {
   // Check if item already exists in cart with same customization
-  const existingItemIndex = this.cart.findIndex(item => 
+  const existingItemIndex = this.cart.findIndex((item: any) =>
     item.product.toString() === productId &&
     JSON.stringify(item.customization) === JSON.stringify(customization)
   );
@@ -185,7 +185,7 @@ UserSchema.methods.addToCart = async function(
 
 // Instance method to remove from cart
 UserSchema.methods.removeFromCart = async function(itemId: string): Promise<IUser> {
-  this.cart = this.cart.filter(item => item._id?.toString() !== itemId);
+  this.cart = this.cart.filter((item: any) => item._id?.toString() !== itemId);
   return await this.save();
 };
 
@@ -194,7 +194,7 @@ UserSchema.methods.updateCartQuantity = async function(
   itemId: string, 
   quantity: number
 ): Promise<IUser> {
-  const item = this.cart.find(item => item._id?.toString() === itemId);
+  const item = this.cart.find((item: any) => item._id?.toString() === itemId);
   if (item) {
     if (quantity <= 0) {
       return this.removeFromCart(itemId);
@@ -203,7 +203,7 @@ UserSchema.methods.updateCartQuantity = async function(
       await this.save();
     }
   }
-  return this;
+  return this as unknown as IUser;
 };
 
 // Instance method to clear cart
@@ -215,8 +215,8 @@ UserSchema.methods.clearCart = async function(): Promise<IUser> {
 // Instance method to get cart total
 UserSchema.methods.getCartTotal = async function(): Promise<number> {
   await this.populate('cart.product');
-  
-  return this.cart.reduce((total, item) => {
+
+  return this.cart.reduce((total: any, item: any) => {
     const product = item.product as any;
     if (product && product.basePrice) {
       return total + (product.basePrice * item.quantity);
@@ -227,7 +227,7 @@ UserSchema.methods.getCartTotal = async function(): Promise<number> {
 
 // Remove password from JSON output
 UserSchema.methods.toJSON = function() {
-  const userObject = this.toObject();
+  const userObject = this.toObject() as any;
   userObject.id = userObject._id.toString();
   delete userObject.password;
   delete userObject.resetPasswordToken;

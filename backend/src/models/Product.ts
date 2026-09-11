@@ -88,7 +88,7 @@ const RatingSchema = new Schema<IRating>({
 });
 
 const ReviewSchema = new Schema<IReview>({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  user: { type: Schema.Types.ObjectId as any, ref: 'User', required: true },
   rating: { type: Number, required: true, min: 1, max: 5 },
   title: { type: String, required: true, maxlength: 100 },
   comment: { type: String, required: true, maxlength: 1000 },
@@ -221,13 +221,13 @@ const ProductSchema = new Schema<IProduct>({
   saleEndDate: Date,
   viewCount: { type: Number, default: 0 },
   salesCount: { type: Number, default: 0 },
-  createdBy: { 
-    type: Schema.Types.ObjectId, 
-    ref: 'User', 
+  createdBy: {
+    type: Schema.Types.ObjectId as any,
+    ref: 'User',
     required: true,
   },
-  updatedBy: { 
-    type: Schema.Types.ObjectId, 
+  updatedBy: {
+    type: Schema.Types.ObjectId as any,
     ref: 'User',
   },
 }, {
@@ -247,21 +247,21 @@ ProductSchema.index({ viewCount: -1 });
 ProductSchema.index({ createdAt: -1 });
 
 // Virtuals
-ProductSchema.virtual('availableQuantity').get(function() {
+ProductSchema.virtual('availableQuantity').get(function(this: IProduct) {
   if (!this.inventory) return 0;
   return Math.max(0, (this.inventory.quantity || 0) - (this.inventory.reserved || 0));
 });
 
-ProductSchema.virtual('discountPercentage').get(function() {
+ProductSchema.virtual('discountPercentage').get(function(this: IProduct) {
   if (!this.originalPrice || this.originalPrice <= this.basePrice) return 0;
   return Math.round(((this.originalPrice - this.basePrice) / this.originalPrice) * 100);
 });
 
-ProductSchema.virtual('inStock').get(function() {
+ProductSchema.virtual('inStock').get(function(this: IProduct) {
   return this.availableQuantity > 0;
 });
 
-ProductSchema.virtual('lowStock').get(function() {
+ProductSchema.virtual('lowStock').get(function(this: IProduct) {
   if (!this.inventory) return false;
   return this.availableQuantity > 0 && this.availableQuantity <= (this.inventory.lowStockThreshold || 0);
 });
@@ -341,7 +341,7 @@ ProductSchema.methods.fulfillOrder = async function(quantity: number) {
 };
 
 // Pre-save middleware
-ProductSchema.pre('save', function(next) {
+ProductSchema.pre('save', function(this: IProduct, next) {
   // Auto-generate slug if not provided
   if (!this.slug && this.name) {
     this.slug = this.name

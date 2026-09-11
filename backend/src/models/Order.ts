@@ -25,7 +25,7 @@ const OrderSchema = new Schema<IOrder>(
       unique: true,
     },
     user: {
-      type: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId as any,
       ref: 'User',
       required: true,
     },
@@ -105,7 +105,7 @@ const OrderSchema = new Schema<IOrder>(
 );
 
 // Auto-generate order number
-OrderSchema.pre('save', async function (next) {
+OrderSchema.pre('save', async function (this: IOrder, next) {
   if (!this.orderNumber) {
     const count = await mongoose.model('Order').countDocuments();
     this.orderNumber = `ORD-${String(count + 1).padStart(6, '0')}`;
@@ -115,7 +115,7 @@ OrderSchema.pre('save', async function (next) {
 
 // Add id virtual
 OrderSchema.methods.toJSON = function () {
-  const obj = this.toObject();
+  const obj = this.toObject() as any;
   obj.id = obj._id.toString();
   return obj;
 };
