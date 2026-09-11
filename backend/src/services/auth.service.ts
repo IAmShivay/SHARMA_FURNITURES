@@ -12,7 +12,7 @@ export class AuthService {
   private generateToken(userId: string): string {
     const secret = process.env.JWT_SECRET || 'fallback-secret-key';
     return jwt.sign({ id: userId }, secret, {
-      expiresIn: process.env.JWT_EXPIRE || '30d',
+      expiresIn: (process.env.JWT_EXPIRE || '30d') as jwt.SignOptions['expiresIn'],
     });
   }
 

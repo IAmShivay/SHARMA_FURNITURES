@@ -9,7 +9,7 @@ export class ProductService {
   /**
    * Get all products with filters and pagination
    */
-  async getProducts(filters: ProductFilters): Promise<PaginatedResponse<IProduct[]>> {
+  async getProducts(filters: ProductFilters): Promise<PaginatedResponse<IProduct>> {
     const {
       page = 1,
       limit = 20,
@@ -150,7 +150,7 @@ export class ProductService {
   /**
    * Search products
    */
-  async searchProducts(query: string, page: number = 1, limit: number = 20): Promise<PaginatedResponse<IProduct[]>> {
+  async searchProducts(query: string, page: number = 1, limit: number = 20): Promise<PaginatedResponse<IProduct>> {
     const products = await Product.find({
       status: 'active',
       $text: { $search: query }
@@ -225,7 +225,7 @@ export class ProductService {
       if (existingProduct) {
         throw new AppError('Product with this name already exists', 400);
       }
-      productData.slug = slug;
+      (productData as any).slug = slug;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(

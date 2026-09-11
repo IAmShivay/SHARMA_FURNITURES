@@ -231,7 +231,7 @@ app.post('/api/auth/login', async (req, res) => {
 // Get current user profile
 app.get('/api/auth/profile', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
+    const user = await User.findById(req.user!._id).select('-password');
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
