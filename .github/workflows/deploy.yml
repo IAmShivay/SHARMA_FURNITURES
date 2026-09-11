@@ -42,10 +42,10 @@ jobs:
             --path /furniture \
             --format dotenv > .env.deploy
 
-      - name: Build frontend
+      - name: Install and build frontend
         run: |
-          set -a && source .env.deploy && set +a
           npm ci
+          set -a && source .env.deploy && set +a
           npm run build
 
       - name: Build backend
