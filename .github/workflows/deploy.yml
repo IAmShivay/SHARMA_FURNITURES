@@ -1,0 +1,140 @@
+name: Deploy to Oracle Cloud VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  VPS_HOST: ${{ secrets.VPS_HOST }}
+  VPS_USER: ubuntu
+  APP_DIR: /home/ubuntu/furniture
+  NODE_VERSION: "20"
+  INFISICAL_PROJECT_ID: ${{ secrets.INFISICAL_PROJECT_ID }}
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Fetch build secrets from Infisical
+        uses: Infisical/secrets-action@v1.0.7
+        with:
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+          project-slug: formiqstudio-project-jk-zk
+          env-slug: prod
+          secret-path: /furniture
+
+      - run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - working-directory: ./backend
+        run: npm ci
+
+      - name: Build backend
+        working-directory: ./backend
+        run: npm run build
+
+      - name: Upload frontend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+
+      - name: Upload backend build
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-dist
+          path: |
+            backend/dist/
+            backend/package.json
+            backend/package-lock.json
+
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend-dist/
+
+      - name: Download backend build
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-dist
+          path: backend-dist/
+
+      - name: Fetch runtime secrets from Infisical
+        uses: Infisical/secrets-action@v1.0.7
+        with:
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+          project-slug: formiqstudio-project-jk-zk
+          env-slug: prod
+          secret-path: /furniture
+          export-type: file
+          file-output-path: .env.furniture
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ env.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy frontend
+        run: |
+          rsync -avz --delete \
+            frontend-dist/ \
+            ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/frontend/
+
+      - name: Deploy backend
+        run: |
+          rsync -avz --delete \
+            backend-dist/backend/dist/ \
+            ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/backend/dist/
+
+          rsync -avz \
+            backend-dist/backend/package.json \
+            backend-dist/backend/package-lock.json \
+            ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/backend/
+
+      - name: Deploy .env and restart
+        run: |
+          scp .env.furniture ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/backend/.env
+
+          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} << 'EOF'
+            cd /home/ubuntu/furniture/backend
+            npm ci --omit=dev
+
+            if pm2 describe furniture-api > /dev/null 2>&1; then
+              pm2 restart furniture-api
+            else
+              NODE_OPTIONS="--max-old-space-size=256" pm2 start dist/server.js \
+                --name furniture-api \
+                --max-memory-restart 200M \
+                -r dotenv/config
+            fi
+
+            pm2 save
+          EOF
+
+      - name: Verify
+        run: |
+          sleep 5
+          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "pm2 status"
