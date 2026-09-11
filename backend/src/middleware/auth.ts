@@ -96,7 +96,7 @@ const PERMISSIONS = {
 
 // Permission checking middleware
 export const hasPermission = (permission: string) => {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       throw new AppError('Authentication required.', 401);
     }
