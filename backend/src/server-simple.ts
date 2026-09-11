@@ -196,7 +196,7 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Check password
-    const isPasswordValid = await user.comparePassword(password);
+    const isPasswordValid = await (user as any).comparePassword(password);
     if (!isPasswordValid) {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }

@@ -597,7 +597,7 @@ async function seed() {
     const [admin, customer, support, manager] = createdUsers;
 
     // Create products
-    const productData = buildProducts(admin._id);
+    const productData = buildProducts(admin._id as unknown as mongoose.Types.ObjectId);
     const products = await Product.insertMany(productData);
     console.log(`\nInserted ${products.length} products`);
 
@@ -745,7 +745,7 @@ async function seed() {
     console.log(`  Created order: ${order3.orderNumber} (confirmed/new)`);
 
     // Create blog posts
-    const blogData = buildBlogPosts(admin._id);
+    const blogData = buildBlogPosts(admin._id as unknown as mongoose.Types.ObjectId);
     const blogs = [];
     for (const post of blogData) {
       blogs.push(await BlogPost.create(post));
