@@ -49,6 +49,7 @@ import BlogListing from './components/pages/BlogListing';
 import BlogPostPage from './components/pages/BlogPostPage';
 import BlogManagement from './components/pages/admin/BlogManagement';
 import AdminConsultations from './components/pages/admin/Consultations';
+import GalleryManagement from './components/pages/admin/GalleryManagement';
 import Consultation from './components/pages/Consultation';
 import Services from './components/pages/Services';
 import RefundPolicy from './components/pages/RefundPolicy';
@@ -151,6 +152,7 @@ const AppLayout: React.FC = () => {
             <Route path="orders" element={<Orders />} />
             <Route path="consultations" element={<AdminConsultations />} />
             <Route path="blog" element={<BlogManagement />} />
+            <Route path="gallery" element={<GalleryManagement />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

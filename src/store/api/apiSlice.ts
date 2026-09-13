@@ -54,14 +54,15 @@ export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: [
     'User',
-    'Product', 
-    'Order', 
-    'Cart', 
+    'Product',
+    'Order',
+    'Cart',
     'Wishlist',
     'Review',
     'Category',
     'Admin',
-    'BlogPost'
+    'BlogPost',
+    'Gallery'
   ],
   endpoints: (builder) => ({
     // Health check endpoint

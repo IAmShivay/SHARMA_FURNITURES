@@ -57,6 +57,7 @@ const AdminLayout: React.FC = () => {
     { name: 'Consultations', path: '/admin/consultations', icon: Calendar, visible: isSupportOrAbove },
     { name: 'Users', path: '/admin/users', icon: Users, visible: isAdminOnly },
     { name: 'Blog', path: '/admin/blog', icon: FileText, visible: isSupportOrAbove },
+    { name: 'Gallery', path: '/admin/gallery', icon: Home, visible: isSupportOrAbove },
     { name: 'View Store', path: '/', icon: Store, visible: true },
     { name: 'My Account', path: '/account', icon: User, visible: true },
   ];
