@@ -14,6 +14,8 @@ import NewsletterSection from './components/sections/NewsletterSection';
 import Footer from './components/layout/Footer';
 import ShoppingCart from './components/ui/ShoppingCart';
 import SEOHead from './components/common/SEOHead';
+import ErrorBoundary from './components/common/ErrorBoundary';
+import NotFound from './components/pages/NotFound';
 import ProtectedRoute, { AdminRoute, SupportRoute } from './components/auth/ProtectedRoute';
 
 // Page imports
@@ -150,6 +152,8 @@ const AppLayout: React.FC = () => {
             <Route path="consultations" element={<AdminConsultations />} />
             <Route path="blog" element={<BlogManagement />} />
           </Route>
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
@@ -173,7 +177,9 @@ const AppContent: React.FC = () => {
   return (
     <HelmetProvider>
       <Router>
-        <AppLayout />
+        <ErrorBoundary>
+          <AppLayout />
+        </ErrorBoundary>
       </Router>
     </HelmetProvider>
   );
