@@ -230,7 +230,12 @@ const Gallery: React.FC = () => {
               </div>
             </>
           )}
-          <p className="text-center text-sm text-gray-400 mt-6">{filteredItems.length} items</p>
+          <p className="text-center text-sm text-gray-400 mt-6">
+            {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
+            {filteredItems.length < 5 && filteredItems.length > 0 && (
+              <span className="block mt-1 text-gray-300">More items coming soon</span>
+            )}
+          </p>
         </div>
       </section>
 
