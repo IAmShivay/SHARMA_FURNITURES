@@ -54,18 +54,53 @@ const CollectionPage: React.FC = () => {
       description: 'Create your perfect sanctuary with our luxurious bedroom furniture'
     },
     'dining': {
-      api: 'tables',
+      api: 'dining',
       title: 'Dining Collection',
       description: 'Gather in style with our elegant dining room furniture'
     },
     'office': {
       api: 'office',
-      title: 'Office Collections',
+      title: 'Office Collection',
       description: 'Work in comfort with our professional office furniture'
-    }
+    },
+    'sofas': {
+      api: 'sofas',
+      title: 'Sofas Collection',
+      description: 'Transform your living space with our premium sofas designed for comfort and style'
+    },
+    'chairs': {
+      api: 'chairs',
+      title: 'Chairs Collection',
+      description: 'Ergonomic and elegant seating crafted for every room in your home'
+    },
+    'tables': {
+      api: 'tables',
+      title: 'Tables Collection',
+      description: 'Functional surfaces from coffee tables to dining sets, crafted with precision'
+    },
+    'storage': {
+      api: 'storage',
+      title: 'Storage Collection',
+      description: 'Smart and beautiful storage solutions to keep your home organized'
+    },
+    'lighting': {
+      api: 'lighting',
+      title: 'Lighting Collection',
+      description: 'Designer lighting fixtures to illuminate and elevate every room'
+    },
+    'decor': {
+      api: 'decor',
+      title: 'Decor Collection',
+      description: 'Curated decorative accessories to add personality and charm to your space'
+    },
   };
 
-  const currentCategory = categoryMap[category || 'living-room'];
+  const slug = category || 'living-room';
+  const currentCategory = categoryMap[slug] || {
+    api: slug,
+    title: `${slug.charAt(0).toUpperCase() + slug.slice(1)} Collection`,
+    description: `Explore our curated ${slug} collection`
+  };
 
   // Fetch products from API
   const { products: apiProducts, loading: apiLoading, error } = useProducts({
