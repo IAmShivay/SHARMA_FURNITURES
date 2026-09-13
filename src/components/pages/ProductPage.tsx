@@ -30,7 +30,7 @@ const ProductPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-amber-600 animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading product...</p>
@@ -41,7 +41,7 @@ const ProductPage: React.FC = () => {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
           <p className="text-gray-600 mb-6">The product you're looking for doesn't exist or has been removed.</p>
@@ -65,7 +65,7 @@ const ProductPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
         title={`${product.name} | LuxeHome`}
         description={product.description.slice(0, 160)}

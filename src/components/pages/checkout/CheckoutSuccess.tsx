@@ -22,7 +22,7 @@ const CheckoutSuccess: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36 flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
       </div>
     );
@@ -30,7 +30,7 @@ const CheckoutSuccess: React.FC = () => {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Order Not Found</h1>
           <Link to="/" className="text-amber-600 hover:text-amber-700">
@@ -53,7 +53,7 @@ const CheckoutSuccess: React.FC = () => {
   const shippingMethod = order.shipping?.method || 'standard';
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead title="Order Confirmed | LuxeHome" noIndex={true} />
       <div className="container mx-auto px-6 py-8">
         {/* Success Header */}

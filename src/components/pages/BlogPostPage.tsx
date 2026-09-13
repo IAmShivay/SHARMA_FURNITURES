@@ -21,7 +21,7 @@ const BlogPostPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28 flex justify-center items-center">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36 flex justify-center items-center">
         <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
       </div>
     );
@@ -29,7 +29,7 @@ const BlogPostPage: React.FC = () => {
 
   if (!post || error) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
         <div className="container mx-auto px-6 py-20 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Article Not Found</h1>
           <p className="text-gray-600 mb-8">The article you're looking for doesn't exist or has been removed.</p>
@@ -44,7 +44,7 @@ const BlogPostPage: React.FC = () => {
   const authorName = typeof post.author === 'object' ? post.author.name : '';
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
         title={`${post.title} | LuxeHome Blog`}
         description={post.excerpt}

@@ -65,7 +65,7 @@ const AboutUs: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
         title="About Us | LuxeHome"
         description="Discover LuxeHome's story, mission, and commitment to bringing premium furniture and exceptional design to your home."

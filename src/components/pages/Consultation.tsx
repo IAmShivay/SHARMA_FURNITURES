@@ -121,7 +121,7 @@ const Consultation: React.FC = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+      <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
         <div className="container mx-auto px-6 py-20">
           <div className="max-w-lg mx-auto text-center bg-white rounded-3xl shadow-lg p-10">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -143,7 +143,7 @@ const Consultation: React.FC = () => {
   const minDate = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead title="Book a Design Consultation | LuxeHome" description="Book a personalized design consultation with LuxeHome's expert interior designers." />
 
       {/* Hero */}

@@ -4,7 +4,7 @@ import SEOHead from '../../components/common/SEOHead';
 
 const RefundPolicy: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
         title="Refund Policy | LuxeHome"
         description="Read LuxeHome's refund policy. Learn about our 30-day refund guarantee, eligibility, process, and timelines for furniture purchases."

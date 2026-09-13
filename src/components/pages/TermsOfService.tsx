@@ -59,7 +59,7 @@ const TermsOfService: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 sm:pt-24 lg:pt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
         title="Terms of Service | LuxeHome"
         description="Review LuxeHome's terms of service for using our website and purchasing furniture."
