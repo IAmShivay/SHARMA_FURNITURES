@@ -148,7 +148,11 @@ const InvoiceManagement: React.FC = () => {
     if (!form.buyerEmail.trim()) e.buyerEmail = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.buyerEmail)) e.buyerEmail = 'Invalid email format';
     if (!form.buyerPhone.trim()) e.buyerPhone = 'Phone is required';
-    else if (!/^[\d+\-\s()]{10,15}$/.test(form.buyerPhone.replace(/\s/g, ''))) e.buyerPhone = 'Invalid phone number';
+    else {
+      let digits = form.buyerPhone.replace(/[^\d]/g, '');
+      if (digits.startsWith('91') && digits.length === 12) digits = digits.slice(2);
+      if (digits.length !== 10) e.buyerPhone = 'Phone must be exactly 10 digits';
+    }
     if (!form.buyerAddress.trim()) e.buyerAddress = 'Address is required';
     if (form.buyerGstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(form.buyerGstin)) e.buyerGstin = 'Invalid GSTIN format';
 
@@ -332,7 +336,7 @@ const InvoiceManagement: React.FC = () => {
                       <InputError error={errors.buyerEmail} />
                     </div>
                     <div>
-                      <input value={form.buyerPhone} onChange={e => { setForm(f => ({ ...f, buyerPhone: e.target.value })); clearFieldError('buyerPhone'); }} placeholder="Phone * (e.g. +91 98765 43210)" className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerPhone ? 'border-red-400' : ''}`} />
+                      <input value={form.buyerPhone} onChange={e => { const v = e.target.value.replace(/[^\d+\s-]/g, ''); setForm(f => ({ ...f, buyerPhone: v })); clearFieldError('buyerPhone'); }} onBlur={() => { if (form.buyerPhone.trim()) { let digits = form.buyerPhone.replace(/[^\d]/g, ''); if (digits.startsWith('91') && digits.length === 12) digits = digits.slice(2); if (digits.length !== 10) setErrors(prev => ({ ...prev, buyerPhone: 'Phone must be exactly 10 digits' })); } }} placeholder="Phone * (e.g. +91 98765 43210)" pattern="[0-9]{10}" maxLength={15} className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerPhone ? 'border-red-400' : ''}`} />
                       <InputError error={errors.buyerPhone} />
                     </div>
                     <div>
@@ -418,9 +422,9 @@ const InvoiceManagement: React.FC = () => {
                   <label className="text-sm font-medium mb-1 block">Notes (optional)</label>
                   <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} placeholder="Additional notes for the customer..." className="w-full px-3 py-2 border rounded-lg text-sm" />
                 </div>
-                <div>
+                <div className="col-span-2">
                   <label className="text-sm font-medium mb-1 block">Terms & Conditions</label>
-                  <textarea value={form.termsAndConditions} onChange={e => setForm(f => ({ ...f, termsAndConditions: e.target.value }))} rows={2} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                  <textarea value={form.termsAndConditions} onChange={e => setForm(f => ({ ...f, termsAndConditions: e.target.value }))} rows={5} className="w-full px-3 py-2 border rounded-lg text-sm" />
                 </div>
               </div>
 
@@ -461,7 +465,7 @@ const InvoiceManagement: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '3px solid #D97706', paddingBottom: '20px' }}>
                 <div>
                   <div style={{ marginBottom: '10px' }}>
-                    {previewInvoice.sellerLogo ? (
+                    {previewInvoice.sellerLogo && previewInvoice.sellerLogo.length > 0 ? (
                       <img src={previewInvoice.sellerLogo} alt="Company Logo" style={{ height: '50px', marginBottom: '5px' }} />
                     ) : (
                       <>
