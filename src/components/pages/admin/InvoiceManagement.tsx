@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Plus, Eye, Trash2, Search, X, Save, Printer, CheckCircle, Clock, AlertCircle, CreditCard, FileText } from 'lucide-react';
+import { Plus, Eye, Trash2, Search, X, Save, Printer, CheckCircle, FileText } from 'lucide-react';
 import {
   useGetInvoicesQuery,
   useCreateInvoiceMutation,
@@ -21,6 +21,12 @@ const SELLER_DEFAULTS = {
 
 const emptyItem = { name: '', description: '', hsnCode: '', quantity: 1, unitPrice: 0, discount: 0, taxRate: 18, taxAmount: 0, total: 0 };
 
+const DEFAULT_TERMS = `1. Payment is due within 15 days of invoice date.
+2. Late payments may incur 2% monthly interest.
+3. Goods once sold will not be taken back.
+4. Subject to Durgapur jurisdiction.
+5. E&OE (Errors and Omissions Excepted).`;
+
 const emptyForm = {
   ...SELLER_DEFAULTS,
   type: 'standard' as const,
@@ -28,24 +34,18 @@ const emptyForm = {
   items: [{ ...emptyItem }],
   shipping: 0,
   notes: '',
-  termsAndConditions: 'Payment is due within 15 days. Late payments may incur additional charges.',
+  termsAndConditions: DEFAULT_TERMS,
   placeOfSupply: 'West Bengal',
   dueDate: '',
 };
 
 const statusColors: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  sent: 'bg-blue-100 text-blue-700',
-  paid: 'bg-green-100 text-green-700',
-  overdue: 'bg-red-100 text-red-700',
-  cancelled: 'bg-gray-100 text-gray-500',
+  draft: 'bg-gray-100 text-gray-700', sent: 'bg-blue-100 text-blue-700',
+  paid: 'bg-green-100 text-green-700', overdue: 'bg-red-100 text-red-700', cancelled: 'bg-gray-100 text-gray-500',
 };
-
 const paymentColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-700',
-  paid: 'bg-green-100 text-green-700',
-  partial: 'bg-orange-100 text-orange-700',
-  refunded: 'bg-red-100 text-red-700',
+  pending: 'bg-yellow-100 text-yellow-700', paid: 'bg-green-100 text-green-700',
+  partial: 'bg-orange-100 text-orange-700', refunded: 'bg-red-100 text-red-700',
 };
 
 const InvoiceManagement: React.FC = () => {
@@ -54,6 +54,7 @@ const InvoiceManagement: React.FC = () => {
   const [form, setForm] = useState(emptyForm);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const printRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading } = useGetInvoicesQuery({ search, status: statusFilter || undefined });
@@ -71,6 +72,38 @@ const InvoiceManagement: React.FC = () => {
       items[idx] = { ...items[idx], [field]: value };
       return { ...f, items };
     });
+    if (errors[`item_${idx}_${field}`]) {
+      setErrors(e => { const n = { ...e }; delete n[`item_${idx}_${field}`]; return n; });
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!form.buyerName.trim()) e.buyerName = 'Customer name is required';
+    if (!form.buyerEmail.trim()) e.buyerEmail = 'Email is required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.buyerEmail)) e.buyerEmail = 'Invalid email format';
+    if (!form.buyerPhone.trim()) e.buyerPhone = 'Phone is required';
+    else if (!/^[\d+\-\s()]{10,15}$/.test(form.buyerPhone.replace(/\s/g, ''))) e.buyerPhone = 'Invalid phone number';
+    if (!form.buyerAddress.trim()) e.buyerAddress = 'Address is required';
+    if (form.buyerGstin && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(form.buyerGstin)) e.buyerGstin = 'Invalid GSTIN format';
+
+    form.items.forEach((item, idx) => {
+      if (!item.name.trim()) e[`item_${idx}_name`] = 'Item name required';
+      if (item.quantity < 1) e[`item_${idx}_quantity`] = 'Min 1';
+      if (item.unitPrice <= 0) e[`item_${idx}_unitPrice`] = 'Price must be > 0';
+      if (item.discount < 0 || item.discount > 100) e[`item_${idx}_discount`] = '0-100%';
+      if (item.taxRate < 0 || item.taxRate > 28) e[`item_${idx}_taxRate`] = '0-28%';
+    });
+
+    if (form.items.length === 0) e.items = 'At least one item required';
+    if (form.shipping < 0) e.shipping = 'Cannot be negative';
+
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const clearFieldError = (field: string) => {
+    if (errors[field]) setErrors(e => { const n = { ...e }; delete n[field]; return n; });
   };
 
   const calcTotals = () => {
@@ -83,15 +116,16 @@ const InvoiceManagement: React.FC = () => {
       subtotal += itemSub;
       taxTotal += tax;
     });
-    const grandTotal = Math.round(subtotal + taxTotal + (form.shipping || 0));
-    return { subtotal, taxTotal, grandTotal };
+    return { subtotal, taxTotal, grandTotal: Math.round(subtotal + taxTotal + (form.shipping || 0)) };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
     await createInvoice(form as any);
     setShowForm(false);
     setForm(emptyForm);
+    setErrors({});
   };
 
   const handleDelete = async (id: string) => {
@@ -104,32 +138,33 @@ const InvoiceManagement: React.FC = () => {
 
   const handlePrint = () => {
     if (!printRef.current) return;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    printWindow.document.write(`
-      <html><head><title>Invoice</title>
-      <style>
-        body{font-family:Arial,sans-serif;margin:0;padding:20px;color:#333}
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:8px 12px;text-align:left;border-bottom:1px solid #eee}
-        th{background:#f8f8f8;font-weight:600}
-        .text-right{text-align:right}
-        .text-center{text-align:center}
-        .bold{font-weight:700}
-        .header{display:flex;justify-content:space-between;margin-bottom:30px}
-        .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
-        .paid{background:#dcfce7;color:#16a34a}
-        .pending{background:#fef3c7;color:#d97706}
-        @media print{body{padding:0}}
-      </style></head><body>
-      ${printRef.current.innerHTML}
-      <script>window.print();window.close()<\/script>
-      </body></html>
-    `);
-    printWindow.document.close();
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(`<html><head><title>Invoice</title><style>
+      body{font-family:Arial,sans-serif;margin:0;padding:30px;color:#333;font-size:13px}
+      table{width:100%;border-collapse:collapse}
+      th,td{padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb}
+      th{background:#f9fafb;font-weight:600;font-size:11px;color:#6b7280;text-transform:uppercase}
+      .right{text-align:right}.bold{font-weight:700}.center{text-align:center}
+      .logo-text{font-size:22px;font-weight:800;color:#D97706;letter-spacing:1px}
+      .logo-icon{display:inline-flex;width:40px;height:40px;background:linear-gradient(135deg,#D97706,#EA580C);border-radius:10px;align-items:center;justify-content:center;margin-right:12px;vertical-align:middle}
+      .logo-icon svg{width:22px;height:22px;fill:none;stroke:white;stroke-width:2}
+      @media print{body{padding:15px}}
+    </style></head><body>${printRef.current.innerHTML}<script>window.print();window.close()<\/script></body></html>`);
+    win.document.close();
   };
 
+  const InputError = ({ error }: { error?: string }) => error ? <p className="text-[10px] text-red-500 mt-0.5">{error}</p> : null;
   const totals = calcTotals();
+
+  const LogoHTML = () => (
+    <span>
+      <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      </span>
+      <span style={{ fontSize: '22px', fontWeight: 800, color: '#D97706', letterSpacing: '1px', verticalAlign: 'middle' }}>LuxeHome</span>
+    </span>
+  );
 
   return (
     <div className="p-6">
@@ -138,7 +173,7 @@ const InvoiceManagement: React.FC = () => {
           <h1 className="text-2xl font-bold">Invoices</h1>
           <p className="text-sm text-gray-500 mt-1">Create and manage invoices</p>
         </div>
-        <button onClick={() => { setForm(emptyForm); setShowForm(true); }} className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600">
+        <button onClick={() => { setForm(emptyForm); setErrors({}); setShowForm(true); }} className="flex items-center gap-2 bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600">
           <Plus className="w-4 h-4" /> Create Invoice
         </button>
       </div>
@@ -150,20 +185,14 @@ const InvoiceManagement: React.FC = () => {
         </div>
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="px-3 py-2 border rounded-lg text-sm">
           <option value="">All Status</option>
-          <option value="draft">Draft</option>
-          <option value="sent">Sent</option>
-          <option value="paid">Paid</option>
-          <option value="overdue">Overdue</option>
+          <option value="draft">Draft</option><option value="sent">Sent</option><option value="paid">Paid</option><option value="overdue">Overdue</option>
         </select>
       </div>
 
       {isLoading ? (
         <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />)}</div>
       ) : invoices.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-          <p>No invoices yet.</p>
-        </div>
+        <div className="text-center py-16 text-gray-500"><FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" /><p>No invoices yet.</p></div>
       ) : (
         <div className="bg-white rounded-lg border overflow-hidden">
           <table className="w-full text-sm">
@@ -180,10 +209,7 @@ const InvoiceManagement: React.FC = () => {
               {invoices.map(inv => (
                 <tr key={inv._id} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-3 font-mono font-medium">{inv.invoiceNumber}</td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium">{inv.buyerName}</div>
-                    <div className="text-xs text-gray-500">{inv.buyerEmail}</div>
-                  </td>
+                  <td className="px-4 py-3"><div className="font-medium">{inv.buyerName}</div><div className="text-xs text-gray-500">{inv.buyerEmail}</div></td>
                   <td className="px-4 py-3 font-semibold">{formatCurrency(inv.grandTotal)}</td>
                   <td className="px-4 py-3"><span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[inv.status]}`}>{inv.status}</span></td>
                   <td className="px-4 py-3"><span className={`text-xs px-2 py-1 rounded-full font-medium ${paymentColors[inv.paymentStatus]}`}>{inv.paymentStatus}</span></td>
@@ -215,77 +241,103 @@ const InvoiceManagement: React.FC = () => {
                 <div>
                   <h3 className="text-sm font-semibold mb-2 text-gray-700">Customer Details</h3>
                   <div className="space-y-2">
-                    <input value={form.buyerName} onChange={e => setForm(f => ({ ...f, buyerName: e.target.value }))} placeholder="Customer Name *" required className="w-full px-3 py-2 border rounded-lg text-sm" />
-                    <input value={form.buyerEmail} onChange={e => setForm(f => ({ ...f, buyerEmail: e.target.value }))} placeholder="Email *" required type="email" className="w-full px-3 py-2 border rounded-lg text-sm" />
-                    <input value={form.buyerPhone} onChange={e => setForm(f => ({ ...f, buyerPhone: e.target.value }))} placeholder="Phone *" required className="w-full px-3 py-2 border rounded-lg text-sm" />
-                    <textarea value={form.buyerAddress} onChange={e => setForm(f => ({ ...f, buyerAddress: e.target.value }))} placeholder="Address *" required rows={2} className="w-full px-3 py-2 border rounded-lg text-sm" />
-                    <input value={form.buyerGstin} onChange={e => setForm(f => ({ ...f, buyerGstin: e.target.value }))} placeholder="GSTIN (optional)" className="w-full px-3 py-2 border rounded-lg text-sm" />
+                    <div>
+                      <input value={form.buyerName} onChange={e => { setForm(f => ({ ...f, buyerName: e.target.value })); clearFieldError('buyerName'); }} placeholder="Customer Name *" className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerName ? 'border-red-400' : ''}`} />
+                      <InputError error={errors.buyerName} />
+                    </div>
+                    <div>
+                      <input value={form.buyerEmail} onChange={e => { setForm(f => ({ ...f, buyerEmail: e.target.value })); clearFieldError('buyerEmail'); }} placeholder="Email *" type="email" className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerEmail ? 'border-red-400' : ''}`} />
+                      <InputError error={errors.buyerEmail} />
+                    </div>
+                    <div>
+                      <input value={form.buyerPhone} onChange={e => { setForm(f => ({ ...f, buyerPhone: e.target.value })); clearFieldError('buyerPhone'); }} placeholder="Phone * (e.g. +91 98765 43210)" className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerPhone ? 'border-red-400' : ''}`} />
+                      <InputError error={errors.buyerPhone} />
+                    </div>
+                    <div>
+                      <textarea value={form.buyerAddress} onChange={e => { setForm(f => ({ ...f, buyerAddress: e.target.value })); clearFieldError('buyerAddress'); }} placeholder="Full Address *" rows={2} className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerAddress ? 'border-red-400' : ''}`} />
+                      <InputError error={errors.buyerAddress} />
+                    </div>
+                    <div>
+                      <input value={form.buyerGstin} onChange={e => { setForm(f => ({ ...f, buyerGstin: e.target.value.toUpperCase() })); clearFieldError('buyerGstin'); }} placeholder="GSTIN (e.g. 22AAAAA0000A1Z5)" maxLength={15} className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.buyerGstin ? 'border-red-400' : ''}`} />
+                      <InputError error={errors.buyerGstin} />
+                    </div>
                   </div>
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold mb-2 text-gray-700">Invoice Settings</h3>
                   <div className="space-y-2">
                     <select value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value as any }))} className="w-full px-3 py-2 border rounded-lg text-sm">
-                      <option value="standard">Standard Invoice</option>
-                      <option value="proforma">Proforma Invoice</option>
-                      <option value="credit_note">Credit Note</option>
+                      <option value="standard">Standard Invoice</option><option value="proforma">Proforma Invoice</option><option value="credit_note">Credit Note</option>
                     </select>
-                    <input type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                    <div>
+                      <label className="text-[10px] text-gray-500">Due Date</label>
+                      <input type="date" value={form.dueDate} onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} min={new Date().toISOString().split('T')[0]} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                    </div>
                     <input value={form.placeOfSupply} onChange={e => setForm(f => ({ ...f, placeOfSupply: e.target.value }))} placeholder="Place of Supply" className="w-full px-3 py-2 border rounded-lg text-sm" />
-                    <input type="number" value={form.shipping} onChange={e => setForm(f => ({ ...f, shipping: Number(e.target.value) }))} placeholder="Shipping Cost" className="w-full px-3 py-2 border rounded-lg text-sm" />
+                    <div>
+                      <input type="number" value={form.shipping} onChange={e => { setForm(f => ({ ...f, shipping: Number(e.target.value) })); clearFieldError('shipping'); }} placeholder="Shipping Cost" min="0" className={`w-full px-3 py-2 border rounded-lg text-sm ${errors.shipping ? 'border-red-400' : ''}`} />
+                      <InputError error={errors.shipping} />
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-gray-700">Items</h3>
+                  <h3 className="text-sm font-semibold text-gray-700">Items {errors.items && <span className="text-red-500 font-normal text-xs ml-2">{errors.items}</span>}</h3>
                   <button type="button" onClick={addItem} className="text-xs text-amber-600 font-medium">+ Add Item</button>
                 </div>
                 <div className="space-y-2">
                   {form.items.map((item, idx) => (
                     <div key={idx} className="grid grid-cols-12 gap-2 items-end p-3 bg-gray-50 rounded-lg">
                       <div className="col-span-4">
-                        <label className="text-[10px] text-gray-500">Item Name</label>
-                        <input value={item.name} onChange={e => updateItem(idx, 'name', e.target.value)} placeholder="Product/Service" required className="w-full px-2 py-1.5 border rounded text-sm" />
+                        <label className="text-[10px] text-gray-500">Item Name *</label>
+                        <input value={item.name} onChange={e => updateItem(idx, 'name', e.target.value)} placeholder="Product/Service" className={`w-full px-2 py-1.5 border rounded text-sm ${errors[`item_${idx}_name`] ? 'border-red-400' : ''}`} />
+                        <InputError error={errors[`item_${idx}_name`]} />
                       </div>
                       <div className="col-span-1">
                         <label className="text-[10px] text-gray-500">HSN</label>
                         <input value={item.hsnCode} onChange={e => updateItem(idx, 'hsnCode', e.target.value)} placeholder="HSN" className="w-full px-2 py-1.5 border rounded text-sm" />
                       </div>
                       <div className="col-span-1">
-                        <label className="text-[10px] text-gray-500">Qty</label>
-                        <input type="number" value={item.quantity} onChange={e => updateItem(idx, 'quantity', Number(e.target.value))} min="1" className="w-full px-2 py-1.5 border rounded text-sm" />
+                        <label className="text-[10px] text-gray-500">Qty *</label>
+                        <input type="number" value={item.quantity} onChange={e => updateItem(idx, 'quantity', Math.max(1, Number(e.target.value)))} min="1" className={`w-full px-2 py-1.5 border rounded text-sm ${errors[`item_${idx}_quantity`] ? 'border-red-400' : ''}`} />
                       </div>
                       <div className="col-span-2">
-                        <label className="text-[10px] text-gray-500">Unit Price</label>
-                        <input type="number" value={item.unitPrice} onChange={e => updateItem(idx, 'unitPrice', Number(e.target.value))} min="0" className="w-full px-2 py-1.5 border rounded text-sm" />
+                        <label className="text-[10px] text-gray-500">Unit Price *</label>
+                        <input type="number" value={item.unitPrice} onChange={e => updateItem(idx, 'unitPrice', Math.max(0, Number(e.target.value)))} min="0" step="0.01" className={`w-full px-2 py-1.5 border rounded text-sm ${errors[`item_${idx}_unitPrice`] ? 'border-red-400' : ''}`} />
                       </div>
                       <div className="col-span-1">
                         <label className="text-[10px] text-gray-500">Disc %</label>
-                        <input type="number" value={item.discount} onChange={e => updateItem(idx, 'discount', Number(e.target.value))} min="0" max="100" className="w-full px-2 py-1.5 border rounded text-sm" />
+                        <input type="number" value={item.discount} onChange={e => updateItem(idx, 'discount', Math.min(100, Math.max(0, Number(e.target.value))))} min="0" max="100" className="w-full px-2 py-1.5 border rounded text-sm" />
                       </div>
                       <div className="col-span-1">
                         <label className="text-[10px] text-gray-500">Tax %</label>
-                        <input type="number" value={item.taxRate} onChange={e => updateItem(idx, 'taxRate', Number(e.target.value))} className="w-full px-2 py-1.5 border rounded text-sm" />
+                        <input type="number" value={item.taxRate} onChange={e => updateItem(idx, 'taxRate', Math.min(28, Math.max(0, Number(e.target.value))))} min="0" max="28" className="w-full px-2 py-1.5 border rounded text-sm" />
                       </div>
                       <div className="col-span-1">
                         <label className="text-[10px] text-gray-500">Total</label>
                         <div className="px-2 py-1.5 text-sm font-medium">{formatCurrency(item.quantity * item.unitPrice * (1 - (item.discount || 0) / 100) * (1 + (item.taxRate || 18) / 100))}</div>
                       </div>
-                      <div className="col-span-1">
-                        {form.items.length > 1 && <button type="button" onClick={() => removeItem(idx)} className="p-1.5 text-red-500 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5" /></button>}
-                      </div>
+                      <div className="col-span-1">{form.items.length > 1 && <button type="button" onClick={() => removeItem(idx)} className="p-1.5 text-red-500 hover:bg-red-50 rounded"><X className="w-3.5 h-3.5" /></button>}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="flex justify-between items-start">
-                <div className="flex-1 mr-6">
-                  <label className="text-sm font-medium mb-1 block">Notes</label>
-                  <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} placeholder="Additional notes..." className="w-full px-3 py-2 border rounded-lg text-sm" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Notes (optional)</label>
+                  <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} placeholder="Additional notes for the customer..." className="w-full px-3 py-2 border rounded-lg text-sm" />
                 </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Terms & Conditions</label>
+                  <textarea value={form.termsAndConditions} onChange={e => setForm(f => ({ ...f, termsAndConditions: e.target.value }))} rows={2} className="w-full px-3 py-2 border rounded-lg text-sm" />
+                </div>
+              </div>
+
+              <div className="flex justify-between items-start border-t pt-4">
+                <div />
                 <div className="w-64 space-y-1 text-sm">
                   <div className="flex justify-between"><span className="text-gray-500">Subtotal:</span><span className="font-medium">{formatCurrency(totals.subtotal)}</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Tax:</span><span className="font-medium">{formatCurrency(totals.taxTotal)}</span></div>
@@ -294,7 +346,7 @@ const InvoiceManagement: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2 border-t">
+              <div className="flex justify-end gap-3">
                 <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 border rounded-lg text-sm">Cancel</button>
                 <button type="submit" disabled={creating} className="flex items-center gap-2 px-5 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 text-sm disabled:opacity-50">
                   <Save className="w-4 h-4" /> Create Invoice
@@ -305,38 +357,43 @@ const InvoiceManagement: React.FC = () => {
         </div>
       )}
 
-      {/* Invoice Preview Modal */}
+      {/* Invoice Preview */}
       {previewInvoice && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center overflow-y-auto p-4 pt-10">
           <div className="bg-white rounded-2xl w-full max-w-3xl shadow-xl">
             <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-lg font-bold">Invoice Preview</h2>
               <div className="flex items-center gap-2">
-                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600">
-                  <Printer className="w-4 h-4" /> Print / PDF
-                </button>
+                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600"><Printer className="w-4 h-4" /> Print / PDF</button>
                 <button onClick={() => setPreviewInvoice(null)}><X className="w-5 h-5" /></button>
               </div>
             </div>
-            <div ref={printRef} className="p-8" style={{ fontFamily: 'Arial, sans-serif' }}>
-              {/* Invoice Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
+            <div ref={printRef} style={{ padding: '40px', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#333' }}>
+              {/* Header with Logo */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '3px solid #D97706', paddingBottom: '20px' }}>
                 <div>
-                  {previewInvoice.sellerLogo && <img src={previewInvoice.sellerLogo} alt="Logo" style={{ height: '50px', marginBottom: '10px' }} />}
-                  <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#D97706', margin: '0 0 5px 0' }}>{previewInvoice.sellerName}</h1>
-                  <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerAddress}</p>
-                  <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerPhone} | {previewInvoice.sellerEmail}</p>
-                  {previewInvoice.sellerGstin && <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>GSTIN: {previewInvoice.sellerGstin}</p>}
+                  <div style={{ marginBottom: '10px' }}>
+                    <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    </span>
+                    <span style={{ fontSize: '24px', fontWeight: 800, color: '#D97706', letterSpacing: '1px', verticalAlign: 'middle' }}>LuxeHome</span>
+                  </div>
+                  <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerName}</p>
+                  <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerAddress}</p>
+                  <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerPhone} | {previewInvoice.sellerEmail}</p>
+                  {previewInvoice.sellerGstin && <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>GSTIN: {previewInvoice.sellerGstin}</p>}
+                  {previewInvoice.sellerPan && <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>PAN: {previewInvoice.sellerPan}</p>}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <h2 style={{ fontSize: '28px', fontWeight: '700', color: '#333', margin: '0' }}>
-                    {previewInvoice.type === 'proforma' ? 'PROFORMA' : previewInvoice.type === 'credit_note' ? 'CREDIT NOTE' : 'INVOICE'}
+                  <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#D97706', margin: '0', letterSpacing: '2px' }}>
+                    {previewInvoice.type === 'proforma' ? 'PROFORMA' : previewInvoice.type === 'credit_note' ? 'CREDIT NOTE' : 'TAX INVOICE'}
                   </h2>
-                  <p style={{ margin: '5px 0 2px', fontSize: '14px', fontWeight: '600' }}>#{previewInvoice.invoiceNumber}</p>
-                  <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>Date: {new Date(previewInvoice.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  {previewInvoice.dueDate && <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>Due: {new Date(previewInvoice.dueDate).toLocaleDateString('en-IN')}</p>}
-                  <p style={{ margin: '5px 0' }}>
-                    <span className={`badge ${previewInvoice.paymentStatus === 'paid' ? 'paid' : 'pending'}`} style={{ padding: '3px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: '600', background: previewInvoice.paymentStatus === 'paid' ? '#dcfce7' : '#fef3c7', color: previewInvoice.paymentStatus === 'paid' ? '#16a34a' : '#d97706' }}>
+                  <p style={{ margin: '8px 0 3px', fontSize: '15px', fontWeight: 700 }}>#{previewInvoice.invoiceNumber}</p>
+                  <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>Date: {new Date(previewInvoice.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  {previewInvoice.dueDate && <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>Due: {new Date(previewInvoice.dueDate).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>}
+                  {previewInvoice.placeOfSupply && <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>Place of Supply: {previewInvoice.placeOfSupply}</p>}
+                  <p style={{ margin: '8px 0 0' }}>
+                    <span style={{ padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: previewInvoice.paymentStatus === 'paid' ? '#dcfce7' : '#fef3c7', color: previewInvoice.paymentStatus === 'paid' ? '#16a34a' : '#d97706' }}>
                       {previewInvoice.paymentStatus.toUpperCase()}
                     </span>
                   </p>
@@ -344,37 +401,35 @@ const InvoiceManagement: React.FC = () => {
               </div>
 
               {/* Bill To */}
-              <div style={{ background: '#f9fafb', padding: '15px', borderRadius: '8px', marginBottom: '25px' }}>
-                <p style={{ fontSize: '11px', color: '#999', fontWeight: '600', marginBottom: '5px' }}>BILL TO</p>
-                <p style={{ fontWeight: '600', margin: '0' }}>{previewInvoice.buyerName}</p>
-                <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.buyerAddress}</p>
-                <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.buyerPhone} | {previewInvoice.buyerEmail}</p>
-                {previewInvoice.buyerGstin && <p style={{ margin: '2px 0', fontSize: '12px', color: '#666' }}>GSTIN: {previewInvoice.buyerGstin}</p>}
+              <div style={{ background: '#f9fafb', padding: '15px 20px', borderRadius: '8px', marginBottom: '25px', borderLeft: '4px solid #D97706' }}>
+                <p style={{ fontSize: '10px', color: '#999', fontWeight: 700, marginBottom: '6px', letterSpacing: '1px' }}>BILL TO</p>
+                <p style={{ fontWeight: 700, margin: '0', fontSize: '15px' }}>{previewInvoice.buyerName}</p>
+                <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.buyerAddress}</p>
+                <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.buyerPhone} | {previewInvoice.buyerEmail}</p>
+                {previewInvoice.buyerGstin && <p style={{ margin: '3px 0', fontSize: '12px', color: '#666', fontWeight: 600 }}>GSTIN: {previewInvoice.buyerGstin}</p>}
               </div>
 
               {/* Items Table */}
               <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px' }}>
-                <thead>
-                  <tr style={{ background: '#f3f4f6' }}>
-                    <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: '#666' }}>#</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: '#666' }}>Item</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: '600', color: '#666' }}>HSN</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: '600', color: '#666' }}>Qty</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: '600', color: '#666' }}>Rate</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: '600', color: '#666' }}>Tax</th>
-                    <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: '600', color: '#666' }}>Amount</th>
-                  </tr>
-                </thead>
+                <thead><tr style={{ background: '#D97706', color: 'white' }}>
+                  <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: 600 }}>#</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '11px', fontWeight: 600 }}>ITEM DESCRIPTION</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '11px', fontWeight: 600 }}>HSN</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: 600 }}>QTY</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: 600 }}>RATE</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: 600 }}>TAX</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '11px', fontWeight: 600 }}>AMOUNT</th>
+                </tr></thead>
                 <tbody>
                   {previewInvoice.items.map((item, i) => (
-                    <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={{ padding: '10px 12px', fontSize: '12px' }}>{i + 1}</td>
-                      <td style={{ padding: '10px 12px', fontSize: '12px', fontWeight: '500' }}>{item.name}{item.description && <><br /><span style={{ color: '#999', fontSize: '11px' }}>{item.description}</span></>}</td>
-                      <td style={{ padding: '10px 12px', fontSize: '12px', color: '#666' }}>{item.hsnCode || '-'}</td>
+                    <tr key={i} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <td style={{ padding: '10px 12px', fontSize: '12px', color: '#666' }}>{i + 1}</td>
+                      <td style={{ padding: '10px 12px', fontSize: '12px' }}><span style={{ fontWeight: 600 }}>{item.name}</span>{item.description && <><br /><span style={{ color: '#999', fontSize: '11px' }}>{item.description}</span></>}</td>
+                      <td style={{ padding: '10px 12px', fontSize: '12px', color: '#666', textAlign: 'center' }}>{item.hsnCode || '-'}</td>
                       <td style={{ padding: '10px 12px', fontSize: '12px', textAlign: 'right' }}>{item.quantity}</td>
                       <td style={{ padding: '10px 12px', fontSize: '12px', textAlign: 'right' }}>{formatCurrency(item.unitPrice)}</td>
                       <td style={{ padding: '10px 12px', fontSize: '12px', textAlign: 'right' }}>{item.taxRate}%</td>
-                      <td style={{ padding: '10px 12px', fontSize: '12px', textAlign: 'right', fontWeight: '600' }}>{formatCurrency(item.total)}</td>
+                      <td style={{ padding: '10px 12px', fontSize: '12px', textAlign: 'right', fontWeight: 700 }}>{formatCurrency(item.total)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -382,48 +437,42 @@ const InvoiceManagement: React.FC = () => {
 
               {/* Totals */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-                <div style={{ width: '280px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>Subtotal</span><span>{formatCurrency(previewInvoice.subtotal)}</span>
-                  </div>
-                  {previewInvoice.discountTotal > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>Discount</span><span>-{formatCurrency(previewInvoice.discountTotal)}</span>
-                  </div>}
-                  {previewInvoice.cgst > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>CGST</span><span>{formatCurrency(previewInvoice.cgst)}</span>
-                  </div>}
-                  {previewInvoice.sgst > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>SGST</span><span>{formatCurrency(previewInvoice.sgst)}</span>
-                  </div>}
-                  {previewInvoice.igst > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>IGST</span><span>{formatCurrency(previewInvoice.igst)}</span>
-                  </div>}
-                  {previewInvoice.shipping > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>Shipping</span><span>{formatCurrency(previewInvoice.shipping)}</span>
-                  </div>}
-                  {previewInvoice.roundOff !== 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: '13px' }}>
-                    <span style={{ color: '#666' }}>Round Off</span><span>{formatCurrency(previewInvoice.roundOff)}</span>
-                  </div>}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', fontSize: '16px', fontWeight: '700', borderTop: '2px solid #333', marginTop: '5px' }}>
-                    <span>Grand Total</span><span>{formatCurrency(previewInvoice.grandTotal)}</span>
+                <div style={{ width: '300px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>Subtotal</span><span>{formatCurrency(previewInvoice.subtotal)}</span></div>
+                  {previewInvoice.discountTotal > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>Discount</span><span style={{ color: '#16a34a' }}>-{formatCurrency(previewInvoice.discountTotal)}</span></div>}
+                  {previewInvoice.cgst > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>CGST</span><span>{formatCurrency(previewInvoice.cgst)}</span></div>}
+                  {previewInvoice.sgst > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>SGST</span><span>{formatCurrency(previewInvoice.sgst)}</span></div>}
+                  {previewInvoice.igst > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>IGST</span><span>{formatCurrency(previewInvoice.igst)}</span></div>}
+                  {previewInvoice.shipping > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>Shipping</span><span>{formatCurrency(previewInvoice.shipping)}</span></div>}
+                  {previewInvoice.roundOff !== 0 && <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px' }}><span style={{ color: '#666' }}>Round Off</span><span>{formatCurrency(previewInvoice.roundOff)}</span></div>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: '18px', fontWeight: 800, borderTop: '3px solid #D97706', marginTop: '8px' }}>
+                    <span>Grand Total</span><span style={{ color: '#D97706' }}>{formatCurrency(previewInvoice.grandTotal)}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Amount in Words */}
-              <div style={{ background: '#fffbeb', padding: '10px 15px', borderRadius: '6px', marginBottom: '20px', fontSize: '12px' }}>
+              <div style={{ background: '#fffbeb', padding: '12px 16px', borderRadius: '6px', marginBottom: '20px', fontSize: '13px', border: '1px solid #fde68a' }}>
                 <strong>Amount in Words:</strong> {previewInvoice.amountInWords}
               </div>
 
-              {/* Notes & Terms */}
-              <div style={{ display: 'flex', gap: '30px', fontSize: '11px', color: '#888', marginBottom: '30px' }}>
-                {previewInvoice.notes && <div style={{ flex: 1 }}><strong style={{ color: '#666' }}>Notes:</strong><br />{previewInvoice.notes}</div>}
-                {previewInvoice.termsAndConditions && <div style={{ flex: 1 }}><strong style={{ color: '#666' }}>Terms & Conditions:</strong><br />{previewInvoice.termsAndConditions}</div>}
+              {(previewInvoice.notes || previewInvoice.termsAndConditions) && (
+                <div style={{ display: 'flex', gap: '30px', fontSize: '11px', color: '#888', marginBottom: '30px' }}>
+                  {previewInvoice.notes && <div style={{ flex: 1 }}><strong style={{ color: '#555', display: 'block', marginBottom: '4px' }}>Notes:</strong>{previewInvoice.notes}</div>}
+                  {previewInvoice.termsAndConditions && <div style={{ flex: 1 }}><strong style={{ color: '#555', display: 'block', marginBottom: '4px' }}>Terms & Conditions:</strong><span style={{ whiteSpace: 'pre-line' }}>{previewInvoice.termsAndConditions}</span></div>}
+                </div>
+              )}
+
+              {/* Signature */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '30px' }}>
+                <div style={{ textAlign: 'center', width: '200px' }}>
+                  <div style={{ borderBottom: '1px solid #ccc', height: '50px', marginBottom: '5px' }} />
+                  <p style={{ fontSize: '11px', color: '#666', margin: '0' }}>Authorized Signatory</p>
+                  <p style={{ fontSize: '10px', color: '#999', margin: '2px 0 0' }}>{previewInvoice.sellerName}</p>
+                </div>
               </div>
 
-              {/* Footer */}
-              <div style={{ borderTop: '1px solid #eee', paddingTop: '15px', textAlign: 'center', fontSize: '11px', color: '#999' }}>
-                This is a computer generated invoice. | {previewInvoice.sellerName} | {previewInvoice.sellerPhone}
+              <div style={{ borderTop: '2px solid #e5e7eb', paddingTop: '12px', textAlign: 'center', fontSize: '10px', color: '#999' }}>
+                This is a computer generated invoice and does not require a physical signature. | {previewInvoice.sellerName} | {previewInvoice.sellerPhone}
               </div>
             </div>
           </div>
