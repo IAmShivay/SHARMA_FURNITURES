@@ -6,8 +6,9 @@ export interface IConsultation {
   planName: string;
   amount: number;
   currency: string;
-  razorpayOrderId: string;
-  razorpayPaymentId?: string;
+  cashfreeOrderId: string;
+  cashfreePaymentId?: string;
+  paymentSessionId?: string;
   status: 'pending' | 'paid' | 'completed' | 'cancelled';
   customerName: string;
   customerEmail: string;
@@ -26,8 +27,9 @@ const ConsultationSchema = new Schema<IConsultation>(
     planName: { type: String, required: true },
     amount: { type: Number, required: true },
     currency: { type: String, default: 'INR' },
-    razorpayOrderId: { type: String, required: true },
-    razorpayPaymentId: { type: String },
+    cashfreeOrderId: { type: String, required: true },
+    cashfreePaymentId: { type: String },
+    paymentSessionId: { type: String },
     status: { type: String, enum: ['pending', 'paid', 'completed', 'cancelled'], default: 'pending' },
     customerName: { type: String, required: true },
     customerEmail: { type: String, required: true },
@@ -41,6 +43,7 @@ const ConsultationSchema = new Schema<IConsultation>(
 
 ConsultationSchema.index({ user: 1, createdAt: -1 });
 ConsultationSchema.index({ status: 1 });
+ConsultationSchema.index({ cashfreeOrderId: 1 });
 
 const Consultation = mongoose.model<IConsultation>('Consultation', ConsultationSchema);
 export default Consultation;

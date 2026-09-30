@@ -6,12 +6,12 @@ import { useAuth } from '../../hooks/useAuth';
 
 declare global {
   interface Window {
-    Razorpay: any;
+    Cashfree: any;
   }
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID || '';
+const CASHFREE_ENV = import.meta.env.VITE_CASHFREE_ENV || 'sandbox';
 
 const plans = [
   {
@@ -94,24 +94,19 @@ const Consultation: React.FC = () => {
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
 
-      const options = {
-        key: RAZORPAY_KEY, amount: data.data.amount, currency: data.data.currency,
-        name: 'LuxeHome', description: `${data.data.plan.name} - ${data.data.plan.duration}`,
-        order_id: data.data.orderId,
-        handler: async (response: any) => {
-          const verifyRes = await fetch(`${API_URL}/consultation/verify-payment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify(response),
-          });
-          const verifyData = await verifyRes.json();
-          if (verifyData.success) setSuccess(true);
-        },
-        prefill: { name: form.name, email: form.email, contact: form.phone },
-        theme: { color: '#D97706' },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      const cashfree = window.Cashfree({ mode: CASHFREE_ENV });
+      await cashfree.checkout({
+        paymentSessionId: data.data.paymentSessionId,
+        redirectTarget: '_modal',
+      }).then(async () => {
+        const verifyRes = await fetch(`${API_URL}/consultation/verify-payment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ orderId: data.data.orderId }),
+        });
+        const verifyData = await verifyRes.json();
+        if (verifyData.success) setSuccess(true);
+      });
     } catch (err: any) {
       alert(err.message || 'Something went wrong.');
     } finally {

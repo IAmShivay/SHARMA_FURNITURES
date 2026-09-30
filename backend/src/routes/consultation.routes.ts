@@ -1,23 +1,18 @@
 import { Router, Request, Response } from 'express';
-import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { auth, hasPermission } from '../middleware/auth';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/AppError';
 import Consultation from '../models/Consultation';
+import cashfree from '../config/cashfree';
 
 const router = Router();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
-});
-
 const CONSULTATION_PLANS = [
-  { id: 'virtual-basic', name: 'Virtual Consultation', duration: '30 min', price: 49900, currency: 'INR' },
-  { id: 'virtual-premium', name: 'Premium Virtual', duration: '60 min', price: 99900, currency: 'INR' },
-  { id: 'in-store', name: 'In-Store Visit', duration: '90 min', price: 149900, currency: 'INR' },
-  { id: 'site-visit', name: 'Home / Office Visit', duration: '2-3 hours', price: 299900, currency: 'INR' },
+  { id: 'virtual-basic', name: 'Virtual Consultation', duration: '30 min', price: 499, currency: 'INR' },
+  { id: 'virtual-premium', name: 'Premium Virtual', duration: '60 min', price: 999, currency: 'INR' },
+  { id: 'in-store', name: 'In-Store Visit', duration: '90 min', price: 1499, currency: 'INR' },
+  { id: 'site-visit', name: 'Home / Office Visit', duration: '2-3 hours', price: 2999, currency: 'INR' },
 ];
 
 router.get('/plans', (_req: Request, res: Response) => {
@@ -34,12 +29,27 @@ router.post(
     if (!plan) throw new AppError('Invalid consultation plan', 400);
     if (!name || !email || !phone || !date || !time) throw new AppError('Name, email, phone, date and time are required', 400);
 
-    const order = await razorpay.orders.create({
-      amount: plan.price,
-      currency: plan.currency,
-      receipt: `consult_${Date.now()}`,
-      notes: { planId: plan.id, planName: plan.name, customerName: name, customerEmail: email, customerPhone: phone, consultationDate: date, consultationTime: time, additionalNotes: notes || '' },
-    });
+    const orderId = `consult_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+    const orderRequest = {
+      order_amount: plan.price,
+      order_currency: plan.currency,
+      order_id: orderId,
+      customer_details: {
+        customer_id: (req as any).user._id.toString(),
+        customer_name: name,
+        customer_email: email,
+        customer_phone: phone.replace(/\D/g, '').slice(-10),
+      },
+      order_meta: {
+        return_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/consultation?order_id=${orderId}&status={order_status}`,
+        notify_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/api/consultation/webhook`,
+      },
+      order_note: `${plan.name} - ${plan.duration} | ${date} ${time}`,
+    };
+
+    const response = await (cashfree as any).PGCreateOrder("2023-08-01", orderRequest);
+    const orderData = response.data;
 
     await Consultation.create({
       user: (req as any).user._id,
@@ -47,7 +57,8 @@ router.post(
       planName: plan.name,
       amount: plan.price,
       currency: plan.currency,
-      razorpayOrderId: order.id,
+      cashfreeOrderId: orderId,
+      paymentSessionId: orderData.payment_session_id,
       status: 'pending',
       customerName: name,
       customerEmail: email,
@@ -57,7 +68,16 @@ router.post(
       notes: notes || '',
     });
 
-    res.json({ success: true, data: { orderId: order.id, amount: order.amount, currency: order.currency, plan } });
+    res.json({
+      success: true,
+      data: {
+        orderId,
+        paymentSessionId: orderData.payment_session_id,
+        amount: plan.price,
+        currency: plan.currency,
+        plan,
+      },
+    });
   })
 );
 
@@ -65,22 +85,63 @@ router.post(
   '/verify-payment',
   auth,
   asyncHandler(async (req: Request, res: Response) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) throw new AppError('Missing payment verification fields', 400);
+    const { orderId } = req.body;
+    if (!orderId) throw new AppError('Order ID required', 400);
 
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || '')
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest('hex');
+    const response = await (cashfree as any).PGOrderFetchPayments("2023-08-01", orderId);
+    const payments = response.data;
 
-    if (expectedSignature !== razorpay_signature) throw new AppError('Payment verification failed', 400);
+    if (!payments || payments.length === 0) throw new AppError('No payments found for this order', 400);
+
+    const successfulPayment = (payments as any[]).find((p: any) => p.payment_status === 'SUCCESS');
+    if (!successfulPayment) throw new AppError('Payment not successful', 400);
 
     await Consultation.findOneAndUpdate(
-      { razorpayOrderId: razorpay_order_id },
-      { status: 'paid', razorpayPaymentId: razorpay_payment_id }
+      { cashfreeOrderId: orderId },
+      { status: 'paid', cashfreePaymentId: successfulPayment.cf_payment_id }
     );
 
-    res.json({ success: true, message: 'Payment verified. Consultation booked!', data: { paymentId: razorpay_payment_id, orderId: razorpay_order_id } });
+    res.json({
+      success: true,
+      message: 'Payment verified. Consultation booked!',
+      data: { paymentId: successfulPayment.cf_payment_id, orderId },
+    });
+  })
+);
+
+router.post(
+  '/webhook',
+  asyncHandler(async (req: Request, res: Response) => {
+    const signature = req.headers['x-cashfree-signature'] as string;
+    const timestamp = req.headers['x-cashfree-timestamp'] as string;
+    const rawBody = JSON.stringify(req.body);
+
+    if (process.env.CASHFREE_SECRET_KEY && signature) {
+      const expectedSignature = crypto
+        .createHmac('sha256', process.env.CASHFREE_SECRET_KEY)
+        .update(timestamp + rawBody)
+        .digest('base64');
+
+      if (signature !== expectedSignature) {
+        return res.status(401).json({ success: false, message: 'Invalid signature' });
+      }
+    }
+
+    const { data, type } = req.body;
+
+    if (type === 'PAYMENT_SUCCESS_WEBHOOK' || data?.payment?.payment_status === 'SUCCESS') {
+      const orderId = data?.order?.order_id;
+      const paymentId = data?.payment?.cf_payment_id;
+
+      if (orderId) {
+        await Consultation.findOneAndUpdate(
+          { cashfreeOrderId: orderId },
+          { status: 'paid', cashfreePaymentId: paymentId }
+        );
+      }
+    }
+
+    res.json({ success: true });
   })
 );
 
