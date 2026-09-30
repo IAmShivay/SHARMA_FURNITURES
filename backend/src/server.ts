@@ -22,6 +22,7 @@ import blogRoutes from './routes/blog.routes';
 import consultationRoutes from './routes/consultation.routes';
 import galleryRoutes from './routes/gallery.routes';
 import uploadRoutes from './routes/upload.routes';
+import invoiceRoutes from './routes/invoice.routes';
 
 // Create Express app
 const app = express();
@@ -138,6 +139,7 @@ app.use('/api/blog', blogRoutes);
 app.use('/api/consultation', consultationRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/invoices', invoiceRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {

@@ -62,7 +62,8 @@ export const apiSlice = createApi({
     'Category',
     'Admin',
     'BlogPost',
-    'Gallery'
+    'Gallery',
+    'Invoice'
   ],
   endpoints: (builder) => ({
     // Health check endpoint
