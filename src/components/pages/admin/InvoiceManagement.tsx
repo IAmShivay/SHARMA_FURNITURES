@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Plus, Eye, Trash2, Search, X, Save, Printer, CheckCircle, FileText } from 'lucide-react';
+import { Plus, Eye, Trash2, Search, X, Save, Printer, CheckCircle, FileText, Upload, Loader2 } from 'lucide-react';
 import {
   useGetInvoicesQuery,
   useCreateInvoiceMutation,
@@ -8,6 +8,7 @@ import {
   Invoice,
 } from '../../../store/api/invoiceApi';
 import { formatCurrency } from '../../../utils/formatters';
+import { useAppSelector } from '../../../store/hooks';
 
 const SELLER_DEFAULTS = {
   sellerName: 'LuxeHome - Sharma Furnitures',
@@ -18,6 +19,38 @@ const SELLER_DEFAULTS = {
   sellerPan: '',
   sellerLogo: '',
 };
+
+const SERVICE_PRESETS = [
+  { name: 'Modular Kitchen', hsnCode: '9403' },
+  { name: 'Interior Design', hsnCode: '9983' },
+  { name: 'Door Frame', hsnCode: '4418' },
+  { name: 'Window Frame', hsnCode: '4418' },
+  { name: 'CPVC Work', hsnCode: '3917' },
+  { name: 'Wardrobe', hsnCode: '9403' },
+  { name: 'Complete Home Furnishing', hsnCode: '9403' },
+  { name: 'Custom Furniture', hsnCode: '9403' },
+  { name: 'Sofa Set', hsnCode: '9401' },
+  { name: 'Bed Frame', hsnCode: '9403' },
+  { name: 'Dining Table Set', hsnCode: '9403' },
+  { name: 'TV Unit', hsnCode: '9403' },
+  { name: 'Study Table', hsnCode: '9403' },
+  { name: 'Dressing Table', hsnCode: '9403' },
+  { name: 'Shoe Rack', hsnCode: '9403' },
+  { name: 'Bookshelf', hsnCode: '9403' },
+  { name: 'Guitar Stand', hsnCode: '9403' },
+  { name: 'Laptop Table', hsnCode: '9403' },
+  { name: 'Plant Stand', hsnCode: '9403' },
+  { name: 'Side Table', hsnCode: '9403' },
+  { name: 'False Ceiling', hsnCode: '6809' },
+  { name: 'Wall Paneling', hsnCode: '4411' },
+  { name: 'Flooring Work', hsnCode: '6907' },
+  { name: 'Painting & Finishing', hsnCode: '9988' },
+  { name: 'Electrical Fitting', hsnCode: '9954' },
+  { name: 'Plumbing Work', hsnCode: '9954' },
+  { name: 'Consultation Fee', hsnCode: '9983' },
+  { name: 'Design & Planning Fee', hsnCode: '9983' },
+  { name: 'Delivery & Installation', hsnCode: '9967' },
+];
 
 const emptyItem = { name: '', description: '', hsnCode: '', quantity: 1, unitPrice: 0, discount: 0, taxRate: 18, taxAmount: 0, total: 0 };
 
@@ -55,7 +88,10 @@ const InvoiceManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const token = useAppSelector((state) => state.auth.token);
 
   const { data, isLoading } = useGetInvoicesQuery({ search, status: statusFilter || undefined });
   const [createInvoice, { isLoading: creating }] = useCreateInvoiceMutation();
@@ -63,6 +99,35 @@ const InvoiceManagement: React.FC = () => {
   const [markPaid] = useMarkPaidMutation();
 
   const invoices = data?.data?.invoices || [];
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+  const handleLogoUpload = async (file: File) => {
+    setUploadingLogo(true);
+    const formData = new FormData();
+    formData.append('images', file);
+    try {
+      const res = await fetch(`${apiUrl}/upload?folder=invoices`, {
+        method: 'POST',
+        headers: { authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.data.urls[0]) {
+        setForm(f => ({ ...f, sellerLogo: data.data.urls[0] }));
+      }
+    } catch (err) {
+      console.error('Logo upload failed:', err);
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const addPresetItem = (preset: typeof SERVICE_PRESETS[0]) => {
+    setForm(f => ({
+      ...f,
+      items: [...f.items, { ...emptyItem, name: preset.name, hsnCode: preset.hsnCode }],
+    }));
+  };
 
   const addItem = () => setForm(f => ({ ...f, items: [...f.items, { ...emptyItem }] }));
   const removeItem = (idx: number) => setForm(f => ({ ...f, items: f.items.filter((_, i) => i !== idx) }));
@@ -237,6 +302,23 @@ const InvoiceManagement: React.FC = () => {
               <button onClick={() => setShowForm(false)}><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-5 max-h-[70vh] overflow-y-auto">
+              {/* Logo Upload */}
+              <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                <input type="file" ref={logoInputRef} accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); }} />
+                {form.sellerLogo ? (
+                  <div className="flex items-center gap-3">
+                    <img src={form.sellerLogo} alt="Logo" className="h-12 rounded-lg border" />
+                    <button type="button" onClick={() => setForm(f => ({ ...f, sellerLogo: '' }))} className="text-xs text-red-500 hover:underline">Remove</button>
+                    <button type="button" onClick={() => logoInputRef.current?.click()} className="text-xs text-amber-600 hover:underline">Change</button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo} className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-amber-500 hover:text-amber-600 transition-colors">
+                    {uploadingLogo ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Company Logo</>}
+                  </button>
+                )}
+                <span className="text-[10px] text-gray-400">PNG or JPG, max 2MB. Shows on invoice header.</span>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-semibold mb-2 text-gray-700">Customer Details</h3>
@@ -285,7 +367,13 @@ const InvoiceManagement: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-semibold text-gray-700">Items {errors.items && <span className="text-red-500 font-normal text-xs ml-2">{errors.items}</span>}</h3>
-                  <button type="button" onClick={addItem} className="text-xs text-amber-600 font-medium">+ Add Item</button>
+                  <div className="flex items-center gap-2">
+                    <select onChange={e => { if (e.target.value) { const p = SERVICE_PRESETS.find(s => s.name === e.target.value); if (p) addPresetItem(p); e.target.value = ''; } }} className="text-xs px-2 py-1 border rounded-lg text-gray-500">
+                      <option value="">Quick Add Service...</option>
+                      {SERVICE_PRESETS.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+                    </select>
+                    <button type="button" onClick={addItem} className="text-xs text-amber-600 font-medium">+ Custom Item</button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {form.items.map((item, idx) => (
@@ -373,10 +461,16 @@ const InvoiceManagement: React.FC = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px', borderBottom: '3px solid #D97706', paddingBottom: '20px' }}>
                 <div>
                   <div style={{ marginBottom: '10px' }}>
-                    <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                    </span>
-                    <span style={{ fontSize: '24px', fontWeight: 800, color: '#D97706', letterSpacing: '1px', verticalAlign: 'middle' }}>LuxeHome</span>
+                    {previewInvoice.sellerLogo ? (
+                      <img src={previewInvoice.sellerLogo} alt="Company Logo" style={{ height: '50px', marginBottom: '5px' }} />
+                    ) : (
+                      <>
+                        <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        </span>
+                        <span style={{ fontSize: '24px', fontWeight: 800, color: '#D97706', letterSpacing: '1px', verticalAlign: 'middle' }}>LuxeHome</span>
+                      </>
+                    )}
                   </div>
                   <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerName}</p>
                   <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerAddress}</p>
