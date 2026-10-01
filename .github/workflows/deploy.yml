@@ -78,6 +78,7 @@ jobs:
 
       - name: Deploy Nginx config
         run: |
+          ssh ${{ env.VPS_USER }}@${{ env.VPS_HOST }} "mkdir -p ${{ env.APP_DIR }}/deploy"
           rsync -avz deploy/nginx.conf ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/deploy/nginx.conf
 
       - name: Deploy .env and restart
