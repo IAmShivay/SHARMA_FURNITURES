@@ -13,8 +13,8 @@ import { useAppSelector } from '../../../store/hooks';
 const SELLER_DEFAULTS = {
   sellerName: 'LuxeHouse - Sharma Furnitures',
   sellerAddress: 'Arrah Shree Pally, Durgapur, West Bengal 713212',
-  sellerPhone: '+91 8918349445',
-  sellerEmail: 'hello@formiqstudio.in',
+  sellerPhone: '+91 9547587246',
+  sellerEmail: 'hello@luxehouse.in',
   sellerGstin: '',
   sellerPan: '',
   sellerLogo: '',
@@ -219,7 +219,19 @@ const InvoiceManagement: React.FC = () => {
       .logo-icon{display:inline-flex;width:40px;height:40px;background:linear-gradient(135deg,#D97706,#EA580C);border-radius:10px;align-items:center;justify-content:center;margin-right:12px;vertical-align:middle}
       .logo-icon svg{width:22px;height:22px;fill:none;stroke:white;stroke-width:2}
       @media print{body{padding:15px}}
-    </style></head><body>${printRef.current.innerHTML}<script>window.print();window.close()<\/script></body></html>`);
+    </style></head><body>${printRef.current.innerHTML}<script>
+      var imgs = document.querySelectorAll('img');
+      if (imgs.length === 0) { window.print(); window.close(); }
+      else {
+        var loaded = 0;
+        imgs.forEach(function(img) {
+          if (img.complete) { loaded++; if (loaded === imgs.length) { window.print(); window.close(); } }
+          else {
+            img.onload = img.onerror = function() { loaded++; if (loaded === imgs.length) { window.print(); window.close(); } };
+          }
+        });
+      }
+    <\/script></body></html>`);
     win.document.close();
   };
 
@@ -466,7 +478,7 @@ const InvoiceManagement: React.FC = () => {
                 <div>
                   <div style={{ marginBottom: '10px' }}>
                     {previewInvoice.sellerLogo && previewInvoice.sellerLogo.length > 0 ? (
-                      <img src={previewInvoice.sellerLogo} alt="Company Logo" style={{ height: '50px', marginBottom: '5px' }} />
+                      <img src={previewInvoice.sellerLogo} alt="Company Logo" crossOrigin="anonymous" style={{ height: '50px', marginBottom: '5px' }} />
                     ) : (
                       <>
                         <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
