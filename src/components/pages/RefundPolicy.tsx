@@ -6,8 +6,8 @@ const RefundPolicy: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Refund Policy | LuxeHome"
-        description="Read LuxeHome's refund policy. Learn about our 30-day refund guarantee, eligibility, process, and timelines for furniture purchases."
+        title="Refund Policy | LuxeHouse"
+        description="Read LuxeHouse's refund policy. Learn about our 30-day refund guarantee, eligibility, process, and timelines for furniture purchases."
       />
 
       <section className="bg-gradient-to-br from-green-50 to-emerald-50 py-12 sm:py-16 lg:py-20">
@@ -19,7 +19,7 @@ const RefundPolicy: React.FC = () => {
             Refund Policy
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            We want you to love your LuxeHome furniture. If something isn't right, we'll make it right.
+            We want you to love your LuxeHouse furniture. If something isn't right, we'll make it right.
           </p>
           <div className="text-sm text-gray-500 mt-4">Last updated: September 1, 2026</div>
         </div>
@@ -32,7 +32,7 @@ const RefundPolicy: React.FC = () => {
             <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 lg:p-8 mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Our 30-Day Refund Guarantee</h2>
               <p className="text-gray-600 text-lg mb-4">
-                At LuxeHome, customer satisfaction is our top priority. If you are not completely satisfied with your purchase,
+                At LuxeHouse, customer satisfaction is our top priority. If you are not completely satisfied with your purchase,
                 you may request a refund within <strong>30 calendar days</strong> from the date of delivery.
               </p>
               <p className="text-gray-600 text-lg">
@@ -99,7 +99,7 @@ const RefundPolicy: React.FC = () => {
               </div>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { step: '1', title: 'Contact Us', desc: 'Email returns@luxehome.com or call us with your order number and reason for return.' },
+                  { step: '1', title: 'Contact Us', desc: 'Email returns@luxehouse.in or call us with your order number and reason for return.' },
                   { step: '2', title: 'Get Approval', desc: 'Our team reviews your request within 2 business days and provides a Return Authorization.' },
                   { step: '3', title: 'Ship It Back', desc: 'Pack the item securely in original packaging. We provide a prepaid shipping label for defective items.' },
                   { step: '4', title: 'Receive Refund', desc: 'Once we receive and inspect the item, your refund is processed within 5–10 business days.' },
@@ -147,7 +147,7 @@ const RefundPolicy: React.FC = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Shipping Costs for Returns</h3>
               <div className="text-gray-600 space-y-3">
                 <p>
-                  <strong>Defective or wrong items:</strong> LuxeHome covers the full cost of return shipping. We will arrange a pickup or provide a prepaid label.
+                  <strong>Defective or wrong items:</strong> LuxeHouse covers the full cost of return shipping. We will arrange a pickup or provide a prepaid label.
                 </p>
                 <p>
                   <strong>Change of mind:</strong> The customer is responsible for return shipping costs. For large furniture items, a flat return shipping fee of ₹149 applies (standard delivery zones). White-glove pickup is available for ₹249.
@@ -164,7 +164,7 @@ const RefundPolicy: React.FC = () => {
                 We are happy to exchange items for a different size, color, or model subject to availability. Exchanges follow the same 30-day window. If the replacement item is a different price, the difference is charged or refunded accordingly.
               </p>
               <p className="text-gray-600">
-                To request an exchange, contact us at <strong>returns@luxehome.com</strong> with your order number and the item you'd like instead.
+                To request an exchange, contact us at <strong>returns@luxehouse.in</strong> with your order number and the item you'd like instead.
               </p>
             </div>
 
@@ -176,7 +176,7 @@ const RefundPolicy: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex items-center space-x-3 text-gray-700">
                   <Mail className="w-5 h-5 text-amber-600" />
-                  <span>returns@luxehome.com</span>
+                  <span>returns@luxehouse.in</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-700">
                   <Phone className="w-5 h-5 text-amber-600" />

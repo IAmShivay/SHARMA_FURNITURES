@@ -67,7 +67,7 @@ const ProductPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title={`${product.name} | LuxeHome`}
+        title={`${product.name} | LuxeHouse`}
         description={product.description.slice(0, 160)}
         keywords={`luxury furniture, ${product.name}, ${product.category}`}
         structuredData={{

@@ -92,12 +92,12 @@ const AppLayout: React.FC = () => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "LuxeHome",
-    "url": "https://luxehome.com",
+    "name": "LuxeHouse",
+    "url": "https://luxehouse.in",
     "description": "Premium furniture and home decor brand offering luxury furniture with modern design and exceptional craftsmanship.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://luxehome.com/search?q={search_term_string}",
+      "target": "https://luxehouse.in/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };

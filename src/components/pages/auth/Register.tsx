@@ -68,16 +68,16 @@ const Register: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Create Account | LuxeHome"
-        description="Create your LuxeHome account to start shopping premium furniture."
-        keywords="luxehome register, create account, sign up"
+        title="Create Account | LuxeHouse"
+        description="Create your LuxeHouse account to start shopping premium furniture."
+        keywords="LuxeHouse register, create account, sign up"
       />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 font-montserrat">
-              Join LuxeHome
+              Join LuxeHouse
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair">
               Create your account and start your furniture journey

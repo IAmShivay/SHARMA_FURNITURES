@@ -54,7 +54,7 @@ const CheckoutSuccess: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-      <SEOHead title="Order Confirmed | LuxeHome" noIndex={true} />
+      <SEOHead title="Order Confirmed | LuxeHouse" noIndex={true} />
       <div className="container mx-auto px-6 py-8">
         {/* Success Header */}
         <div className="text-center mb-12">

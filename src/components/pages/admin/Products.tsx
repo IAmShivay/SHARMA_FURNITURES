@@ -45,7 +45,7 @@ const DEFAULT_CUSTOMIZATION = [
 ];
 
 const emptyForm = {
-  name: '', slug: '', description: '', shortDescription: '', brand: 'LuxeHome',
+  name: '', slug: '', description: '', shortDescription: '', brand: 'LuxeHouse',
   category: 'chairs', subcategory: '', basePrice: 0, originalPrice: 0,
   images: [''], materials: [''], colors: [''], features: [''],
   status: 'active', featured: false, bestseller: false, newArrival: false,

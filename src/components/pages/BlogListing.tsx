@@ -35,8 +35,8 @@ const BlogListing: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Blog | LuxeHome"
-        description="Design inspiration, furniture care tips, and the latest home decor trends from LuxeHome."
+        title="Blog | LuxeHouse"
+        description="Design inspiration, furniture care tips, and the latest home decor trends from LuxeHouse."
         keywords="furniture blog, interior design tips, home decor trends"
       />
       {/* Hero */}

@@ -53,8 +53,8 @@ const PrivacyPolicy: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Privacy Policy | LuxeHome"
-        description="Read LuxeHome's privacy policy to understand how we collect, use, and protect your personal information."
+        title="Privacy Policy | LuxeHouse"
+        description="Read LuxeHouse's privacy policy to understand how we collect, use, and protect your personal information."
       />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-50 py-12 sm:py-16 lg:py-20">
@@ -85,7 +85,7 @@ const PrivacyPolicy: React.FC = () => {
               </h2>
               <div className="prose prose-lg text-gray-600 font-playfair">
                 <p>
-                  At LuxeHome, we are committed to protecting your privacy and ensuring the security of your personal information. 
+                  At LuxeHouse, we are committed to protecting your privacy and ensuring the security of your personal information. 
                   This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our 
                   website or make a purchase from us.
                 </p>
@@ -229,7 +229,7 @@ const PrivacyPolicy: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-3">
                     <Mail className="w-5 h-5 text-amber-600" />
-                    <span>privacy@luxehome.com</span>
+                    <span>privacy@luxehouse.in</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Shield className="w-5 h-5 text-amber-600" />

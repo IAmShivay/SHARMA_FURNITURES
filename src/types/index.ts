@@ -94,6 +94,7 @@ export interface BrandInfo {
 
 export interface ContactInfo {
   phone: string;
+  whatsapp?: string;
   email: string;
   address: {
     street: string;

@@ -79,7 +79,7 @@ const AdminLayout: React.FC = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
                   <Home className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">LuxeHome</span>
+                <span className="text-xl font-bold text-white">LuxeHouse</span>
               </Link>
               <button onClick={() => setSidebarOpen(false)} className="p-1 text-gray-400 hover:text-white rounded-lg">
                 <X className="w-5 h-5" />
@@ -130,7 +130,7 @@ const AdminLayout: React.FC = () => {
                 <Home className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-white">LuxeHome</h1>
+                <h1 className="text-lg font-bold text-white">LuxeHouse</h1>
                 <p className="text-[10px] text-amber-400 uppercase font-bold tracking-widest">Admin Panel</p>
               </div>
             </Link>

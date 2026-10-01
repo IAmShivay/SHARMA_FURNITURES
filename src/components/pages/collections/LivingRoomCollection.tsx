@@ -325,7 +325,7 @@ const LivingRoomCollection: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Living Room Collection | LuxeHome"
+        title="Living Room Collection | LuxeHouse"
         description="Shop our living room furniture collection including sofas, coffee tables, and accent chairs."
         keywords="living room furniture, sofas, coffee tables, accent chairs"
       />

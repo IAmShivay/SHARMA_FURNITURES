@@ -140,7 +140,7 @@ const Orders: React.FC = () => {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-      <SEOHead title="Order Management | LuxeHome Admin" noIndex={true} />
+      <SEOHead title="Order Management | LuxeHouse Admin" noIndex={true} />
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Order Management</h1>
         <p className="text-gray-500">View and manage customer orders</p>

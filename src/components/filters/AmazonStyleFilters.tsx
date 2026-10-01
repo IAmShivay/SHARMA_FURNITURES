@@ -86,7 +86,7 @@ const AmazonStyleFilters: React.FC<AmazonStyleFiltersProps> = ({
       type: 'checkbox',
       expanded: true,
       options: [
-        { id: 'luxehome', label: 'LuxeHome', count: 234, selected: false },
+        { id: 'LuxeHouse', label: 'LuxeHouse', count: 234, selected: false },
         { id: 'west-elm', label: 'West Elm', count: 156, selected: false },
         { id: 'pottery-barn', label: 'Pottery Barn', count: 123, selected: false },
         { id: 'crate-barrel', label: 'Crate & Barrel', count: 89, selected: false },

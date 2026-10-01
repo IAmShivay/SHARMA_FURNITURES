@@ -24,7 +24,7 @@ router.post(
         new Promise<string>((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
             {
-              folder: `luxehome/${folder}`,
+              folder: `LuxeHouse/${folder}`,
               transformation: [{ quality: 'auto', fetch_format: 'auto' }],
             },
             (error, result) => {

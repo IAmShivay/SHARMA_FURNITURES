@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                <span className="text-gray-300">hello@luxehome.com</span>
+                <span className="text-gray-300">hello@luxehouse.in</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-amber-600 flex-shrink-0 mt-1" />
@@ -106,7 +106,7 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              © {currentYear} LuxeHome. All rights reserved.
+              © {currentYear} LuxeHouse. All rights reserved.
             </div>
             <div className="flex flex-wrap justify-center md:justify-end space-x-6 text-sm">
               <a href="#" className="text-gray-400 hover:text-amber-600 transition-colors duration-200">Privacy Policy</a>

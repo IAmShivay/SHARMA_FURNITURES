@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, CheckCircle, MapPin, Phone, Clock, Calendar, Users, Award } from 'lucide-react';
 import { contactInfo } from '../../config/brand';
+import { useSubscribeNewsletterMutation } from '../../store/api/newsletterApi';
 
 const NewsletterSection: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [subscribe, { isLoading }] = useSubscribeNewsletterMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubscribed(true);
-      setIsLoading(false);
-    }, 1500);
+    setError('');
+    try {
+      const result = await subscribe({ email }).unwrap();
+      if (result.success) {
+        setIsSubscribed(true);
+      }
+    } catch (err: any) {
+      setError(err?.data?.message || 'Failed to subscribe. Please try again.');
+    }
   };
 
   return (
@@ -35,13 +41,13 @@ const NewsletterSection: React.FC = () => {
               <Mail className="w-6 h-6 text-amber-600" />
               <span className="text-amber-600 font-medium font-montserrat">Stay Connected</span>
             </div>
-            
+
             <h2 className="text-4xl md:text-5xl font-bold mb-6 font-montserrat">
-              Join the LuxeHome Family
+              Join the LuxeHouse Family
             </h2>
-            
+
             <p className="text-xl text-gray-300 mb-8 leading-relaxed font-playfair">
-              Be the first to discover new collections, receive exclusive design insights, and enjoy special member benefits. 
+              Be the first to discover new collections, receive exclusive design insights, and enjoy special member benefits.
               Join over 50,000 design enthusiasts who trust us to inspire their homes.
             </p>
 
@@ -58,6 +64,9 @@ const NewsletterSection: React.FC = () => {
                     required
                   />
                 </div>
+                {error && (
+                  <p className="text-red-400 text-sm">{error}</p>
+                )}
                 <button
                   type="submit"
                   disabled={isLoading}
@@ -73,16 +82,16 @@ const NewsletterSection: React.FC = () => {
                   )}
                 </button>
                 <p className="text-sm text-gray-400 font-playfair">
-                  By subscribing, you agree to our Privacy Policy and consent to receiving marketing emails. 
+                  By subscribing, you agree to our Privacy Policy and consent to receiving marketing emails.
                   Unsubscribe at any time.
                 </p>
               </form>
             ) : (
               <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-8 text-center">
                 <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold mb-3 font-montserrat">Welcome to the LuxeHome Family!</h3>
+                <h3 className="text-2xl font-semibold mb-3 font-montserrat">Welcome to the LuxeHouse Family!</h3>
                 <p className="text-gray-300 font-playfair">
-                  You'll receive your first design inspiration email within 24 hours. 
+                  You'll receive your first design inspiration email within 24 hours.
                   Get ready to transform your space!
                 </p>
               </div>
@@ -99,7 +108,7 @@ const NewsletterSection: React.FC = () => {
                   <p className="text-sm text-gray-400 font-playfair">Early collection previews</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-amber-600/20 rounded-lg flex items-center justify-center">
                   <Users className="w-5 h-5 text-amber-600" />
@@ -115,13 +124,13 @@ const NewsletterSection: React.FC = () => {
           {/* Contact & Showroom Information */}
           <div>
             <h3 className="text-3xl font-bold mb-8 font-montserrat">
-              Visit Our Design Studios
+              Visit Our Showroom
             </h3>
 
             <div className="space-y-8">
-              {/* Flagship Showroom */}
+              {/* Showroom */}
               <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700 hover:border-amber-600/50 transition-colors duration-300">
-                <h4 className="text-2xl font-semibold mb-6 text-amber-400 font-montserrat">Manhattan Flagship</h4>
+                <h4 className="text-2xl font-semibold mb-6 text-amber-400 font-montserrat">Durgapur Showroom</h4>
                 <div className="space-y-4">
                   <div className="flex items-start space-x-4">
                     <MapPin className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
@@ -146,8 +155,11 @@ const NewsletterSection: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
-                <button className="mt-6 bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 font-montserrat">
+
+                <button
+                  onClick={() => navigate('/consultation')}
+                  className="mt-6 bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 font-montserrat"
+                >
                   Schedule Visit
                 </button>
               </div>
@@ -159,14 +171,20 @@ const NewsletterSection: React.FC = () => {
                   <h4 className="text-xl font-bold font-montserrat">Complimentary Design Consultation</h4>
                 </div>
                 <p className="text-gray-300 mb-6 font-playfair">
-                  Our expert designers are ready to help you create your dream space. 
+                  Our expert designers are ready to help you create your dream space.
                   Book a free consultation and discover how our furniture can transform your home.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 font-montserrat">
+                  <button
+                    onClick={() => navigate('/consultation')}
+                    className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200 font-montserrat"
+                  >
                     Book In-Store
                   </button>
-                  <button className="border border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 font-montserrat">
+                  <button
+                    onClick={() => navigate('/consultation')}
+                    className="border border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 font-montserrat"
+                  >
                     Virtual Consultation
                   </button>
                 </div>

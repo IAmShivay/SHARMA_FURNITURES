@@ -591,7 +591,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                   </div>
                 </a>
                 <a
-                  href="mailto:hello@luxehome.com"
+                  href="mailto:hello@luxehouse.in"
                   className="flex items-center space-x-4 px-4 py-3 text-gray-700 hover:text-amber-600 hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 rounded-xl transition-all duration-300 group"
                 >
                   <div className="p-2 bg-amber-100 rounded-lg group-hover:bg-amber-200 transition-colors duration-300">
@@ -599,7 +599,7 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                   </div>
                   <div>
                     <div className="font-semibold">Email Us</div>
-                    <div className="text-sm text-gray-500">hello@luxehome.com</div>
+                    <div className="text-sm text-gray-500">hello@luxehouse.in</div>
                   </div>
                 </a>
               </div>
@@ -607,12 +607,13 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
 
             {/* Mobile CTA */}
             <div className="pt-8 mt-8 border-t border-gray-200/50">
-              <a
-                href="#consultation"
+              <Link
+                to="/consultation"
+                onClick={() => dispatch(setMobileMenuOpen(false))}
                 className="block w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white text-center py-4 px-6 rounded-2xl font-semibold text-lg hover:from-amber-700 hover:to-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl font-montserrat"
               >
                 Book Free Consultation
-              </a>
+              </Link>
             </div>
           </nav>
         </div>

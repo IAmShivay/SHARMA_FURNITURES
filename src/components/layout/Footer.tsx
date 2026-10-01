@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Home, Heart, Award, Truck, Shield, Clock } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Home, Heart, Award, Truck, Shield, Clock, CheckCircle } from 'lucide-react';
 import { brandInfo, contactInfo, socialLinks } from '../../config/brand';
+import { useSubscribeNewsletterMutation } from '../../store/api/newsletterApi';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const [footerEmail, setFooterEmail] = useState('');
+  const [footerSubscribed, setFooterSubscribed] = useState(false);
+  const [subscribe, { isLoading: footerLoading }] = useSubscribeNewsletterMutation();
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -134,16 +138,32 @@ const Footer: React.FC = () => {
             <div>
               <h5 className="text-sm font-semibold mb-3 text-amber-400 font-montserrat">Stay Inspired</h5>
               <p className="text-sm text-gray-400 mb-4 font-playfair">Get design tips and exclusive offers</p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white placeholder-gray-400"
-                />
-                <button className="bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-r-lg transition-colors duration-200">
-                  <Mail className="w-5 h-5" />
-                </button>
-              </div>
+              {!footerSubscribed ? (
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  try {
+                    const result = await subscribe({ email: footerEmail }).unwrap();
+                    if (result.success) setFooterSubscribed(true);
+                  } catch {}
+                }} className="flex">
+                  <input
+                    type="email"
+                    value={footerEmail}
+                    onChange={(e) => setFooterEmail(e.target.value)}
+                    placeholder="Your email"
+                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-white placeholder-gray-400"
+                    required
+                  />
+                  <button type="submit" disabled={footerLoading} className="bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-r-lg transition-colors duration-200">
+                    <Mail className="w-5 h-5" />
+                  </button>
+                </form>
+              ) : (
+                <div className="flex items-center space-x-2 text-green-400">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="text-sm">Subscribed!</span>
+                </div>
+              )}
             </div>
           </div>
         </div>

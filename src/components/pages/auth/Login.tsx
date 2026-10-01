@@ -59,9 +59,9 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Sign In | LuxeHome"
-        description="Sign in to your LuxeHome account to access your orders, wishlist, and exclusive offers."
-        keywords="luxehome login, sign in, furniture store account"
+        title="Sign In | LuxeHouse"
+        description="Sign in to your LuxeHouse account to access your orders, wishlist, and exclusive offers."
+        keywords="LuxeHouse login, sign in, furniture store account"
       />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">

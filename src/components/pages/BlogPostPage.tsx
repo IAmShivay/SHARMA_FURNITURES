@@ -46,7 +46,7 @@ const BlogPostPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title={`${post.title} | LuxeHome Blog`}
+        title={`${post.title} | LuxeHouse Blog`}
         description={post.excerpt}
         keywords={post.tags ? post.tags.join(', ') : ''}
         structuredData={{
@@ -62,7 +62,7 @@ const BlogPostPage: React.FC = () => {
           datePublished: post.publishedAt,
           publisher: {
             '@type': 'Organization',
-            name: 'LuxeHome'
+            name: 'LuxeHouse'
           }
         }}
       />

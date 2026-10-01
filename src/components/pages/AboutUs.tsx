@@ -67,9 +67,9 @@ const AboutUs: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="About Us | LuxeHome"
-        description="Discover LuxeHome's story, mission, and commitment to bringing premium furniture and exceptional design to your home."
-        keywords="about luxehome, furniture company, premium home furnishings"
+        title="About Us | LuxeHouse"
+        description="Discover LuxeHouse's story, mission, and commitment to bringing premium furniture and exceptional design to your home."
+        keywords="about LuxeHouse, furniture company, premium home furnishings"
       />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
@@ -82,7 +82,7 @@ const AboutUs: React.FC = () => {
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair leading-relaxed">
-              For over two decades, LuxeHome has been creating exceptional furniture that transforms houses into homes.
+              For over two decades, LuxeHouse has been creating exceptional furniture that transforms houses into homes.
               Our passion for craftsmanship and dedication to quality has made us a trusted name in luxury furniture.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -124,7 +124,7 @@ const AboutUs: React.FC = () => {
               </h2>
               <div className="space-y-6 text-gray-600 font-playfair text-lg leading-relaxed">
                 <p>
-                  Founded in 2000 by Sarah Johnson, LuxeHome began as a small workshop in Brooklyn with a simple mission: 
+                  Founded in 2000 by Sarah Johnson, LuxeHouse began as a small workshop in Brooklyn with a simple mission: 
                   to create furniture that combines timeless design with exceptional craftsmanship.
                 </p>
                 <p>
@@ -201,7 +201,7 @@ const AboutUs: React.FC = () => {
               Meet Our Team
             </h2>
             <p className="text-xl text-gray-600 font-playfair max-w-3xl mx-auto">
-              The passionate people behind LuxeHome's success
+              The passionate people behind LuxeHouse's success
             </p>
           </div>
           

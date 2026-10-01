@@ -1,11 +1,11 @@
 import { BrandInfo, ContactInfo, SocialLinks } from '../types';
 
 export const brandInfo: BrandInfo = {
-  name: 'LuxeHome',
+  name: 'LuxeHouse',
   tagline: 'Where Luxury Meets Comfort',
-  description: 'LuxeHome is a premium furniture brand dedicated to creating exceptional pieces that transform houses into homes. Founded on the principles of quality craftsmanship, timeless design, and sustainable practices.',
+  description: 'LuxeHouse is a premium furniture brand dedicated to creating exceptional pieces that transform houses into homes. Founded on the principles of quality craftsmanship, timeless design, and sustainable practices.',
   founded: '2018',
-  location: 'New York, USA',
+  location: 'Durgapur, West Bengal',
   values: [
     'Exceptional Craftsmanship',
     'Sustainable Materials',
@@ -17,24 +17,25 @@ export const brandInfo: BrandInfo = {
 
 export const contactInfo: ContactInfo = {
   phone: '+91 9547587246',
-  email: 'hello@luxehome.com',
+  whatsapp: '+91 6295411681',
+  email: 'hello@luxehouse.in',
   address: {
-    street: '123 Design Avenue',
-    city: 'New York',
-    state: 'NY',
-    zip: '10001',
-    country: 'United States'
+    street: 'Arrah Shree Pally',
+    city: 'Durgapur',
+    state: 'West Bengal',
+    zip: '713212',
+    country: 'India'
   },
   hours: {
-    weekdays: 'Monday - Friday: 9:00 AM - 8:00 PM EST',
-    weekends: 'Saturday - Sunday: 10:00 AM - 6:00 PM EST'
+    weekdays: 'Monday - Friday: 10:00 AM - 8:00 PM IST',
+    weekends: 'Saturday - Sunday: 10:00 AM - 6:00 PM IST'
   }
 };
 
 export const socialLinks: SocialLinks = {
-  facebook: 'https://facebook.com/luxehome',
-  instagram: 'https://instagram.com/luxehome',
-  twitter: 'https://twitter.com/luxehome',
-  pinterest: 'https://pinterest.com/luxehome',
-  youtube: 'https://youtube.com/luxehome'
+  facebook: 'https://facebook.com/luxehouse.in',
+  instagram: 'https://instagram.com/luxehouse.in',
+  twitter: 'https://twitter.com/luxehouse_in',
+  pinterest: 'https://pinterest.com/luxehouse',
+  youtube: 'https://youtube.com/luxehouse'
 };

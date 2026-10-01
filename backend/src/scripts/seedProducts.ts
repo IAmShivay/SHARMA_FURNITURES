@@ -9,7 +9,7 @@ const sampleProducts = [
     slug: 'velvet-accent-chair',
     description: 'Luxurious velvet accent chair with solid hardwood frame and premium cushioning. Perfect for adding a touch of elegance to any living space.',
     shortDescription: 'Elegant velvet chair with hardwood frame',
-    brand: 'LuxeHome',
+    brand: 'LuxeHouse',
     category: 'chairs',
     subcategory: 'accent-chairs',
     tags: ['bestseller', 'premium', 'velvet'],
@@ -60,7 +60,7 @@ const sampleProducts = [
     slug: 'scandinavian-dining-table',
     description: 'Minimalist solid oak dining table with clean lines and sustainable finish. Seats 6 comfortably.',
     shortDescription: 'Solid oak dining table with clean lines',
-    brand: 'LuxeHome',
+    brand: 'LuxeHouse',
     category: 'tables',
     subcategory: 'dining-tables',
     tags: ['eco-friendly', 'handcrafted', 'oak'],
@@ -109,7 +109,7 @@ const sampleProducts = [
     slug: 'modern-sectional-sofa',
     description: 'Contemporary L-shaped sectional with premium fabric and modular design. Perfect for large living spaces.',
     shortDescription: 'L-shaped sectional with premium fabric',
-    brand: 'LuxeHome',
+    brand: 'LuxeHouse',
     category: 'sofas',
     subcategory: 'sectionals',
     tags: ['bestseller', 'modular', 'premium'],
@@ -160,7 +160,7 @@ const sampleProducts = [
     slug: 'executive-office-chair',
     description: 'Ergonomic office chair with premium leather and advanced lumbar support. Perfect for long work sessions.',
     shortDescription: 'Ergonomic chair with premium leather',
-    brand: 'LuxeHome',
+    brand: 'LuxeHouse',
     category: 'office',
     subcategory: 'office-chairs',
     tags: ['ergonomic', 'professional', 'leather'],
@@ -210,7 +210,7 @@ const sampleProducts = [
     slug: 'glass-coffee-table',
     description: 'Elegant tempered glass coffee table with brushed steel frame. Modern design perfect for contemporary spaces.',
     shortDescription: 'Tempered glass table with steel frame',
-    brand: 'LuxeHome',
+    brand: 'LuxeHouse',
     category: 'tables',
     subcategory: 'coffee-tables',
     tags: ['modern', 'minimalist', 'glass'],
@@ -259,7 +259,7 @@ const sampleProducts = [
     slug: 'industrial-bookshelf',
     description: 'Industrial-style bookshelf with reclaimed wood and steel construction. Five tiers for ample storage.',
     shortDescription: 'Industrial bookshelf with reclaimed wood',
-    brand: 'LuxeHome',
+    brand: 'LuxeHouse',
     category: 'storage',
     subcategory: 'bookcases',
     tags: ['vintage', 'eco-friendly', 'handcrafted'],
@@ -312,11 +312,11 @@ async function seedProducts() {
     console.log('Connected to database');
 
     // Create a default admin user if it doesn't exist
-    let adminUser = await User.findOne({ email: 'admin@luxehome.com' });
+    let adminUser = await User.findOne({ email: 'admin@luxehouse.in' });
     if (!adminUser) {
       adminUser = await User.create({
         name: 'Admin User',
-        email: 'admin@luxehome.com',
+        email: 'admin@luxehouse.in',
         password: 'admin123',
         role: 'admin',
         emailVerified: true,

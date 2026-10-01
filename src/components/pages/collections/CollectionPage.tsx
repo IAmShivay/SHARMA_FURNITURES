@@ -315,7 +315,7 @@ const CollectionPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title={`${currentCategory.title} | LuxeHome`}
+        title={`${currentCategory.title} | LuxeHouse`}
         description={currentCategory.description}
       />
       {/* Hero Section */}

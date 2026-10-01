@@ -14,7 +14,7 @@ app.use(express.json());
 // Connect to MongoDB
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/luxehome');
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/LuxeHouse');
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('Database connection error:', error);
@@ -491,7 +491,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'velvet-accent-chair',
         description: 'Luxurious velvet accent chair with solid hardwood frame and premium cushioning.',
         shortDescription: 'Elegant velvet chair with hardwood frame',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'chairs',
         subcategory: 'accent-chairs',
         basePrice: 899,
@@ -540,7 +540,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'scandinavian-dining-table',
         description: 'Minimalist solid oak dining table with clean lines and sustainable finish.',
         shortDescription: 'Solid oak dining table with clean lines',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'tables',
         subcategory: 'dining-tables',
         basePrice: 1299,
@@ -572,7 +572,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'modern-sectional-sofa',
         description: 'Contemporary L-shaped sectional with premium fabric and modular design.',
         shortDescription: 'L-shaped sectional with premium fabric',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'sofas',
         subcategory: 'sectionals',
         basePrice: 2199,
@@ -621,7 +621,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'executive-office-desk',
         description: 'Premium executive desk with built-in storage and cable management.',
         shortDescription: 'Executive desk with storage',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'office',
         subcategory: 'desks',
         basePrice: 1599,
@@ -657,7 +657,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'luxury-king-bed-frame',
         description: 'Elegant upholstered king bed frame with premium fabric headboard.',
         shortDescription: 'Upholstered king bed frame',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'bedroom',
         subcategory: 'beds',
         basePrice: 2299,
@@ -693,7 +693,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'glass-coffee-table',
         description: 'Modern tempered glass coffee table with chrome legs.',
         shortDescription: 'Modern glass coffee table',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'tables',
         subcategory: 'coffee-tables',
         basePrice: 699,
@@ -729,7 +729,7 @@ app.post('/api/seed-products', async (req, res) => {
         slug: 'ergonomic-office-chair',
         description: 'Professional ergonomic office chair with lumbar support and adjustable features.',
         shortDescription: 'Ergonomic office chair with lumbar support',
-        brand: 'LuxeHome',
+        brand: 'LuxeHouse',
         category: 'chairs',
         subcategory: 'office-chairs',
         basePrice: 799,
@@ -785,7 +785,7 @@ app.post('/api/seed-users', async (req, res) => {
       {
         firstName: 'Admin',
         lastName: 'User',
-        email: 'admin@luxehome.com',
+        email: 'admin@luxehouse.in',
         password: 'admin123',
         role: 'admin',
         phone: '+1-555-0001',

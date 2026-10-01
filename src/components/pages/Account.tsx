@@ -110,7 +110,7 @@ const Account: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-      <SEOHead title="My Account | LuxeHome" description="Manage your LuxeHome account, orders, and preferences." noIndex={true} />
+      <SEOHead title="My Account | LuxeHouse" description="Manage your LuxeHouse account, orders, and preferences." noIndex={true} />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">

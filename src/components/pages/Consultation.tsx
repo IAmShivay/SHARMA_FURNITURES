@@ -139,7 +139,7 @@ const Consultation: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-      <SEOHead title="Book a Design Consultation | LuxeHome" description="Book a personalized design consultation with LuxeHome's expert interior designers." />
+      <SEOHead title="Book a Design Consultation | LuxeHouse" description="Book a personalized design consultation with LuxeHouse's expert interior designers." />
 
       {/* Hero */}
       <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-amber-900 text-white py-16 sm:py-20">

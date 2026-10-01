@@ -49,7 +49,7 @@ const DeliveryTracker: React.FC = () => {
     currentStatus: 'out-for-delivery',
     trackingNumber: 'LH2024001234',
     deliveryAddress: '123 Main Street, Apt 4B, New York, NY 10001',
-    deliveryPartner: 'LuxeHome White-Glove Delivery',
+    deliveryPartner: 'LuxeHouse White-Glove Delivery',
     driverName: 'Michael Johnson',
     driverPhone: '+91 9547587246',
     specialInstructions: 'Please call before delivery. Assembly required.',
@@ -70,7 +70,7 @@ const DeliveryTracker: React.FC = () => {
         id: '3',
         status: 'shipped',
         timestamp: '2024-01-12T09:15:00Z',
-        location: 'LuxeHome Warehouse, Brooklyn',
+        location: 'LuxeHouse Warehouse, Brooklyn',
         description: 'Package shipped from our warehouse'
       },
       {

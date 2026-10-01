@@ -10,7 +10,7 @@ const TermsOfService: React.FC = () => {
       content: [
         'By accessing and using our website, you accept and agree to be bound by these Terms of Service',
         'If you do not agree to these terms, please do not use our services',
-        'These terms apply to all visitors, users, and customers of LuxeHome',
+        'These terms apply to all visitors, users, and customers of LuxeHouse',
         'We reserve the right to update these terms at any time without prior notice'
       ]
     },
@@ -61,8 +61,8 @@ const TermsOfService: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Terms of Service | LuxeHome"
-        description="Review LuxeHome's terms of service for using our website and purchasing furniture."
+        title="Terms of Service | LuxeHouse"
+        description="Review LuxeHouse's terms of service for using our website and purchasing furniture."
       />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-indigo-50 to-purple-50 py-12 sm:py-16 lg:py-20">
@@ -74,7 +74,7 @@ const TermsOfService: React.FC = () => {
             Terms of Service
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 mb-8 font-playfair max-w-3xl mx-auto">
-            Please read these terms carefully before using our services. These terms govern your use of LuxeHome's website and services.
+            Please read these terms carefully before using our services. These terms govern your use of LuxeHouse's website and services.
           </p>
           <div className="text-sm text-gray-500">
             Last updated: January 1, 2024
@@ -93,11 +93,11 @@ const TermsOfService: React.FC = () => {
               </h2>
               <div className="prose prose-lg text-gray-600 font-playfair">
                 <p>
-                  These Terms of Service ("Terms") govern your use of the LuxeHome website and services. 
+                  These Terms of Service ("Terms") govern your use of the LuxeHouse website and services. 
                   By using our website, you agree to comply with and be bound by these Terms.
                 </p>
                 <p>
-                  These Terms constitute a legally binding agreement between you and LuxeHome. 
+                  These Terms constitute a legally binding agreement between you and LuxeHouse. 
                   Please read them carefully and contact us if you have any questions.
                 </p>
               </div>
@@ -159,7 +159,7 @@ const TermsOfService: React.FC = () => {
                 </h3>
                 <div className="text-gray-600 font-playfair space-y-3">
                   <p>
-                    All content on our website, including text, graphics, logos, and images, is the property of LuxeHome.
+                    All content on our website, including text, graphics, logos, and images, is the property of LuxeHouse.
                   </p>
                   <p>
                     You may not reproduce, distribute, or create derivative works without our written permission.
@@ -174,7 +174,7 @@ const TermsOfService: React.FC = () => {
                 </h3>
                 <div className="text-gray-600 font-playfair space-y-3">
                   <p>
-                    LuxeHome shall not be liable for any indirect, incidental, or consequential damages.
+                    LuxeHouse shall not be liable for any indirect, incidental, or consequential damages.
                   </p>
                   <p>
                     Our total liability shall not exceed the amount paid for the specific product or service.
@@ -258,7 +258,7 @@ const TermsOfService: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex items-center space-x-3">
                     <FileText className="w-5 h-5 text-amber-600" />
-                    <span>legal@luxehome.com</span>
+                    <span>legal@luxehouse.in</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Scale className="w-5 h-5 text-amber-600" />

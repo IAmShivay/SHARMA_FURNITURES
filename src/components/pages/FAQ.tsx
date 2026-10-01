@@ -122,7 +122,7 @@ const FAQ: React.FC = () => {
       id: '15',
       category: 'account',
       question: 'How do I contact customer service?',
-      answer: 'You can reach us via live chat, email at support@luxehome.com, or phone at 9547587246. Our team is available Monday-Friday 9AM-6PM EST.'
+      answer: 'You can reach us via live chat, email at support@luxehouse.in, or phone at 9547587246. Our team is available Monday-Friday 9AM-6PM EST.'
     }
   ];
 
@@ -144,9 +144,9 @@ const FAQ: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="FAQ | LuxeHome"
-        description="Find answers to frequently asked questions about LuxeHome's furniture, shipping, returns, and more."
-        keywords="luxehome faq, furniture questions, shipping policy, return policy"
+        title="FAQ | LuxeHouse"
+        description="Find answers to frequently asked questions about LuxeHouse's furniture, shipping, returns, and more."
+        keywords="LuxeHouse faq, furniture questions, shipping policy, return policy"
       />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-purple-50 to-indigo-50 py-12 sm:py-16 lg:py-20">

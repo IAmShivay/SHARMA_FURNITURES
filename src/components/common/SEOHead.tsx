@@ -13,11 +13,11 @@ interface SEOHeadProps {
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
-  title = 'LuxeHome - Premium Furniture & Home Decor Brand',
-  description = 'Transform your home with LuxeHome\'s curated collection of luxury furniture. Modern design meets exceptional craftsmanship.',
+  title = 'LuxeHouse - Premium Furniture & Home Decor Brand',
+  description = 'Transform your home with LuxeHouse\'s curated collection of luxury furniture. Modern design meets exceptional craftsmanship.',
   keywords = 'luxury furniture, premium home decor, modern furniture, scandinavian design, furniture brand',
-  image = 'https://luxehome.com/og-image.jpg',
-  url = 'https://luxehome.com',
+  image = 'https://luxehouse.in/og-image.jpg',
+  url = 'https://luxehouse.in',
   type = 'website',
   structuredData,
   noIndex = false

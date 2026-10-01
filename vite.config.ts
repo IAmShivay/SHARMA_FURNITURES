@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'LuxeHome - Premium Furniture',
-        short_name: 'LuxeHome',
+        name: 'LuxeHouse - Premium Furniture',
+        short_name: 'LuxeHouse',
         description: 'Discover luxury furniture for every room. Premium quality, exceptional design, and unmatched craftsmanship for your home.',
         theme_color: '#D4AF37',
         background_color: '#FAFAFA',

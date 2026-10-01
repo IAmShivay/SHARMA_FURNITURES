@@ -33,7 +33,7 @@ const Contact: React.FC = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: ['hello@luxehome.com', 'support@luxehome.com'],
+      details: ['hello@luxehouse.in', 'support@luxehouse.in'],
       description: 'We respond within 24 hours'
     },
     {
@@ -87,9 +87,9 @@ const Contact: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Contact Us | LuxeHome"
-        description="Get in touch with LuxeHome. We're here to help with your furniture needs, design consultations, and customer support."
-        keywords="contact luxehome, furniture store contact, customer support"
+        title="Contact Us | LuxeHouse"
+        description="Get in touch with LuxeHouse. We're here to help with your furniture needs, design consultations, and customer support."
+        keywords="contact LuxeHouse, furniture store contact, customer support"
       />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">

@@ -204,7 +204,7 @@ const Gallery: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-      <SEOHead title="Gallery & Inspiration | LuxeHome" description="Explore our gallery of premium furniture, room designs, and completed projects." />
+      <SEOHead title="Gallery & Inspiration | LuxeHouse" description="Explore our gallery of premium furniture, room designs, and completed projects." />
 
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-8 sm:py-12">
         <div className="container mx-auto px-4 text-center">

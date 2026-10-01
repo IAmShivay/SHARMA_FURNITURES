@@ -21,7 +21,7 @@
     "express",
     "mongodb"
   ],
-  "author": "LuxeHome",
+  "author": "LuxeHouse",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",

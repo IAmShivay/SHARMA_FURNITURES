@@ -10,7 +10,7 @@ import BlogPost from '../models/BlogPost';
 const users = [
   {
     name: 'Admin User',
-    email: 'admin@luxehome.com',
+    email: 'admin@luxehouse.in',
     password: 'Admin@1234',
     role: 'admin',
     phone: '+1-555-100-0001',
@@ -50,7 +50,7 @@ const users = [
   },
   {
     name: 'Support Agent',
-    email: 'support@luxehome.com',
+    email: 'support@luxehouse.in',
     password: 'Support@1234',
     role: 'support',
     emailVerified: true,
@@ -58,7 +58,7 @@ const users = [
   },
   {
     name: 'Store Manager',
-    email: 'manager@luxehome.com',
+    email: 'manager@luxehouse.in',
     password: 'Manager@1234',
     role: 'manager',
     emailVerified: true,
@@ -160,7 +160,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'velvet-accent-chair',
       description: 'Luxurious velvet accent chair with solid hardwood frame and premium cushioning. Perfect for adding a touch of elegance to any living space.',
       shortDescription: 'Elegant velvet chair with hardwood frame',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'chairs',
       subcategory: 'accent-chairs',
       tags: ['bestseller', 'premium', 'velvet'],
@@ -197,7 +197,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'scandinavian-dining-table',
       description: 'Minimalist solid oak dining table with clean lines and sustainable finish. Seats 6 comfortably. Handcrafted with care.',
       shortDescription: 'Solid oak dining table with clean lines',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'tables',
       subcategory: 'dining-tables',
       tags: ['eco-friendly', 'handcrafted', 'oak'],
@@ -232,7 +232,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'modern-sectional-sofa',
       description: 'Contemporary L-shaped sectional with premium fabric and modular design. Perfect for large living spaces. Reversible chaise.',
       shortDescription: 'L-shaped sectional with premium fabric',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'sofas',
       subcategory: 'sectionals',
       tags: ['bestseller', 'modular', 'premium'],
@@ -269,7 +269,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'executive-office-chair',
       description: 'Ergonomic office chair with premium leather and advanced lumbar support. Perfect for long work sessions.',
       shortDescription: 'Ergonomic chair with premium leather',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'office',
       subcategory: 'office-chairs',
       tags: ['ergonomic', 'professional', 'leather'],
@@ -305,7 +305,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'glass-coffee-table',
       description: 'Elegant tempered glass coffee table with brushed steel frame. Modern design perfect for contemporary spaces.',
       shortDescription: 'Tempered glass table with steel frame',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'tables',
       subcategory: 'coffee-tables',
       tags: ['modern', 'minimalist', 'glass'],
@@ -340,7 +340,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'industrial-bookshelf',
       description: 'Industrial-style bookshelf with reclaimed wood and steel construction. Five tiers for ample storage.',
       shortDescription: 'Industrial bookshelf with reclaimed wood',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'storage',
       subcategory: 'bookcases',
       tags: ['vintage', 'eco-friendly', 'handcrafted'],
@@ -375,7 +375,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'luxury-king-bed-frame',
       description: 'Stunning upholstered king bed frame with tufted headboard. Premium linen fabric and solid wood slats for ultimate comfort.',
       shortDescription: 'Upholstered king bed with tufted headboard',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'bedroom',
       subcategory: 'beds',
       tags: ['luxury', 'premium', 'bedroom'],
@@ -412,7 +412,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'pendant-chandelier-light',
       description: 'Modern pendant chandelier with brushed brass finish and frosted glass shades. Creates warm ambient lighting for dining rooms.',
       shortDescription: 'Brushed brass chandelier with glass shades',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'lighting',
       subcategory: 'chandeliers',
       tags: ['modern', 'brass', 'lighting'],
@@ -447,7 +447,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'marble-console-table',
       description: 'Elegant Italian marble top console table with gold-finished steel legs. A statement piece for entryways and living rooms.',
       shortDescription: 'Italian marble console with gold legs',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'tables',
       subcategory: 'console-tables',
       tags: ['luxury', 'marble', 'gold'],
@@ -482,7 +482,7 @@ function buildProducts(adminId: mongoose.Types.ObjectId) {
       slug: 'ceramic-table-lamp-set',
       description: 'Set of 2 handcrafted ceramic table lamps with linen shades. Textured glaze finish adds character to any nightstand or side table.',
       shortDescription: 'Set of 2 handcrafted ceramic lamps',
-      brand: 'LuxeHome',
+      brand: 'LuxeHouse',
       category: 'decor',
       subcategory: 'table-lamps',
       tags: ['handcrafted', 'ceramic', 'set'],
@@ -763,10 +763,10 @@ async function seed() {
     console.log('═══════════════════════════════════════════\n');
     console.log('  Test Accounts:');
     console.log('  ─────────────────────────────────────────');
-    console.log('  Admin:    admin@luxehome.com    / Admin@1234');
+    console.log('  Admin:    admin@luxehouse.in    / Admin@1234');
     console.log('  Customer: customer@test.com     / Customer@1234');
-    console.log('  Support:  support@luxehome.com  / Support@1234');
-    console.log('  Manager:  manager@luxehome.com  / Manager@1234');
+    console.log('  Support:  support@luxehouse.in  / Support@1234');
+    console.log('  Manager:  manager@luxehouse.in  / Manager@1234');
     console.log('');
     console.log(`  Products: ${products.length}`);
     console.log('  Orders:   3 (delivered, shipped, confirmed)');

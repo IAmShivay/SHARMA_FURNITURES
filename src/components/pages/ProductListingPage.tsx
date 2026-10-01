@@ -53,7 +53,7 @@ const ProductListingPage: React.FC = () => {
   const products: Product[] = (apiProducts || []).map((product: any) => ({
     id: product._id || product.id,
     name: product.name,
-    brand: product.brand || 'LuxeHome',
+    brand: product.brand || 'LuxeHouse',
     price: product.basePrice || product.price,
     originalPrice: product.originalPrice,
     rating: product.rating?.average || 0,
@@ -197,7 +197,7 @@ const ProductListingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
       <SEOHead
-        title="Premium Furniture Collection | LuxeHome"
+        title="Premium Furniture Collection | LuxeHouse"
         description="Browse our curated collection of premium furniture. Shop sofas, chairs, tables, and more with free delivery."
         keywords="buy furniture online, premium furniture, sofas, chairs, tables, home decor"
       />

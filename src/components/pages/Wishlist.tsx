@@ -13,7 +13,7 @@ const Wishlist: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-        <SEOHead title="My Wishlist | LuxeHome" description="View and manage your saved favorite furniture items." noIndex={true} />
+        <SEOHead title="My Wishlist | LuxeHouse" description="View and manage your saved favorite furniture items." noIndex={true} />
         <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
@@ -31,7 +31,7 @@ const Wishlist: React.FC = () => {
   if (!wishlistItems || wishlistItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-        <SEOHead title="My Wishlist | LuxeHome" description="View and manage your saved favorite furniture items." noIndex={true} />
+        <SEOHead title="My Wishlist | LuxeHouse" description="View and manage your saved favorite furniture items." noIndex={true} />
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
           <div className="container mx-auto px-6">
@@ -75,7 +75,7 @@ const Wishlist: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-28 sm:pt-32 lg:pt-36">
-      <SEOHead title="My Wishlist | LuxeHome" description="View and manage your saved favorite furniture items." noIndex={true} />
+      <SEOHead title="My Wishlist | LuxeHouse" description="View and manage your saved favorite furniture items." noIndex={true} />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-50 to-orange-50 py-12 sm:py-16 lg:py-20">
         <div className="container mx-auto px-6">
