@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
+import multer from 'multer';
 import { AppError } from '../utils/AppError';
 
 interface ErrorResponse {
@@ -67,6 +68,15 @@ export const errorHandler = (
     response.message = 'Token expired';
     res.status(401);
   }
+  // Multer errors (file upload)
+  else if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      response.message = 'File too large. Maximum size is 5MB.';
+    } else {
+      response.message = `Upload error: ${err.message}`;
+    }
+    res.status(400);
+  }
   // Custom AppError
   else if (err instanceof AppError) {
     response.message = err.message;
@@ -74,6 +84,7 @@ export const errorHandler = (
   }
   // Default to 500 server error
   else {
+    response.message = err.message || 'Internal Server Error';
     res.status(500);
   }
 

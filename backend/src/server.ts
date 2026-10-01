@@ -169,18 +169,18 @@ const startServer = async () => {
       console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });
 
-    // Handle unhandled promise rejections
+    // Handle unhandled promise rejections — log but don't crash
     process.on('unhandledRejection', (err: Error) => {
-      console.error('Unhandled Promise Rejection:', err.message);
-      server.close(() => {
-        process.exit(1);
-      });
+      console.error('Unhandled Promise Rejection:', err.message, err.stack);
     });
 
-    // Handle uncaught exceptions
+    // Handle uncaught exceptions — log but don't crash for recoverable errors
     process.on('uncaughtException', (err: Error) => {
-      console.error('Uncaught Exception:', err.message);
-      process.exit(1);
+      console.error('Uncaught Exception:', err.message, err.stack);
+      // Only exit for truly fatal errors
+      if (err.message.includes('EADDRINUSE') || err.message.includes('out of memory')) {
+        server.close(() => process.exit(1));
+      }
     });
 
     // Graceful shutdown
