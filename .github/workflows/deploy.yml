@@ -76,6 +76,10 @@ jobs:
             backend/package-lock.json \
             ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/backend/
 
+      - name: Deploy Nginx config
+        run: |
+          rsync -avz deploy/nginx.conf ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/deploy/nginx.conf
+
       - name: Deploy .env and restart
         run: |
           scp .env.deploy ${{ env.VPS_USER }}@${{ env.VPS_HOST }}:${{ env.APP_DIR }}/backend/.env
@@ -94,6 +98,13 @@ jobs:
             fi
 
             pm2 save
+
+            # Update Nginx config and reload
+            if [ -f /home/ubuntu/furniture/deploy/nginx.conf ]; then
+              sudo cp /home/ubuntu/furniture/deploy/nginx.conf /etc/nginx/sites-available/furniture
+              sudo ln -sf /etc/nginx/sites-available/furniture /etc/nginx/sites-enabled/furniture
+              sudo nginx -t && sudo systemctl reload nginx
+            fi
           EOF
 
       - name: Verify

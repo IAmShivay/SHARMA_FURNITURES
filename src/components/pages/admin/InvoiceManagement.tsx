@@ -89,6 +89,7 @@ const InvoiceManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoError, setLogoError] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const token = useAppSelector((state) => state.auth.token);
@@ -102,7 +103,12 @@ const InvoiceManagement: React.FC = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   const handleLogoUpload = async (file: File) => {
+    if (file.size > 2 * 1024 * 1024) {
+      setLogoError('Logo must be under 2MB');
+      return;
+    }
     setUploadingLogo(true);
+    setLogoError('');
     const formData = new FormData();
     formData.append('images', file);
     try {
@@ -111,12 +117,23 @@ const InvoiceManagement: React.FC = () => {
         headers: { authorization: `Bearer ${token}` },
         body: formData,
       });
-      const data = await res.json();
-      if (data.success && data.data.urls[0]) {
-        setForm(f => ({ ...f, sellerLogo: data.data.urls[0] }));
+      if (!res.ok) {
+        if (res.status === 413) {
+          setLogoError('File too large. Reduce image size and try again.');
+        } else {
+          setLogoError(`Upload failed (${res.status}). Try again.`);
+        }
+        return;
+      }
+      const result = await res.json();
+      if (result.success && result.data?.urls?.[0]) {
+        setForm(f => ({ ...f, sellerLogo: result.data.urls[0] }));
+        setLogoError('');
+      } else {
+        setLogoError('Upload failed. No URL returned.');
       }
     } catch (err) {
-      console.error('Logo upload failed:', err);
+      setLogoError('Upload failed. Check your connection.');
     } finally {
       setUploadingLogo(false);
     }
@@ -319,20 +336,23 @@ const InvoiceManagement: React.FC = () => {
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-5 max-h-[70vh] overflow-y-auto">
               {/* Logo Upload */}
-              <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                <input type="file" ref={logoInputRef} accept="image/*" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); }} />
-                {form.sellerLogo ? (
-                  <div className="flex items-center gap-3">
-                    <img src={form.sellerLogo} alt="Logo" className="h-12 rounded-lg border" />
-                    <button type="button" onClick={() => setForm(f => ({ ...f, sellerLogo: '' }))} className="text-xs text-red-500 hover:underline">Remove</button>
-                    <button type="button" onClick={() => logoInputRef.current?.click()} className="text-xs text-amber-600 hover:underline">Change</button>
-                  </div>
-                ) : (
-                  <button type="button" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo} className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-amber-500 hover:text-amber-600 transition-colors">
-                    {uploadingLogo ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Company Logo</>}
-                  </button>
-                )}
-                <span className="text-[10px] text-gray-400">PNG or JPG, max 2MB. Shows on invoice header.</span>
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-4">
+                  <input type="file" ref={logoInputRef} accept="image/png,image/jpeg,image/jpg,image/webp" className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) handleLogoUpload(f); e.target.value = ''; }} />
+                  {form.sellerLogo ? (
+                    <div className="flex items-center gap-3">
+                      <img src={form.sellerLogo} alt="Logo" className="h-12 rounded-lg border" onError={() => setLogoError('Logo image failed to load. Try uploading again.')} />
+                      <button type="button" onClick={() => { setForm(f => ({ ...f, sellerLogo: '' })); setLogoError(''); }} className="text-xs text-red-500 hover:underline">Remove</button>
+                      <button type="button" onClick={() => logoInputRef.current?.click()} className="text-xs text-amber-600 hover:underline">Change</button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => logoInputRef.current?.click()} disabled={uploadingLogo} className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-amber-500 hover:text-amber-600 transition-colors">
+                      {uploadingLogo ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Company Logo</>}
+                    </button>
+                  )}
+                  <span className="text-[10px] text-gray-400">PNG or JPG, max 2MB. Shows on invoice header.</span>
+                </div>
+                {logoError && <p className="text-xs text-red-500 mt-2">{logoError}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -478,7 +498,7 @@ const InvoiceManagement: React.FC = () => {
                 <div>
                   <div style={{ marginBottom: '10px' }}>
                     {previewInvoice.sellerLogo && previewInvoice.sellerLogo.length > 0 ? (
-                      <img src={previewInvoice.sellerLogo} alt="Company Logo" crossOrigin="anonymous" style={{ height: '50px', marginBottom: '5px' }} />
+                      <img src={previewInvoice.sellerLogo} alt="Company Logo" style={{ height: '50px', marginBottom: '5px' }} />
                     ) : (
                       <>
                         <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
