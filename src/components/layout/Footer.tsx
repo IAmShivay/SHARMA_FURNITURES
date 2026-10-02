@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Home, Heart, Award, Truck, Shield, Clock, CheckCircle } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin, Heart, Award, Truck, Shield, Clock, CheckCircle } from 'lucide-react';
 import { brandInfo, contactInfo, socialLinks } from '../../config/brand';
 import { useSubscribeNewsletterMutation } from '../../store/api/newsletterApi';
 
@@ -17,18 +17,11 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Section */}
           <div className="lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-lg flex items-center justify-center">
-                <Home className="w-7 h-7 text-white" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold font-montserrat">
-                  {brandInfo.name}
-                </h3>
-                <p className="text-sm text-amber-400 font-playfair">
-                  {brandInfo.tagline}
-                </p>
-              </div>
+            <div className="mb-6">
+              <img src="/logo.png" alt={brandInfo.name} className="h-12 mb-2" />
+              <p className="text-sm text-amber-400 font-playfair">
+                {brandInfo.tagline}
+              </p>
             </div>
             
             <p className="text-gray-300 mb-6 leading-relaxed font-playfair">

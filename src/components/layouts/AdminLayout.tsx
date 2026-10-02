@@ -76,10 +76,7 @@ const AdminLayout: React.FC = () => {
           <div className="fixed inset-y-0 left-0 flex flex-col w-72 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 shadow-2xl">
             <div className="flex items-center justify-between px-6 pt-6 pb-4">
               <Link to="/" className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                  <Home className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">LuxeHouse</span>
+                <img src="/logo.png" alt="LuxeHouse" className="h-8" />
               </Link>
               <button onClick={() => setSidebarOpen(false)} className="p-1 text-gray-400 hover:text-white rounded-lg">
                 <X className="w-5 h-5" />
@@ -126,14 +123,9 @@ const AdminLayout: React.FC = () => {
         <div className="flex flex-col flex-1 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800">
           <div className="flex items-center gap-3 px-6 pt-7 pb-6">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
-                <Home className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-white">LuxeHouse</h1>
-                <p className="text-[10px] text-amber-400 uppercase font-bold tracking-widest">Admin Panel</p>
-              </div>
+              <img src="/logo.png" alt="LuxeHouse" className="h-8 group-hover:scale-105 transition-transform" />
             </Link>
+            <p className="text-[10px] text-amber-400 uppercase font-bold tracking-widest mt-1 px-6">Admin Panel</p>
           </div>
 
           <nav className="flex-1 px-3 space-y-1 overflow-y-auto">

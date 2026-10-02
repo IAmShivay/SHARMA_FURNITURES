@@ -171,49 +171,13 @@ const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
         <div className="flex items-center justify-between py-4 sm:py-6">
           {/* Luxury Brand Logo */}
           <Link to="/" className="flex items-center space-x-2 sm:space-x-5 group cursor-pointer">
-            {/* Premium Logo Container */}
-            <div className={`relative transition-all duration-500 ${
-              isScrolled
-                ? 'w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-amber-600 via-orange-600 to-amber-700 shadow-xl'
-                : 'w-12 h-12 sm:w-16 sm:h-16 bg-white/15 backdrop-blur-xl border-2 border-white/40 shadow-2xl'
-            } rounded-2xl sm:rounded-3xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transform-gpu`}>
-
-              {/* Logo Icon */}
-              <Home className={`transition-all duration-500 ${
-                isScrolled ? 'w-5 h-5 sm:w-8 sm:h-8 text-white' : 'w-6 h-6 sm:w-9 sm:h-9 text-white filter drop-shadow-2xl'
-              }`} />
-
-              {/* Hover Glow Effect */}
-              <div className={`absolute inset-0 rounded-3xl transition-all duration-500 ${
-                isScrolled
-                  ? 'bg-gradient-to-br from-white/20 via-transparent to-white/10'
-                  : 'bg-gradient-to-br from-white/30 via-transparent to-white/10'
-              } opacity-0 group-hover:opacity-100`}></div>
-
-              {/* Premium Ring Effect */}
-              <div className={`absolute -inset-1 rounded-3xl transition-all duration-500 opacity-0 group-hover:opacity-100 ${
-                isScrolled
-                  ? 'bg-gradient-to-br from-amber-400/30 to-orange-600/30'
-                  : 'bg-gradient-to-br from-white/30 to-white/10'
-              } blur-sm`}></div>
-            </div>
-
-            {/* Brand Text */}
-            <div className="transition-all duration-500 group-hover:translate-x-1 hidden xs:block">
-              <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-montserrat transition-all duration-500 leading-none text-white filter drop-shadow-2xl">
-                <span className="text-amber-200 transition-all duration-500 inline-block group-hover:scale-110">
-                  {brandInfo.name.charAt(0)}
-                </span>
-                <span className="tracking-tight">{brandInfo.name.slice(1)}</span>
-              </h1>
-
-              <p className="text-xs sm:text-sm text-white/95 filter drop-shadow-lg font-medium font-playfair hidden sm:block transition-all duration-500 mt-1">
-                {brandInfo.tagline}
-              </p>
-
-              {/* Luxury Underline */}
-              <div className="h-0.5 bg-gradient-to-r from-white/60 to-transparent transition-all duration-500 mt-1 w-0 group-hover:w-full"></div>
-            </div>
+            <img
+              src="/logo.png"
+              alt={brandInfo.name}
+              className={`transition-all duration-500 group-hover:scale-105 transform-gpu ${
+                isScrolled ? 'h-8 sm:h-10' : 'h-10 sm:h-14'
+              }`}
+            />
           </Link>
 
           {/* Premium Desktop Navigation */}

@@ -256,12 +256,7 @@ const InvoiceManagement: React.FC = () => {
   const totals = calcTotals();
 
   const LogoHTML = () => (
-    <span>
-      <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-      </span>
-      <span style={{ fontSize: '22px', fontWeight: 800, color: '#D97706', letterSpacing: '1px', verticalAlign: 'middle' }}>LuxeHouse</span>
-    </span>
+    <img src="/logo.png" alt="LuxeHouse" style={{ height: '40px' }} />
   );
 
   return (
@@ -500,12 +495,7 @@ const InvoiceManagement: React.FC = () => {
                     {previewInvoice.sellerLogo && previewInvoice.sellerLogo.length > 0 ? (
                       <img src={previewInvoice.sellerLogo} alt="Company Logo" style={{ height: '50px', marginBottom: '5px' }} />
                     ) : (
-                      <>
-                        <span style={{ display: 'inline-flex', width: '40px', height: '40px', background: 'linear-gradient(135deg, #D97706, #EA580C)', borderRadius: '10px', alignItems: 'center', justifyContent: 'center', marginRight: '12px', verticalAlign: 'middle' }}>
-                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                        </span>
-                        <span style={{ fontSize: '24px', fontWeight: 800, color: '#D97706', letterSpacing: '1px', verticalAlign: 'middle' }}>LuxeHouse</span>
-                      </>
+                      <img src="/logo.png" alt="LuxeHouse" style={{ height: '50px', marginBottom: '5px' }} />
                     )}
                   </div>
                   <p style={{ margin: '3px 0', fontSize: '12px', color: '#666' }}>{previewInvoice.sellerName}</p>
