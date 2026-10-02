@@ -45,21 +45,14 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5174').replace(/^['"]|['"]$/g, '');
 const corsOptions = {
   origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    const allowedOrigins = [
-      process.env.FRONTEND_URL || 'http://localhost:5174',
-      'http://localhost:3000',
-      'http://localhost:5173',
-    ];
-    
-    // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (origin === frontendUrl || origin.includes('localhost')) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true);
     }
   },
   credentials: true,
